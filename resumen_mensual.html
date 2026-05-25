@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Mensual — Telconet</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #dce8f5;
+  color: #1a1a2e;
+  font-size: 12px;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ══ SIDEBAR ══ */
+.sidebar {
+  width: 155px;
+  min-width: 155px;
+  background: white;
+  border-right: 1.5px solid #b0c8e8;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 200;
+  overflow-y: auto;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  color: #444;
+  font-size: 11px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  line-height: 1.2;
+}
+.sidebar-item:hover { background: #e8f0fb; color: #003087; }
+.sidebar-item.active { background: #dce8f5; border-left-color: #003087; color: #003087; }
+.sidebar-icon { font-size: 14px; min-width: 18px; text-align: center; }
+.sidebar-divider { height: 1px; background: #e0eaf5; margin: 6px 10px; }
+.sidebar-collapse {
+  margin-top: auto;
+  padding: 8px 14px;
+  color: #888; cursor: pointer; font-size: 12px;
+  border-top: 1px solid #e0eaf5;
+  text-align: right;
+}
+
+/* ══ MAIN ══ */
+.main {
+  margin-left: 155px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ══ HEADER ══ */
+.header {
+  background: white;
+  border: 1.5px solid #b0c8e8;
+  border-radius: 8px;
+  margin: 12px 12px 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo-box {
+  border: 2.5px solid #003087;
+  border-radius: 6px;
+  padding: 6px 10px;
+  text-align: center;
+  min-width: 110px;
+}
+.logo-brand { font-size: 17px; font-weight: 900; color: #003087; letter-spacing: 1px; }
+.logo-diamonds { font-size: 13px; color: #003087; }
+.logo-latam { font-size: 8px; letter-spacing: 3px; color: #5a7fa8; margin-top: 1px; }
+.header-title {
+  flex: 1; text-align: center;
+  font-size: 15px; font-weight: 700; color: #003087;
+  line-height: 1.3;
+}
+.btn-resumen {
+  border: 1.5px solid #003087;
+  border-radius: 20px;
+  padding: 5px 14px;
+  background: white; color: #003087;
+  font-size: 10px; font-weight: 700;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-resumen:hover { background: #003087; color: white; }
+.btn-resumen.hidden { display: none; }
+
+/* ══ SUBROW ══ */
+.subrow {
+  background: white;
+  border: 1.5px solid #b0c8e8;
+  border-radius: 8px;
+  margin: 0 12px 10px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.mes-pill {
+  border: 1.5px solid #003087;
+  border-radius: 20px;
+  padding: 5px 16px;
+  color: #003087; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; gap: 6px;
+  position: relative; cursor: pointer;
+}
+.mes-pill select {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
+}
+.empresa-pill {
+  border: 1.5px solid #003087;
+  border-radius: 20px;
+  padding: 5px 16px;
+  color: #003087; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; gap: 6px;
+  position: relative; cursor: pointer;
+  min-width: 160px;
+}
+.empresa-pill select {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%;
+}
+.kpi-pill {
+  border: 1.5px solid #555;
+  border-radius: 8px; padding: 5px 18px; text-align: center;
+}
+.kpi-pill .lbl { font-size: 8px; color: #777; font-weight: 700; text-transform: uppercase; }
+.kpi-pill .val { font-size: 18px; font-weight: 700; color: #222; }
+.kpi-right { margin-left: auto; }
+
+/* ══ CONTENT ══ */
+.content { padding: 0 12px 12px; flex: 1; }
+
+/* ══ PANEL ══ */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ══ CHART CARDS ══ */
+.grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.grid-1 { margin-bottom: 10px; }
+
+.card {
+  background: white;
+  border: 1.5px solid #b0c8e8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.card-head {
+  background: #e8f0fb;
+  border-bottom: 1px solid #b0c8e8;
+  padding: 5px 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.dot-blue { background: #1565c0; }
+.dot-teal { background: #0097a7; }
+.dot-green { background: #2e7d32; }
+.dot-red { background: #c62828; }
+.card-title { font-size: 10px; font-weight: 700; color: #003087; text-transform: uppercase; letter-spacing: 0.4px; }
+.card-body { padding: 8px 14px 4px; }
+canvas { max-height: 160px; }
+.card-obs {
+  border-top: 1px solid #e8f0fb;
+  padding: 6px 12px;
+  display: flex; align-items: flex-start; gap: 8px;
+  min-height: 50px;
+}
+.obs-mes { font-size: 10px; font-weight: 700; color: #003087; white-space: nowrap; padding-top: 1px; }
+.obs-txt { font-size: 10px; color: #444; line-height: 1.45; flex: 1; }
+.card-nav {
+  border-top: 1px solid #e8f0fb;
+  padding: 3px 12px;
+  display: flex; align-items: center; justify-content: flex-end; gap: 4px;
+  color: #888; font-size: 10px;
+}
+.card-nav button {
+  background: none; border: none; cursor: pointer;
+  color: #003087; font-size: 13px; padding: 0 2px;
+}
+
+/* ══ PLACEHOLDER ══ */
+.placeholder {
+  background: white;
+  border: 1.5px solid #b0c8e8;
+  border-radius: 8px;
+  padding: 60px 20px;
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.placeholder-icon { font-size: 40px; margin-bottom: 10px; }
+
+@media print {
+  .sidebar, .btn-pdf, .btn-det-visible, .mes-pill select,
+  select, .sidebar-collapse { display:none !important; }
+  .main { margin-left:0 !important; }
+  .card, .pie-card, .chart-card { break-inside:avoid; }
+  body { background:white; }
+  .panel { display:block !important; }
+}
+.btn-pdf {
+  border:1.5px solid #555; border-radius:20px;
+  padding:5px 14px; background:white; color:#555;
+  font-size:10px; font-weight:700; cursor:pointer;
+  transition:all 0.2s; font-family:'Segoe UI',Arial,sans-serif;
+}
+.btn-pdf:hover { background:#555; color:white; }
+
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-item active" id="nav-ins" onclick="switchPanel('ins')">
+    <span class="sidebar-icon">⚙️</span> INS X SOP X CAN
+  </div>
+  <div class="sidebar-item" id="nav-nl" onclick="switchPanel('nl')">
+    <span class="sidebar-icon">📋</span> SOPORTE NL
+  </div>
+  <div class="sidebar-item" id="nav-ec" onclick="switchPanel('ec')">
+    <span class="sidebar-icon">📋</span> SOPORTE EC
+  </div>
+  <div class="sidebar-item" id="nav-tn" onclick="switchPanel('tn')">
+    <span class="sidebar-icon">📋</span> SOPORTE TN
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-item" id="nav-construccion" onclick="switchPanel('construccion')">
+    <span class="sidebar-icon">🏗️</span> CONSTRUCCIÓN Y ARR...
+  </div>
+  <div class="sidebar-item" id="nav-interurbano" onclick="switchPanel('interurbano')">
+    <span class="sidebar-icon">✈️</span> INTERURBANO
+  </div>
+  <div class="sidebar-item" id="nav-retiro" onclick="switchPanel('retiro')">
+    <span class="sidebar-icon">⚙️</span> RETIRO
+  </div>
+  <div class="sidebar-item" id="nav-ttg" onclick="switchPanel('ttg')">
+    <span class="sidebar-icon">📊</span> TTG
+  </div>
+  <div class="sidebar-collapse" onclick="toggleSidebar()">‹</div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-box">
+      <div><span class="logo-brand">TELCONET</span> <span class="logo-diamonds">◆◆</span></div>
+      <div class="logo-latam">L A T A M</div>
+    </div>
+    <div class="header-title" id="hdr-title">INSTALADOS vs CANCELADOS vs SOPORTES<br>2026</div>
+    <a class="btn-det-visible hidden" id="btn-det" href="https://telconet-adc-ia.github.io/telconet-adc/" target="_blank">
+        <i>↗</i> <span id="btn-det-label">VER DETALLE</span>
+      </a>
+  </div>
+
+  <!-- SUBROW -->
+  <div class="subrow">
+    <div class="mes-pill">
+      MES: <span id="mes-lbl">abril</span>&nbsp;(1) ▼
+      <select id="mesSelect" onchange="cambiarMes(this.value)">
+        <option value="1">Enero</option>
+        <option value="2">Febrero</option>
+        <option value="3">Marzo</option>
+        <option value="4" selected>Abril</option>
+      </select>
+    </div>
+    <div class="empresa-pill" id="empresa-pill" style="display:none">
+      EMPRESA: <span id="emp-lbl">Todas</span> ▼
+      <select id="empresaSelect" onchange="cambiarEmpresa(this.value)">
+        <option value="todas">Todas</option>
+        <option value="NETLIFE">NETLIFE</option>
+        <option value="ECUANET">ECUANET</option>
+        <option value="TELCONET">TELCONET</option>
+      </select>
+    </div>
+    <div class="kpi-pill" id="kpi1-box" style="display:none">
+      <div class="lbl" id="k1-lbl">TOTAL ACTIVOS</div>
+      <div class="val" id="k1-val">—</div>
+    </div>
+    <div class="kpi-pill kpi-right" id="kpi2-box" style="display:none">
+      <div class="lbl">SOPORTES VS SERVICIOS ACTIVOS</div>
+      <div class="val" id="k2-val">—</div>
+    </div>
+  </div>
+
+  <!-- ══ CONTENT ══ -->
+  <div class="content">
+
+    <!-- INS X SOP X CAN -->
+    <div class="panel active" id="panel-ins">
+      <div class="grid-1">
+        <div class="card">
+          <div class="card-head">
+            <div class="dot dot-blue"></div><div class="dot dot-red" style="margin-left:2px"></div><div class="dot dot-green" style="margin-left:2px"></div>
+            <div class="card-title">INSTALACIONES vs CANCELADOS vs SOPORTES</div>
+          </div>
+          <div class="card-body" style="padding:12px 16px 8px">
+            <canvas id="ins-main-chart" style="max-height:320px"></canvas>
+          </div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOPORTE NL -->
+    <div class="panel" id="panel-nl">
+
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 4px;padding:6px 10px;background:white;border:1.5px solid #e8f0fb;border-radius:6px;font-size:10px;color:#555">
+        <span style="font-weight:700;color:#003087">SEMÁFORO:</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:middle"></span>En objetivo</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle"></span>Atención</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-right:4px;vertical-align:middle"></span>Fuera de objetivo</span>
+      </div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># DE SOPORTES</div></div>
+          <div class="card-body"><canvas id="nl-c-sop"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="nl-m-sop"></span><span class="obs-txt" id="nl-o-sop"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">% REVISITAS</div></div>
+          <div class="card-body"><canvas id="nl-c-rev"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="nl-m-rev"></span><span class="obs-txt" id="nl-o-rev"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title">% CIERRE EN 4 HORAS</div></div>
+          <div class="card-body"><canvas id="nl-c-cierr"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="nl-m-cierr"></span><span class="obs-txt" id="nl-o-cierr"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">% RECURRENCIAS</div></div>
+          <div class="card-body"><canvas id="nl-c-rec"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="nl-m-rec"></span><span class="obs-txt" id="nl-o-rec"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># SOPORTE BB</div></div>
+          <div class="card-body"><canvas id="nl-c-bb"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="nl-m-bb"></span><span class="obs-txt" id="nl-o-bb"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">TIEMPO DE SOPORTES BB</div></div>
+          <div class="card-body"><canvas id="nl-c-tbb"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="nl-m-tbb"></span><span class="obs-txt" id="nl-o-tbb"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOPORTE EC -->
+    <div class="panel" id="panel-ec">
+
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 4px;padding:6px 10px;background:white;border:1.5px solid #e8f0fb;border-radius:6px;font-size:10px;color:#555">
+        <span style="font-weight:700;color:#003087">SEMÁFORO:</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:middle"></span>En objetivo</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle"></span>Atención</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-right:4px;vertical-align:middle"></span>Fuera de objetivo</span>
+      </div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># DE SOPORTES</div></div>
+          <div class="card-body"><canvas id="ec-c-sop"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="ec-m-sop"></span><span class="obs-txt" id="ec-o-sop"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">% REVISITAS</div></div>
+          <div class="card-body"><canvas id="ec-c-rev"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="ec-m-rev"></span><span class="obs-txt" id="ec-o-rev"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title">% CIERRE EN 4 HORAS</div></div>
+          <div class="card-body"><canvas id="ec-c-cierr"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="ec-m-cierr"></span><span class="obs-txt" id="ec-o-cierr"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">% RECURRENCIAS</div></div>
+          <div class="card-body"><canvas id="ec-c-rec"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="ec-m-rec"></span><span class="obs-txt" id="ec-o-rec"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># SOPORTE BB</div></div>
+          <div class="card-body"><canvas id="ec-c-bb"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="ec-m-bb"></span><span class="obs-txt" id="ec-o-bb"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">TIEMPO DE SOPORTES BB</div></div>
+          <div class="card-body"><canvas id="ec-c-tbb"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="ec-m-tbb"></span><span class="obs-txt" id="ec-o-tbb"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOPORTE TN -->
+    <div class="panel" id="panel-tn">
+
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 4px;padding:6px 10px;background:white;border:1.5px solid #e8f0fb;border-radius:6px;font-size:10px;color:#555">
+        <span style="font-weight:700;color:#003087">SEMÁFORO:</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#22c55e;margin-right:4px;vertical-align:middle"></span>En objetivo</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle"></span>Atención</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-right:4px;vertical-align:middle"></span>Fuera de objetivo</span>
+      </div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># DE SOPORTES</div></div>
+          <div class="card-body"><canvas id="tn-c-sop"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="tn-m-sop"></span><span class="obs-txt" id="tn-o-sop"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">% REVISITAS</div></div>
+          <div class="card-body"><canvas id="tn-c-rev"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="tn-m-rev"></span><span class="obs-txt" id="tn-o-rev"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title">% CIERRE EN 24 HORAS</div></div>
+          <div class="card-body"><canvas id="tn-c-cierr"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="tn-m-cierr"></span><span class="obs-txt" id="tn-o-cierr"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">% RECURRENCIAS</div></div>
+          <div class="card-body"><canvas id="tn-c-rec"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="tn-m-rec"></span><span class="obs-txt" id="tn-o-rec"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># SOPORTE BB</div></div>
+          <div class="card-body"><canvas id="tn-c-bb"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="tn-m-bb"></span><span class="obs-txt" id="tn-o-bb"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">TIEMPO SOLUCIÓN CASOS BB</div></div>
+          <div class="card-body"><canvas id="tn-c-tbb"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="tn-m-tbb"></span><span class="obs-txt" id="tn-o-tbb"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>‹</button><button>›</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRÓXIMAS SECCIONES -->
+    <!-- CONSTRUCCIÓN Y ARREGLO DE CAJA -->
+    <div class="panel" id="panel-construccion">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <a class="btn-resumen" href="https://telconet-adc-ia.github.io/telconet-adc/" target="_blank" style="border-radius:6px;padding:7px 20px;font-size:11px;font-weight:700">↗ DETALLE ADC-CONS</a>
+      </div>
+      <div style="margin-bottom:10px">
+        <div class="mes-pill" style="display:inline-flex;min-width:220px">
+          ITEM: <span id="con-item-lbl">1.-ÍNDICE ÓPTICO</span>&nbsp;(1) ▼
+          <select id="conItemSelect" onchange="cambiarItem(this.value)">
+            <option value="0">1.-ÍNDICE ÓPTICO</option>
+            <option value="1">2.-INCIDENCIAS</option>
+            <option value="2">3.-TRABAJOS REGULATORIO</option>
+            <option value="3">4.-CAJAS CONSTRUIDAS</option>
+            <option value="4">5.-SATURACIÓN</option>
+          </select>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-body" style="padding:12px 16px 8px">
+          <canvas id="con-main-chart" style="max-height:280px"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <tbody>
+            <tr>
+              <td style="padding:8px 14px;font-weight:700;color:#003087;white-space:nowrap;vertical-align:top;min-width:60px" id="con-obs-mes"></td>
+              <td style="padding:8px 14px;font-weight:700;color:#003087;white-space:nowrap;vertical-align:top" id="con-obs-item"></td>
+              <td style="padding:8px 14px;color:#444;line-height:1.5" id="con-obs-txt"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+      </div>
+    </div>
+    <!-- INTERURBANO -->
+    <div class="panel" id="panel-interurbano">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <a class="btn-resumen" href="#" target="_blank" style="border-radius:6px;padding:6px 16px;font-size:10px">RESUMEN INTERURBANO</a>
+      </div>
+      <div class="grid-4">
+        <!-- INCIDENTES -->
+        <div class="card">
+          <div class="card-head"><div class="dot dot-green"></div><div class="card-title">INCIDENTES INTERURBANOS</div></div>
+          <div class="card-body"><canvas id="int-c-inc"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="int-m-inc"></span><span class="obs-txt" id="int-o-inc"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+        <!-- PROMEDIO TIEMPO -->
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">PROMEDIO TIEMPO SOP INTERURBANO</div></div>
+          <div class="card-body"><canvas id="int-c-tprom"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="int-m-tprom"></span><span class="obs-txt" id="int-o-tprom"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+        <!-- RECORRIDOS -->
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># DE RECORRIDOS</div></div>
+          <div class="card-body"><canvas id="int-c-rec"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="int-m-rec"></span><span class="obs-txt" id="int-o-rec"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+        <!-- % RECORRIDOS -->
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">% RECORRIDOS REALIZADOS</div></div>
+          <div class="card-body"><canvas id="int-c-precor"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="int-m-precor"></span><span class="obs-txt" id="int-o-precor"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+        <!-- MANGAS -->
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title"># DE MANGAS 48H ARMADAS</div></div>
+          <div class="card-body"><canvas id="int-c-manga"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="int-m-manga"></span><span class="obs-txt" id="int-o-manga"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+        <!-- PROMEDIO TIEMPO ARMADO -->
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">PROMEDIO TIEMPO ARMADO DE MANGA</div></div>
+          <div class="card-body"><canvas id="int-c-tmanga"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="int-m-tmanga"></span><span class="obs-txt" id="int-o-tmanga"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+      </div>
+      <!-- RUTAS LIBERADAS -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><div class="dot dot-blue"></div><div class="card-title">RUTAS LIBERADAS</div></div>
+          <div class="card-body"><canvas id="int-c-rutas"></canvas></div>
+          <div class="card-obs"><span class="obs-mes" id="int-m-rutas"></span><span class="obs-txt" id="int-o-rutas"></span></div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="dot dot-teal"></div><div class="card-title">RUTAS EN CONSTRUCCIÓN / PENDIENTES</div></div>
+          <div class="card-body" style="padding:10px 14px;font-size:10px;color:#444;line-height:1.6" id="int-rutas-txt">—</div>
+          <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+        </div>
+      </div>
+    </div>
+    <!-- RETIRO -->
+    <div class="panel" id="panel-retiro">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="mes-pill" style="display:inline-flex;min-width:220px">
+          ITEM: <span id="ret-item-lbl">1.- EQUIPOS NL</span>&nbsp;(1) ▼
+          <select id="retItemSelect" onchange="cambiarRetItem(this.value)">
+            <option value="0">1.- EQUIPOS NL</option>
+            <option value="1">2.- RETIRO FIBRA NL</option>
+            <option value="2">3.- EQUIPOS EN</option>
+            <option value="3">4.- RETIRO FIBRA EN</option>
+            <option value="4">5.- EQUIPOS TN</option>
+            <option value="5">6.- RETIRO FIBRA TN</option>
+          </select>
+        </div>
+        <div class="kpi-pill" style="margin-left:auto;border-color:#003087">
+          <div class="lbl">PORCENTAJE</div>
+          <div class="val" id="ret-pct" style="color:#003087;font-size:22px">—</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-body" style="padding:12px 16px 8px">
+          <canvas id="ret-main-chart" style="max-height:260px"></canvas>
+        </div>
+        <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+      </div>
+      <div class="card">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead>
+            <tr style="background:#e8f0fb;border-bottom:1px solid #b0c8e8">
+              <th style="padding:6px 12px;text-align:left;color:#003087;font-size:10px">MES</th>
+              <th style="padding:6px 12px;text-align:left;color:#003087;font-size:10px">ITEM</th>
+              <th style="padding:6px 12px;text-align:left;color:#003087;font-size:10px">OBSERVACIÓN</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:7px 12px;font-weight:700;color:#003087;white-space:nowrap;vertical-align:top" id="ret-obs-mes"></td>
+              <td style="padding:7px 12px;font-weight:600;color:#333;white-space:nowrap;vertical-align:top" id="ret-obs-item"></td>
+              <td style="padding:7px 12px;color:#444;line-height:1.5" id="ret-obs-txt"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="card-nav"><span>1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+      </div>
+    </div>
+    <!-- TTG -->
+    <div class="panel" id="panel-ttg">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="mes-pill" style="display:inline-flex;min-width:180px">
+          TIPO CUADRILLA: <span id="ttg-tipo-lbl">SOPORTE NL</span>&nbsp;(1) ▼
+          <select id="ttgTipoSelect" onchange="cambiarTTGTipo(this.value)">
+            <option value="SOPORTE NL">SOPORTE NL</option>
+            <option value="SOPORTE TN">SOPORTE TN</option>
+            <option value="INTERURBANO">INTERURBANO</option>
+            <option value="ARREGLO DE CAJA">ARREGLO DE CAJA</option>
+            <option value="CONSTRUCCION">CONSTRUCCIÓN</option>
+            <option value="RETIRO">RETIRO</option>
+            <option value="OBRA CIVIL">OBRA CIVIL</option>
+          </select>
+        </div>
+        <div class="mes-pill" style="display:inline-flex;min-width:130px">
+          CUADRILLAS ▼
+        </div>
+        <div class="kpi-pill">
+          <div class="lbl">PROMEDIO</div>
+          <div class="val" id="ttg-prom" style="color:#003087">—</div>
+        </div>
+        <div class="kpi-pill">
+          <div class="lbl">Total de Cuadrillas</div>
+          <div class="val" id="ttg-total" style="color:#003087">—</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-body" style="padding:12px 16px 8px">
+          <canvas id="ttg-main-chart" style="max-height:260px"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <table style="width:100%;border-collapse:collapse;font-size:11px" id="ttg-obs-table">
+        </table>
+        <div class="card-nav"><span id="ttg-nav-lbl">1 – 1 / 1</span><button>&#8249;</button><button>&#8250;</button></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+
+// ══════════════════════════════════════════
+//  SEMÁFORO DE INDICADORES
+// ══════════════════════════════════════════
+const UMBRALES = {
+  nl: {
+    cierre:      { verde:92,  amarillo:85  },
+    revisitas:   { verde:8,   amarillo:12  },
+    recurrencia: { verde:2,   amarillo:4   },
+    tiempoBB:    { verde:4,   amarillo:6   },
+  },
+  ec: {
+    cierre:      { verde:88,  amarillo:75  },
+    revisitas:   { verde:5,   amarillo:10  },
+    recurrencia: { verde:2,   amarillo:4   },
+    tiempoBB:    { verde:4,   amarillo:6   },
+  },
+  tn: {
+    cierre:      { verde:88,  amarillo:80  },
+    revisitas:   { verde:20,  amarillo:25  },
+    recurrencia: { verde:18,  amarillo:23  },
+    tiempoBB:    { verde:8,   amarillo:10  },
+  }
+};
+
+function getSemaforo(tab, indicator, value) {
+  const u = UMBRALES[tab]?.[indicator];
+  if (!u) return 'neutral';
+  const lowerIsBetter = ['revisitas','recurrencia','tiempoBB'].includes(indicator);
+  if (lowerIsBetter) {
+    if (value <= u.verde)    return 'verde';
+    if (value <= u.amarillo) return 'amarillo';
+    return 'rojo';
+  } else {
+    if (value >= u.verde)    return 'verde';
+    if (value >= u.amarillo) return 'amarillo';
+    return 'rojo';
+  }
+}
+
+function getSemaforoColor(estado) {
+  return {verde:'#22c55e',amarillo:'#f59e0b',rojo:'#ef4444',neutral:'#94a3b8'}[estado] || '#94a3b8';
+}
+
+// ══════════════════════════════════════════
+//  EXPORTAR A PDF
+// ══════════════════════════════════════════
+function exportarPDF() {
+  const titulo = document.getElementById('hdr-title').innerText.replace('\n','');
+  const mes = document.getElementById('mes-lbl').textContent;
+  document.title = titulo + ' - ' + mes + ' 2026';
+  window.print();
+  setTimeout(() => { document.title = 'Reporte Mensual — Telconet'; }, 1500);
+}
+
+
+// ════════════════════════════════
+//  DATA
+// ════════════════════════════════
+const MESES_L = ['','enero','febrero','marzo','abril'];
+const MESES_F = ['','Enero','Febrero','Marzo','Abril'];
+
+
+
+
+const RET_DATA = {
+  1:[
+    {item:'1.- EQUIPOS NL',      cant:101, rec:38,  pct:'37,62%', obs:'Se ha retirado el 37,62%. El resto de clientes no tiene respuesta, la mayoría son personas de otras ciudades que arriendan por poco tiempo, se reasignan las tareas para continuar el proceso.'},
+    {item:'2.- RETIRO FIBRA NL', cant:208, rec:138, pct:'66,35%', obs:'Se ha retirado el 66,35%, de cancelaciones voluntarias y automáticas. El resto se tiene fibra reutilizada y fibra ya retirada por depuración de cajas.'},
+    {item:'3.- EQUIPOS EN',      cant:107, rec:58,  pct:'54,21%', obs:'Se ha retirado el 54,21%. El resto indica que ya no viven donde se realizó la instalación, son personas extranjeras que permanecen poco tiempo arrendando.'},
+    {item:'4.- RETIRO FIBRA EN', cant:115, rec:76,  pct:'66,09%', obs:'Se ha retirado el 66,09%, de cancelaciones voluntarias y automáticas.'},
+    {item:'5.- EQUIPOS TN',      cant:11,  rec:7,   pct:'63,64%', obs:'Se ha retirado el 63,64%. No se tiene respuesta de varios clientes por lo que se reasigna a comercial para continuar el proceso.'},
+    {item:'6.- RETIRO FIBRA TN', cant:11,  rec:11,  pct:'100%',   obs:'Se ha retirado el 100% de la FO.'},
+  ],
+  2:[
+    {item:'1.- EQUIPOS NL',      cant:111, rec:39,  pct:'35,14%', obs:'Se ha retirado el 35,14%. El resto de clientes no tiene respuesta, la mayoría son personas de otras ciudades que arriendan por poco tiempo.'},
+    {item:'2.- RETIRO FIBRA NL', cant:225, rec:140, pct:'62,22%', obs:'Se ha retirado el 62,22%. Se retiraron 5.920 m (automáticas) y 5.280 m (voluntarias). Total: 11.200 metros.'},
+    {item:'3.- EQUIPOS EN',      cant:81,  rec:36,  pct:'44,44%', obs:'Se ha retirado el 44,44%. El resto de clientes indican que ya no viven en el lugar.'},
+    {item:'4.- RETIRO FIBRA EN', cant:90,  rec:55,  pct:'61,11%', obs:'Se ha retirado el 61,11%. Se retiraron 3.840 m (automáticas) y 560 m (voluntarias). Total: 4.400 metros.'},
+    {item:'5.- EQUIPOS TN',      cant:6,   rec:4,   pct:'66,74%', obs:'Se ha retirado el 66,74%. No se tiene respuesta de varios clientes, se reasigna a comercial.'},
+    {item:'6.- RETIRO FIBRA TN', cant:6,   rec:6,   pct:'100%',   obs:'Se ha retirado el 100% de la FO. Total fibra retirada 480 metros.'},
+  ],
+  3:[
+    {item:'1.- EQUIPOS NL',      cant:126, rec:53,  pct:'42,06%', obs:'Se ha retirado el 42,06%. El resto de clientes no tiene respuesta, son personas de otras ciudades que arriendan por poco tiempo.'},
+    {item:'2.- RETIRO FIBRA NL', cant:195, rec:119, pct:'61,03%', obs:'Se ha retirado el 61,03%. Se retiraron 5.760 m (automáticas) y 3.760 m (voluntarias). Total: 9.520 metros.'},
+    {item:'3.- EQUIPOS EN',      cant:74,  rec:30,  pct:'40,54%', obs:'Se ha retirado el 40,54%. El resto indica que ya no viven en el lugar.'},
+    {item:'4.- RETIRO FIBRA EN', cant:81,  rec:47,  pct:'58,02%', obs:'Se ha retirado el 58,02%. Se retiraron 3.360 m (automáticas) y 400 m (voluntarias). Total: 3.760 metros.'},
+    {item:'5.- EQUIPOS TN',      cant:11,  rec:8,   pct:'72,73%', obs:'Se ha retirado el 72,73%. No se tiene respuesta de varios clientes, se reasigna a comercial.'},
+    {item:'6.- RETIRO FIBRA TN', cant:11,  rec:11,  pct:'100%',   obs:'Se ha retirado el 100% de la FO. Total fibra retirada 880 metros.'},
+  ],
+  4:[
+    {item:'1.- EQUIPOS NL',      cant:136, rec:52,  pct:'38,24%', obs:'Se ha retirado el 38,24%. El resto de clientes no tiene respuesta, la mayoría son personas de otras ciudades que arriendan por poco tiempo, se reasignan las tareas para continuar el proceso.'},
+    {item:'2.- RETIRO FIBRA NL', cant:309, rec:222, pct:'71,84%', obs:'Se ha retirado el 71,84%. Se retiraron 6.880 m (automáticas) y 10.880 m (voluntarias). Total: 17.760 metros.'},
+    {item:'3.- EQUIPOS EN',      cant:61,  rec:23,  pct:'37,70%', obs:'Se ha retirado el 37,70%. El resto indica que ya no viven en el lugar.'},
+    {item:'4.- RETIRO FIBRA EN', cant:74,  rec:49,  pct:'66,22%', obs:'Se ha retirado el 66,22%. Se retiraron 3.120 m (automáticas) y 800 m (voluntarias). Total: 3.920 metros.'},
+    {item:'5.- EQUIPOS TN',      cant:20,  rec:13,  pct:'66,22%', obs:'Se ha retirado el 66,22%. No se tiene respuesta de varios clientes, se reasigna a comercial.'},
+    {item:'6.- RETIRO FIBRA TN', cant:20,  rec:20,  pct:'100%',   obs:'Se ha retirado el 100% de la FO. Total fibra retirada 880 metros.'},
+  ]
+};
+let retItemSel=0;
+
+const TTG_DATA = {
+  1:{
+    'SOPORTE NL':    [{c:'CUE PROV CUE SNL 01',v:3.66,obs:'TTG bajo por mal cierre de tareas; se conversa con la cuadrilla.'},{c:'CUE PROV CUE SNL 02',v:4.65,obs:''},{c:'CUE PROV CUE SNL 03',v:4.01,obs:''},{c:'CUE PROV CUE SNL 04',v:3.68,obs:'TTG bajo por problemas internos; se reubica personal para su reestructuración.'},{c:'CUE PROV CUE SNL 05',v:4.64,obs:''},{c:'CUE PROV MAC SNL 01',v:4.47,obs:''},{c:'CUE PROV PAU SNL 01',v:3.88,obs:''}],
+    'SOPORTE TN':    [{c:'CUE PROV CUE STN 01',v:4.49,obs:''},{c:'CUE PROV CUE STN 02',v:4.01,obs:''}],
+    'INTERURBANO':   [{c:'CUE PROV CUE INT 01',v:4.69,obs:''},{c:'CUE PROV CUE INT 02',v:4.80,obs:''},{c:'CUE PROV CUE INT 03',v:3.82,obs:'Reestructuración de cuadrilla por cambio de líder.'},{c:'CUE PROV CUE INT 04',v:4.71,obs:''},{c:'CUE PROV GLT INT 01',v:4.93,obs:''},{c:'CUE PROV GQZ INT 01',v:4.06,obs:''},{c:'CUE PROV ONA INT 01',v:4.45,obs:''},{c:'CUE PROV STA INT 01',v:4.62,obs:''},{c:'CUE PROV STA INT 02',v:4.26,obs:''},{c:'CUE PROV SUC INT 01',v:4.80,obs:''},{c:'CUE PROV SUC INT 02',v:4.88,obs:''},{c:'CUE PROV ZHU INT 01',v:4.72,obs:''}],
+    'ARREGLO DE CAJA':[{c:'CUE PROV CUE ADC 01',v:4.14,obs:''},{c:'CUE PROV CUE ADC 02',v:4.14,obs:''},{c:'CUE PROV CUE ADC 03',v:4.14,obs:''}],
+    'CONSTRUCCION':  [{c:'CUE PROV CUE CON 01',v:4.60,obs:''},{c:'CUE PROV CUE CON 02',v:4.90,obs:''}],
+    'RETIRO':        [{c:'CUE PROV CUE RET 01',v:4.66,obs:''},{c:'CUE PROV CUE RET 02',v:4.62,obs:''}],
+    'OBRA CIVIL':    [{c:'CUE PROV CUE OBC 01',v:4.14,obs:''}],
+  },
+  2:{
+    'SOPORTE NL':    [{c:'CUE PROV CUE SNL 01',v:4.82,obs:''},{c:'CUE PROV CUE SNL 02',v:4.88,obs:''},{c:'CUE PROV CUE SNL 03',v:4.20,obs:''},{c:'CUE PROV CUE SNL 04',v:4.20,obs:''},{c:'CUE PROV CUE SNL 05',v:4.40,obs:''},{c:'CUE PROV MAC SNL 01',v:4.02,obs:''},{c:'CUE PROV PAU SNL 01',v:3.80,obs:'Solo se tiene una persona en la cuadrilla lo que afecta actividades diarias.'}],
+    'SOPORTE TN':    [{c:'CUE PROV CUE STN 01',v:4.57,obs:''},{c:'CUE PROV CUE STN 02',v:5.03,obs:'TTG elevado; cuadrilla de turno cortes de ruta.'}],
+    'INTERURBANO':   [{c:'CUE PROV CUE INT 01',v:4.32,obs:''},{c:'CUE PROV CUE INT 02',v:4.81,obs:''},{c:'CUE PROV CUE INT 03',v:4.73,obs:''},{c:'CUE PROV CUE INT 04',v:4.56,obs:''},{c:'CUE PROV GLT INT 01',v:4.84,obs:''},{c:'CUE PROV GQZ INT 01',v:4.34,obs:''},{c:'CUE PROV ONA INT 01',v:4.83,obs:''},{c:'CUE PROV STA INT 01',v:4.87,obs:''},{c:'CUE PROV STA INT 02',v:4.63,obs:''},{c:'CUE PROV SUC INT 01',v:4.08,obs:''},{c:'CUE PROV SUC INT 02',v:4.72,obs:''},{c:'CUE PROV ZHU INT 01',v:4.31,obs:''}],
+    'ARREGLO DE CAJA':[{c:'CUE PROV CUE ADC 01',v:3.80,obs:'SOPORTE POR CORTE DE RUTA EN FIN DE SEMANA AFECTA TTG'},{c:'CUE PROV CUE ADC 02',v:4.10,obs:''},{c:'CUE PROV CUE ADC 03',v:4.60,obs:''}],
+    'CONSTRUCCION':  [{c:'CUE PROV CUE CON 01',v:4.40,obs:''},{c:'CUE PROV CUE CON 02',v:4.60,obs:''}],
+    'RETIRO':        [{c:'CUE PROV CUE RET 01',v:4.40,obs:''},{c:'CUE PROV CUE RET 02',v:4.40,obs:''}],
+    'OBRA CIVIL':    [{c:'CUE PROV CUE OBC 01',v:3.10,obs:'Últimos 15 días una persona sale de vacaciones lo que afecta en sus actividades diarias.'}],
+  },
+  3:{
+    'SOPORTE NL':    [{c:'CUE PROV CUE SNL 01',v:4.25,obs:''},{c:'CUE PROV CUE SNL 02',v:3.46,obs:'Cuadrilla baja la productividad por renuncia del líder Jesus Narváez.'},{c:'CUE PROV CUE SNL 03',v:4.48,obs:''},{c:'CUE PROV CUE SNL 04',v:2.91,obs:'Cuadrilla baja la productividad por desvinculación del líder David Romo; trabaja solo una persona.'},{c:'CUE PROV CUE SNL 05',v:4.78,obs:''},{c:'CUE PROV MAC SNL 01',v:3.80,obs:'SOPORTE FIN DE SEMANA AFECTA TTG'},{c:'CUE PROV PAU SNL 01',v:3.80,obs:'Solo se tiene una persona en la cuadrilla lo que afecta actividades diarias.'}],
+    'SOPORTE TN':    [{c:'CUE PROV CUE STN 01',v:4.47,obs:''},{c:'CUE PROV CUE STN 02',v:4.98,obs:''}],
+    'INTERURBANO':   [{c:'CUE PROV CUE INT 01',v:5.05,obs:'Alto TTG por trabajos nocturnos en nuevo Centro comercial El ALTO.'},{c:'CUE PROV CUE INT 02',v:5.55,obs:'Alto TTG por trabajos nocturnos en nuevo Centro comercial El ALTO.'},{c:'CUE PROV CUE INT 03',v:4.43,obs:''},{c:'CUE PROV CUE INT 04',v:4.43,obs:''},{c:'CUE PROV GLT INT 01',v:4.54,obs:''},{c:'CUE PROV GQZ INT 01',v:4.96,obs:''},{c:'CUE PROV ONA INT 01',v:3.99,obs:''},{c:'CUE PROV STA INT 01',v:4.46,obs:''},{c:'CUE PROV STA INT 02',v:4.43,obs:''},{c:'CUE PROV SUC INT 01',v:4.99,obs:''},{c:'CUE PROV SUC INT 02',v:4.66,obs:''},{c:'CUE PROV ZHU INT 01',v:4.88,obs:''}],
+    'ARREGLO DE CAJA':[{c:'CUE PROV CUE ADC 01',v:4.90,obs:''},{c:'CUE PROV CUE ADC 02',v:4.60,obs:''},{c:'CUE PROV CUE ADC 03',v:4.90,obs:''}],
+    'CONSTRUCCION':  [{c:'CUE PROV CUE CON 01',v:4.40,obs:''},{c:'CUE PROV CUE CON 02',v:4.10,obs:''}],
+    'RETIRO':        [{c:'CUE PROV CUE RET 01',v:2.95,obs:'Cuadrilla con baja productividad por apoyo a cuadrilla de soporte; realiza retiros y soportes.'},{c:'CUE PROV CUE RET 02',v:4.66,obs:''}],
+    'OBRA CIVIL':    [{c:'CUE PROV CUE OBC 01',v:4.10,obs:''}],
+  },
+  4:{
+    'SOPORTE NL':    [{c:'CUE PROV CUE SNL 01',v:3.83,obs:'TTG bajo por mal cierre de tareas; se conversa con la cuadrilla.'},{c:'CUE PROV CUE SNL 02',v:4.19,obs:''},{c:'CUE PROV CUE SNL 03',v:4.22,obs:''},{c:'CUE PROV CUE SNL 04',v:4.24,obs:''},{c:'CUE PROV CUE SNL 05',v:4.72,obs:''},{c:'CUE PROV MAC SNL 01',v:3.37,obs:'SOPORTES POR CORTE DE RUTA FIN DE SEMANA AFECTAN PRODUCTIVIDAD'},{c:'CUE PROV PAU SNL 01',v:4.14,obs:''}],
+    'SOPORTE TN':    [{c:'CUE PROV CUE STN 01',v:4.59,obs:''},{c:'CUE PROV CUE STN 02',v:4.68,obs:''}],
+    'INTERURBANO':   [{c:'CUE PROV CUE INT 01',v:5.06,obs:'Trabajos asignados luego de jornada laboral por STAND BY.'},{c:'CUE PROV CUE INT 02',v:4.68,obs:''},{c:'CUE PROV CUE INT 03',v:4.60,obs:''},{c:'CUE PROV CUE INT 04',v:4.15,obs:''},{c:'CUE PROV GLT INT 01',v:4.73,obs:''},{c:'CUE PROV GQZ INT 01',v:4.36,obs:''},{c:'CUE PROV ONA INT 01',v:4.35,obs:''},{c:'CUE PROV STA INT 01',v:4.90,obs:''},{c:'CUE PROV STA INT 02',v:4.89,obs:''},{c:'CUE PROV SUC INT 01',v:4.47,obs:''},{c:'CUE PROV SUC INT 02',v:3.70,obs:'Cuadrilla cierra tarea con proceso incorrecto.'},{c:'CUE PROV ZHU INT 01',v:4.47,obs:''}],
+    'ARREGLO DE CAJA':[{c:'CUE PROV CUE ADC 02',v:3.89,obs:'CORTE FIN DE SEMANA AFECTA PRODUCTIVIDAD'},{c:'CUE PROV CUE ADC 03',v:4.40,obs:''}],
+    'CONSTRUCCION':  [{c:'CUE PROV CUE CON 01',v:4.66,obs:''},{c:'CUE PROV CUE CON 02',v:4.40,obs:''}],
+    'RETIRO':        [{c:'CUE PROV CUE RET 01',v:4.24,obs:''},{c:'CUE PROV CUE RET 02',v:4.66,obs:''}],
+    'OBRA CIVIL':    [{c:'CUE PROV CUE OBC 01',v:3.89,obs:'TRABAJO FIN DE SEMANA CLIENTE siatilogistic-cuenca-Riverside AFECTA PRODUCTIVIDAD'}],
+  }
+};
+let ttgTipoSel='SOPORTE NL';
+
+const INT_DATA = {
+  1:{incidentes:3, tprom:8.39, recorridos:38, precorridos:100, mangas:5, tmanga:3.36, rutas:0,
+     o_inc:'Rutas afectadas: MDZ-LOG cuadrilla más cercana a 2h del corte; Accidente de tránsito postes afectados GQZ-GRA; corte por caída de árbol MDZ-TWZ.',
+     o_tprom:'Cortes ocurren en zonas del oriente por deslaves, zonas de difícil acceso y sin iluminación durante la noche.',
+     o_rec:'Se realiza recorrido de todas las rutas interurbanas durante las 4 semanas del mes.',
+     o_precor:'Se cumple el 100% de recorridos de todas las rutas interurbanas.',
+     o_manga:'2 Mangas armadas por migración de nodo Paute. 3 Mangas por corte de ruta.',
+     o_tmanga:'NO se cumple objetivo de las 3:30 horas promedio.',
+     o_rutas:'Ruta VILLAFLOR-PAUTE: A la espera de fibra ADSS 48H 8 km. Ruta MACAS-TAISHA: A la espera de hincado de postes.',
+     rutas_txt:'RUTAS LIBRES: Ninguna.<br>RUTAS A LA ESPERA DE MATERIALES:<br>VIL-PAU: fibra adss 48h<br>MAC-TAISHA: hincado de postes; ampliación de vía por parte de la prefectura.'},
+  2:{incidentes:4, tprom:6.15, recorridos:36.23, precorridos:95.34, mangas:18, tmanga:3.24, rutas:1,
+     o_inc:'CUE-ZHU: Corte por volcamiento de trailer. ZHU-CHU: corte por deslave en madrugada. EL CABO-SAN JUAN: Corte por paso de trailer. MEN-TWZ: Cuadrilla más cercana a 2 horas.',
+     o_tprom:'CUE-ZHU: volteo de trailer. ZHU-CHU: deslave en madrugada. EL CABO-SANJUAN: trailer en zona urbana. MEN-TWZ: cuadrilla a 2h del corte.',
+     o_rec:'Semana 1: 38 | Semana 2: 38 | Semana 3: 34 | Semana 4: 35.',
+     o_precor:'Durante semana 3 se revisan 34 de 38 rutas por feriado. Semana 4: 35 de 38 rutas.',
+     o_manga:'4 mangas por corte de rutas. 6 mangas por migración de Nodo PAUTE. 8 mangas por soportes urbanos.',
+     o_tmanga:'SÍ se cumple objetivo de las 3:30 horas promedio.',
+     o_rutas:'Se libera 1 ruta Santa Isabel - Pucara F02.',
+     rutas_txt:'RUTA LIBERADA: STA ISABEL - PUCARA F02<br>RUTAS A LA ESPERA DE MATERIALES:<br>VIL-PAU: fibra adss 48h<br>VIL-GLC: En construcción<br>MAC-TAISHA: hincado de postes.'},
+  3:{incidentes:10, tprom:15.3, recorridos:38, precorridos:100, mangas:17, tmanga:4.3, rutas:0,
+     o_inc:'STA ISB-CAS: 4 cortes por deslizamientos; solo se trabaja de día por riesgo de desprendimientos. MDZ-LIM, MDZ-TZA, MDZ-PCY: deslizamientos por lluvias. ZHD-CHU: deslizamiento. CUE-CAN: maquinaria de agricultura.',
+     o_tprom:'STA ISB-CAS: Ruta afectada por deslizamientos, se reprograman trabajos hasta el día siguiente.',
+     o_rec:'Se cumplieron 38 recorridos durante las 4 semanas.',
+     o_precor:'Se cumple el 100% de recorridos de todas las rutas interurbanas.',
+     o_manga:'3 mangas por corte ruta interurbana. 6 mangas por Centro Comercial El Alto. 6 mangas por cortes urbanos. 2 mangas por cambio de tramo EMERGENTE Gualaquiza.',
+     o_tmanga:'NO se cumple objetivo de las 3:30. Demoras por lluvias fuertes en armado de manga.',
+     o_rutas:'Ninguna ruta liberada.',
+     rutas_txt:'RUTAS A LA ESPERA DE MATERIALES:<br>VIL-PAU: fibra adss 48h<br>MAC-TAISHA: hincado de postes<br>VIL-GLC: EN CONSTRUCCIÓN'},
+  4:{incidentes:5, tprom:7.55, recorridos:38, precorridos:100, mangas:8, tmanga:3.3, rutas:0,
+     o_inc:'EL CABO-SAN JUAN: corte por camión de carga elevada, zona de alto tráfico. STA-GIR: Corte por accidente de tránsito. MDZ-PAH: Corte por deslaves de árboles (2 cortes). MDZ-TWZ: Corte por caída de árboles.',
+     o_tprom:'Se afectaron 5 rutas. Tiempos elevados por accidentes de tránsito y deslaves en zonas de difícil acceso.',
+     o_rec:'Se cumplieron los 38 recorridos durante las 4 semanas.',
+     o_precor:'Se cumplieron los 38 recorridos durante las 4 semanas.',
+     o_manga:'2 mangas por incidentes interurbanos (Gualaceo, Tiwinza). 3 mangas por cambios de tramo (Gualaquiza, Jadán, Lentag). 3 mangas por soportes urbanos (Chaullabamba, Ricaurte, Parroquia Vergel).',
+     o_tmanga:'Se cumple el objetivo de 3:30 horas promedio.',
+     o_rutas:'Ninguna ruta liberada.',
+     rutas_txt:'RUTAS EN CONSTRUCCIÓN:<br>VIL-PAU: Tendido<br>VIL-GLC: Armado de mangas<br>RUTAS A LA ESPERA DE MATERIALES:<br>MAC-TAISHA: hincado de postes; a la espera de ampliación de vía por parte de la prefectura de Morona Santiago; pendiente 120 postes.'},
+};
+
+const CON_DATA = {
+  1:[
+    {item:'1.-REGULATORIO',   valor:19, obs:'SE HAN REALIZADOS TODOS LOS TRABAJOS POR CAMBIOS DE POSTERÍA SOLICITADOS POR REGULATORIO'},
+    {item:'2.-ÍNDICE ÓPTICO', valor:47, obs:'SE HAN RESUELTO TODAS LAS TAREAS POR PROBLEMAS DE ÍNDICE ÓPTICO ESCALADAS'},
+    {item:'3.-INCIDENCIAS',   valor:50, obs:'SE CORRIGEN TODAS LAS INCIDENCIAS ESCALADAS'},
+    {item:'4.-MIGRACIÓN UM A CAJA PRECONECTORIZADA', valor:84, obs:'SE DA PRIORIDAD A TAREAS DE ÍNDICE ÓPTICO, INCIDENCIAS Y REGULATORIO'},
+    {item:'5.-SATURACIÓN',    valor:10, obs:'SE TIENE EL 0.1 DE SATURACIÓN, SE CONTINUA TRABAJANDO EN FTTH PARA BAJAR SATURACIÓN'},
+  ],
+  2:[
+    {item:'1.-ÍNDICE ÓPTICO', valor:56, obs:'SE HAN RESUELTO TODAS LAS TAREAS POR PROBLEMAS DE ÍNDICE ÓPTICO ESCALADAS'},
+    {item:'2.-INCIDENCIAS',   valor:79, obs:'SE CORRIGEN TODAS LAS INCIDENCIAS ESCALADAS'},
+    {item:'3.-MIGRACIÓN UM A CAJA PRECONECTORIZADA', valor:19, obs:'NO SE DISPONE DE CONECTORES PARA PRECONECTORIZAR'},
+    {item:'4.-CAJAS CONSTRUIDAS', valor:131, obs:'SE CUMPLE CON OBJETIVOS OFRECIDOS A MEGADATOS'},
+    {item:'5.-SATURACIÓN',    valor:15, obs:'CORRESPONDIENTE AL 0.2% SE TRABAJA EN RUTAS FTTH POR SATURACIÓN EN PRIMERA SEMANA DE MARZO'},
+  ],
+  3:[
+    {item:'1.-ÍNDICE ÓPTICO', valor:61, obs:'SE HAN RESUELTO TODAS LAS TAREAS POR PROBLEMAS DE ÍNDICE ÓPTICO ESCALADAS'},
+    {item:'2.-INCIDENCIAS',   valor:58, obs:'SE TIENE 40 TAREAS PENDIENTES DE FISCALIZACIÓN E INSTALACIONES POR CAMBIO DE CAJA ANTIGUA A NUEVA'},
+    {item:'3.-RUTA REGULARIZADA A PRECONECTORIZADA', valor:124, obs:'RICAURTE CALDERON F01/BELLAVISTA CALDERON F03 REGULARIZADAS A CAJAS PRECONECTORIZADAS'},
+    {item:'4.-CAJAS CONSTRUIDAS', valor:122, obs:'SE CUMPLE CON OBJETIVOS OFRECIDOS A MEGADATOS'},
+    {item:'5.-SATURACIÓN',    valor:4,  obs:'CORRESPONDIENTE AL 0.1%'},
+  ],
+  4:[
+    {item:'1.-ÍNDICE ÓPTICO', valor:32, obs:'SE HAN RESUELTO TODAS LAS TAREAS POR PROBLEMAS DE ÍNDICE ÓPTICO ESCALADAS'},
+    {item:'2.-INCIDENCIAS',   valor:65, obs:'SE TIENE 20 TAREAS PENDIENTES DE FISCALIZACIÓN E INSTALACIONES POR CAMBIO DE CAJA ANTIGUA A NUEVA'},
+    {item:'3.-TRABAJOS DE REGULATORIO', valor:27, obs:'SE HA TRABAJADO EN SECTOR UNIDAD NACIONAL EN CAMBIOS DE FIBRAS A POSTERÍA NUEVA'},
+    {item:'4.-CAJAS CONSTRUIDAS', valor:90, obs:'SE CUMPLE CON LOS OBJETIVOS MEGADATOS Y CONSTRUYE RUTA BELLAVISTA/ARENAL F02 PARA MIGRACIÓN DE UM A PRECONECTORIZADA'},
+    {item:'5.-SATURACIÓN',    valor:7,  obs:'EQUIVALE AL 0.1%  1 CAJA EN CUENCA, 6 CAJAS EN EL ORIENTE'},
+  ]
+};
+let conItemSel=0;
+
+const INS_DATA = {
+  1:{ NETLIFE:{ins:427,sop:515,can:371}, TELCONET:{ins:29,sop:144,can:24}, ECUANET:{ins:136,sop:63,can:104} },
+  2:{ NETLIFE:{ins:460,sop:440,can:386}, TELCONET:{ins:49,sop:169,can:22}, ECUANET:{ins:114,sop:68,can:108} },
+  3:{ NETLIFE:{ins:482,sop:513,can:379}, TELCONET:{ins:36,sop:129,can:36}, ECUANET:{ins:127,sop:70,can:105} },
+  4:{ NETLIFE:{ins:397,sop:542,can:248}, TELCONET:{ins:23,sop:111,can:20}, ECUANET:{ins:78,sop:55,can:80}  }
+};
+
+const SOP_DATA = {
+  nl:{
+    1:{soportes:515,cierre:89.60,revisitas:4.95,recurrencia:0.94,bb:55,tiempoBB:3.89,activos:18322,vsActivos:2.81,
+       o_sop:'Numero de soportes en el mes de Enero.',
+       o_cierr:'El cierre de casos es del 89,6 %, se da por las distancias entre cantones y a las lluvias registradas durante el período.',
+       o_rev:'El número de revisitas registradas durante el mes corresponde al 4,95 % del total. Este porcentaje representa las revisitas ocasionados por cortes de UM.',
+       o_rec:'Las recurrencias registradas representan el 0,94 % del total. La cual son por cortes de UM.',
+       o_bb:'',o_tbb:'La resolución de los casos backbone se realizó en un promedio de 3,89 horas.'},
+    2:{soportes:440,cierre:86.88,revisitas:9.89,recurrencia:2.10,bb:56,tiempoBB:4.73,activos:18394,vsActivos:2.39,
+       o_sop:'Numero de soportes en el mes de Febrero.',
+       o_cierr:'El cierre de casos es del 86,8 %, se da por las distancias entre cantones y a las lluvias registradas durante el período.',
+       o_rev:'El número de revisitas registradas durante el mes corresponde al 9,89 % del total. Personal de la empresa eléctrica con cambios de postería genera nuevas revisitas.',
+       o_rec:'Las recurrencias registradas representan el 2,1 % del total. Afectaciones por cortes de UM.',
+       o_bb:'Numero de soportes Backbone en el mes de Febrero.',o_tbb:'La resolución de los casos backbone se realizó en un promedio de 4,73 horas.'},
+    3:{soportes:513,cierre:95.14,revisitas:6.43,recurrencia:0.95,bb:62,tiempoBB:3.29,activos:18576,vsActivos:2.76,
+       o_sop:'Numero de soportes en el mes de Marzo.',
+       o_cierr:'El cierre de casos es del 95,14 %, se da por las distancias entre cantones y a las lluvias registradas durante el período.',
+       o_rev:'El número de revisitas registradas durante el mes corresponde al 6,43 % del total. Por motivo del constante cambio de postería que realiza la empresa eléctrica.',
+       o_rec:'Las recurrencias registradas representan el 0,95 % del total. Afectaciones por cortes de UM.',
+       o_bb:'Numero de soportes Backbone en el mes de Marzo.',o_tbb:'La resolución de los casos backbone se realizó en un promedio de 3,29 horas.'},
+    4:{soportes:542,cierre:92.42,revisitas:12.60,recurrencia:2.37,bb:64,tiempoBB:5.39,activos:18585,vsActivos:2.91,
+       o_sop:'Numero de soportes en el mes de Abril.',
+       o_cierr:'El cierre de casos es del 92,42 %, se da por las distancias entre cantones y a las lluvias registradas durante el período.',
+       o_rev:'El número de revisitas registradas durante el mes corresponde al 12,6 % del total. Por motivo de tener 25 puntos con cambios de postería.',
+       o_rec:'Las recurrencias han sido por temas parecidos a las revisitas.',
+       o_bb:'Numero de soportes Backbone en el mes de Abril.',o_tbb:'La resolución de los casos backbone se realizó en un promedio de 5,39 horas, debido a constantes lluvias en el mes de Abril.'},
+  },
+  ec:{
+    1:{soportes:63,cierre:69.84,revisitas:10.64,recurrencia:6.38,bb:0,tiempoBB:0,activos:2520,vsActivos:2.50,
+       o_sop:'',o_cierr:'El cierre en un plazo de 4 horas se cumple aproximadamente en un 70%, considerando la movilización hacia ciudades satélite.',
+       o_rev:'Se registra un 10,64% ya que en ciudades de Macas, Gualaceo y Paute realizan cambios de postería.',
+       o_rec:'Las recurrencias se ubican en un 6,38%, por afectaciones de trabajos externos.',
+       o_bb:'No se tienen casos Backbone Ecuanet.',o_tbb:'No se tienen casos Backbone Ecuanet.'},
+    2:{soportes:68,cierre:76.41,revisitas:3.28,recurrencia:1.64,bb:0,tiempoBB:0,activos:2570,vsActivos:2.65,
+       o_sop:'Total de soportes mes de Febrero.',o_cierr:'El cierre en un plazo de 4 horas se cumple aproximadamente en un 76,41%.',
+       o_rev:'Se registra un 3,28% en ciudades de Macas, Gualaceo y Paute.',
+       o_rec:'Las recurrencias se ubican en un 1,64%, principalmente por cortes de UM.',
+       o_bb:'No se tienen casos Backbone Ecuanet.',o_tbb:'No se tienen casos Backbone Ecuanet.'},
+    3:{soportes:70,cierre:90.01,revisitas:3.77,recurrencia:1.89,bb:0,tiempoBB:0,activos:2570,vsActivos:2.72,
+       o_sop:'Total de soportes mes de Marzo.',o_cierr:'El cierre en un plazo de 4 horas se cumple en un 90,01%.',
+       o_rev:'Se registra un 3,77%, por afectaciones externas como cortes de UM.',
+       o_rec:'Las recurrencias se ubican en un 1,89%, por cambios de postería recurrentes.',
+       o_bb:'No se tienen casos Backbone Ecuanet.',o_tbb:'No se tienen casos Backbone Ecuanet.'},
+    4:{soportes:55,cierre:90.74,revisitas:3.80,recurrencia:0.00,bb:4,tiempoBB:2.52,activos:2564,vsActivos:2.14,
+       o_sop:'Total de soportes mes de Abril.',o_cierr:'El cierre en un plazo de 4 horas se cumple en un 90,74%.',
+       o_rev:'Se han dado por cambios de postes en sectores de cantones y parroquias.',
+       o_rec:'No se tienen recurrencias en Abril.',
+       o_bb:'Numero de soportes Backbone en el mes de Abril.',o_tbb:'La resolución de los casos backbone se realizó en un promedio de 2,52 horas.'},
+  },
+  tn:{
+    1:{soportes:144,cierre:83.51,revisitas:23.28,recurrencia:21.90,bb:4,tiempoBB:9.39,activos:4500,vsActivos:3.20,
+       o_sop:'',o_cierr:'El 83,5 % de los cierres se realizó dentro de las 24 horas, condicionado a la gestión de permisos por parte del cliente.',
+       o_rev:'El 23,2 % de las revisitas está relacionado con afectaciones físicas en la infraestructura de última milla.',
+       o_rec:'Tasa de recurrencia del 21,9 %, asociada a saturación del espectro radioeléctrico.',
+       o_bb:'',o_tbb:'El tiempo promedio de cierre de soportes backbone es de 9,39 horas, debido a condiciones climáticas.'},
+    2:{soportes:169,cierre:80.47,revisitas:21.88,recurrencia:19.79,bb:8,tiempoBB:8.00,activos:4320,vsActivos:3.91,
+       o_sop:'Numero de soportes del Mes de Febrero.',o_cierr:'El 80,47 % de los cierres se realizó dentro de las 24 horas.',
+       o_rev:'El 21,8 % de las revisitas está relacionado con afectaciones físicas en la infraestructura de última milla.',
+       o_rec:'Tasa de recurrencia del 19,7 %. Se detectan problemas de cortes de UM por cambios de postería.',
+       o_bb:'Numero de soportes Backbone del Mes de Febrero.',o_tbb:'El tiempo promedio de cierre de soportes backbone es de 8,00 horas.'},
+    3:{soportes:129,cierre:89.15,revisitas:23.28,recurrencia:21.90,bb:13,tiempoBB:9.09,activos:4320,vsActivos:2.99,
+       o_sop:'Numero de soportes del Mes de Marzo.',o_cierr:'El 89,15 % de los cierres se realizó dentro de las 24 horas.',
+       o_rev:'El 23,2 % de las revisitas está relacionado con afectaciones físicas en la última milla.',
+       o_rec:'Tasa de recurrencia del 21,9 %, por radioenlaces con frecuencias no licenciadas.',
+       o_bb:'Numero de soportes Backbone del Mes de Marzo.',o_tbb:'El tiempo promedio es de 9,09 horas. Derrumbes en Santa Isabel e incendios en el Oriente.'},
+    4:{soportes:111,cierre:86.00,revisitas:27.50,recurrencia:26.20,bb:11,tiempoBB:9.10,activos:null,vsActivos:2.50,
+       o_sop:'',o_cierr:'El 86 % de los cierres se realizó dentro de las 24 horas.',
+       o_rev:'El 27,5 % de las revisitas está relacionado con afectaciones físicas en la última milla.',
+       o_rec:'Tasa de recurrencia del 26,2 %, por radioenlaces con frecuencias no licenciadas.',
+       o_bb:'Numero de soportes Backbone del Mes de Abril.',o_tbb:'El tiempo promedio es de 9,10 horas. Derrumbes en Santa Isabel e incendios en el Oriente.'},
+  }
+};
+
+const URLS = {
+  nl:'https://telconet-adc-ia.github.io/telconet-adc/',
+  ec:'https://telconet-adc-ia.github.io/telconet-adc/',
+  tn:'https://telconet-adc-ia.github.io/telconet-adc/',
+};
+const HDR = {
+  ins:'INSTALADOS vs CANCELADOS vs SOPORTES<br>2026',
+  nl:'SOPORTES NL<br>2026', ec:'SOPORTES EC<br>2026', tn:'SOPORTES TN<br>2026',
+  construccion:'CONSTRUCCIÓN Y ARREGLO DE CAJA<br>2026',
+  interurbano:'INTERURBANO<br>2026', retiro:'RETIRO<br>2026', ttg:'TTG<br>2026'
+};
+
+// ════════════════════════════════
+//  STATE
+// ════════════════════════════════
+let mesSel=4, empSel='todas', panelSel='ins', charts={};
+
+const labelPlugin = {
+  id:'lbl',
+  afterDatasetsDraw(chart){
+    const ctx=chart.ctx;
+    chart.data.datasets.forEach((ds,i)=>{
+      const meta=chart.getDatasetMeta(i);
+      meta.data.forEach((bar,j)=>{
+        const v=ds.data[j];
+        if(v===null||v===undefined||v===0) return;
+        ctx.save();
+        ctx.font='bold 11px Segoe UI';
+        ctx.fillStyle='#111';
+        ctx.textAlign='center';
+        ctx.fillText(v+(ds._sfx||''), bar.x, bar.y-5);
+        ctx.restore();
+      });
+    });
+  }
+};
+
+// ════════════════════════════════
+//  CHART FACTORY
+// ════════════════════════════════
+function mkChart(id, labels, datasets, opts={}){
+  if(charts[id]){ charts[id].destroy(); delete charts[id]; }
+  const el=document.getElementById(id); if(!el) return;
+  charts[id]=new Chart(el,{
+    type:'bar',
+    data:{labels, datasets},
+    options:{
+      responsive:true,
+      animation:{duration:300},
+      plugins:{
+        legend: opts.legend || {display:false},
+        tooltip:{callbacks:{label:c=>` ${c.raw}${c.dataset._sfx||''}`}}
+      },
+      scales:{
+        y:{beginAtZero:true,grid:{color:'#e8f0fb'},ticks:{font:{size:9},callback:v=>v+(opts.ySfx||'')}},
+        x:{grid:{display:false},ticks:{font:{size:11,weight:'600'}}}
+      }
+    },
+    plugins:[labelPlugin]
+  });
+}
+
+function mkSingle(id, val, color, sfx='', semaforoEstado=null){
+  const barColor = semaforoEstado ? getSemaforoColor(semaforoEstado) : color;
+  mkChart(id,[MESES_F[mesSel]],[{data:[val],backgroundColor:[barColor],borderRadius:4,barPercentage:0.4,_sfx:sfx}],{ySfx:sfx});
+
+  // Add semaforo dot to card header
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if(!el || !semaforoEstado) return;
+    const card = el.closest('.card');
+    if(!card) return;
+    const head = card.querySelector('.card-head');
+    if(!head) return;
+    const existing = head.querySelector('.semaforo-dot');
+    if(existing) existing.remove();
+    const dot = document.createElement('span');
+    dot.className = 'semaforo-dot';
+    dot.title = {verde:'En objetivo',amarillo:'Atención',rojo:'Fuera de objetivo'}[semaforoEstado]||'';
+    dot.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:50%;background:${getSemaforoColor(semaforoEstado)};margin-left:auto;flex-shrink:0;box-shadow:0 0 0 2px white;`;
+    head.appendChild(dot);
+  }, 50);
+}
+
+// ════════════════════════════════
+//  SET TEXT
+// ════════════════════════════════
+function set(id,v){ const e=document.getElementById(id); if(e) e.textContent=v??''; }
+function setH(id,v){ const e=document.getElementById(id); if(e) e.innerHTML=v??''; }
+function show(id,v){ const e=document.getElementById(id); if(e) e.style.display=v?'':'none'; }
+
+// ════════════════════════════════
+//  RENDER INS X SOP X CAN
+// ════════════════════════════════
+function renderIns(){
+  const mes=INS_DATA[mesSel];
+  let empresas, labels;
+
+  if(empSel==='todas'){
+    empresas=['NETLIFE','TELCONET','ECUANET'];
+    labels=['4']; // mes number as x label like original
+    const ins=empresas.reduce((a,e)=>a+mes[e].ins,0);
+    const sop=empresas.reduce((a,e)=>a+mes[e].sop,0);
+    const can=empresas.reduce((a,e)=>a+mes[e].can,0);
+    mkChart('ins-main-chart',
+      [mesSel.toString()],
+      [
+        {label:'INSTALACIONES',data:[ins],backgroundColor:'#1976d2',borderRadius:4,_sfx:''},
+        {label:'CANCELADOS',   data:[can],backgroundColor:'#c62828',borderRadius:4,_sfx:''},
+        {label:'SOPORTES',     data:[sop],backgroundColor:'#2e7d32',borderRadius:4,_sfx:''},
+      ],
+      {legend:{display:true,labels:{font:{size:10},boxWidth:14,padding:12}}}
+    );
+  } else {
+    const d=mes[empSel];
+    mkChart('ins-main-chart',
+      [mesSel.toString()],
+      [
+        {label:'INSTALACIONES',data:[d.ins],backgroundColor:'#1976d2',borderRadius:4,_sfx:''},
+        {label:'CANCELADOS',   data:[d.can],backgroundColor:'#c62828',borderRadius:4,_sfx:''},
+        {label:'SOPORTES',     data:[d.sop],backgroundColor:'#2e7d32',borderRadius:4,_sfx:''},
+      ],
+      {legend:{display:true,labels:{font:{size:10},boxWidth:14,padding:12}}}
+    );
+  }
+}
+
+// ════════════════════════════════
+//  RENDER SOPORTE
+// ════════════════════════════════
+function renderSop(tab){
+  const d=SOP_DATA[tab][mesSel];
+  const ml=MESES_L[mesSel];
+  const B='#1565c0', T='#0097a7';
+
+  set('k1-lbl', tab==='tn'?'SERVICIOS ACTIVOS':'TOTAL ACTIVOS');
+  set('k1-val', d.activos ? Number(d.activos).toLocaleString('es-EC') : '—');
+  set('k2-val', d.vsActivos.toFixed(2).replace('.',',')+' %');
+
+  const btn=document.getElementById('btn-det');
+  const btnLabels = {
+    nl: 'Ver Detalle Megadatos',
+    ec: 'Ver Detalle Ecuanet',
+    tn: 'Ver Detalle Telconet'
+  };
+  const labelEl = document.getElementById('btn-det-label');
+  if(labelEl) labelEl.textContent = btnLabels[tab] || 'VER DETALLE';
+  if(URLS[tab]){ btn.href=URLS[tab]; btn.classList.remove('hidden'); }
+  else btn.classList.add('hidden');
+
+  mkSingle(`${tab}-c-sop`,   d.soportes,    B, '',  null);
+  mkSingle(`${tab}-c-rev`,   d.revisitas,   T, '%', getSemaforo(tab,'revisitas',d.revisitas));
+  mkSingle(`${tab}-c-cierr`, d.cierre,      B, '%', getSemaforo(tab,'cierre',d.cierre));
+  mkSingle(`${tab}-c-rec`,   d.recurrencia, T, '%', getSemaforo(tab,'recurrencia',d.recurrencia));
+  mkSingle(`${tab}-c-bb`,    d.bb,          B, '',  null);
+  mkSingle(`${tab}-c-tbb`,   d.tiempoBB,    T, 'h', getSemaforo(tab,'tiempoBB',d.tiempoBB));
+
+  ['sop','rev','cierr','rec','bb','tbb'].forEach(k=>{
+    set(`${tab}-m-${k}`, ml);
+    set(`${tab}-o-${k}`, d[`o_${k}`]||'');
+  });
+}
+
+// ════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════
+
+
+
+function renderRet(){
+  const items=RET_DATA[mesSel];
+  const d=items[retItemSel]||items[0];
+  set('ret-item-lbl', d.item);
+  set('ret-pct', d.pct);
+  set('ret-obs-mes', MESES_L[mesSel]);
+  set('ret-obs-item', d.item);
+  set('ret-obs-txt', d.obs);
+
+  if(charts['ret-main']){ charts['ret-main'].destroy(); delete charts['ret-main']; }
+  const el=document.getElementById('ret-main-chart'); if(!el) return;
+  charts['ret-main']=new Chart(el,{
+    type:'bar',
+    data:{
+      labels:[MESES_L[mesSel]],
+      datasets:[
+        {label:'CANTIDAD',    data:[d.cant], backgroundColor:'#1976d2', borderRadius:4, barPercentage:0.4, _sfx:''},
+        {label:'RECUPERADOS', data:[d.rec],  backgroundColor:'#00acc1', borderRadius:4, barPercentage:0.4, _sfx:''},
+      ]
+    },
+    options:{
+      responsive:true,
+      animation:{duration:300},
+      plugins:{
+        legend:{display:true,labels:{font:{size:10},boxWidth:14,padding:10}},
+        tooltip:{callbacks:{label:c=>` ${c.raw}`}}
+      },
+      scales:{
+        y:{beginAtZero:true,grid:{color:'#e8f0fb'},ticks:{font:{size:9}}},
+        x:{grid:{display:false},ticks:{font:{size:11,weight:'600'}}}
+      }
+    },
+    plugins:[labelPlugin]
+  });
+}
+
+function cambiarRetItem(v){
+  retItemSel=parseInt(v);
+  const d=RET_DATA[mesSel][retItemSel];
+  set('ret-item-lbl', d.item);
+  renderRet();
+}
+
+function renderTTG(){
+  const cuadrillas=(TTG_DATA[mesSel]||TTG_DATA[4])[ttgTipoSel]||[];
+  const vals=cuadrillas.map(c=>c.v);
+  const prom=vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : '—';
+  set('ttg-prom', prom);
+  set('ttg-total', cuadrillas.length);
+  set('ttg-tipo-lbl', ttgTipoSel);
+
+  if(charts['ttg-main']){ charts['ttg-main'].destroy(); delete charts['ttg-main']; }
+  const el=document.getElementById('ttg-main-chart'); if(!el) return;
+  const TTG_MIN=4, TTG_MAX=5;
+  charts['ttg-main']=new Chart(el,{
+    type:'bar',
+    data:{
+      labels:cuadrillas.map(c=>c.c),
+      datasets:[
+        {label:'TTG',data:vals,backgroundColor:'#1976d2',borderRadius:4,barPercentage:0.55,_sfx:''},
+        {label:'TTG MÁXIMO ('+TTG_MAX+')',data:Array(cuadrillas.length).fill(TTG_MAX),type:'line',borderColor:'#555',borderDash:[6,3],borderWidth:1.5,pointRadius:0,fill:false},
+        {label:'TTG MÍNIMO ('+TTG_MIN+')',data:Array(cuadrillas.length).fill(TTG_MIN),type:'line',borderColor:'#888',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false},
+      ]
+    },
+    options:{
+      responsive:true,
+      animation:{duration:300},
+      plugins:{
+        legend:{display:true,labels:{font:{size:9},boxWidth:12,padding:8}},
+        tooltip:{callbacks:{label:c=>` ${c.raw}`}}
+      },
+      scales:{
+        y:{beginAtZero:true,min:0,max:6,grid:{color:'#e8f0fb'},ticks:{font:{size:9}}},
+        x:{grid:{display:false},ticks:{font:{size:8},maxRotation:45}}
+      }
+    },
+    plugins:[labelPlugin]
+  });
+
+  // observaciones table
+  const tbl=document.getElementById('ttg-obs-table');
+  const withObs=cuadrillas.filter(c=>c.obs);
+  tbl.innerHTML=withObs.length ? withObs.map((c,i)=>`
+    <tr style="border-bottom:1px solid #e8f0fb">
+      <td style="padding:6px 12px;font-weight:700;color:#003087;white-space:nowrap;font-size:10px">${c.c}</td>
+      <td style="padding:6px 12px;color:#444;font-size:10px;line-height:1.4">${c.obs}</td>
+    </tr>`).join('') : '<tr><td colspan="2" style="padding:10px 12px;color:#888;font-size:10px">Sin observaciones para este grupo.</td></tr>';
+  set('ttg-nav-lbl', `1 – ${withObs.length} / ${withObs.length}`);
+}
+
+function cambiarTTGTipo(v){
+  ttgTipoSel=v;
+  renderTTG();
+}
+
+function renderInt(){
+  const d = INT_DATA[mesSel];
+  const ml = MESES_L[mesSel];
+  const G='#2e7d32', T='#0097a7', B='#1565c0';
+
+  mkSingle('int-c-inc',    d.incidentes, G, '');
+  mkSingle('int-c-tprom',  d.tprom,      T, 'h');
+  mkSingle('int-c-rec',    d.recorridos, B, '');
+  mkSingle('int-c-precor', d.precorridos,T, '%');
+  mkSingle('int-c-manga',  d.mangas,     B, '');
+  mkSingle('int-c-tmanga', d.tmanga,     T, 'h');
+  mkSingle('int-c-rutas',  d.rutas,      B, '');
+
+  [['inc','o_inc'],['tprom','o_tprom'],['rec','o_rec'],['precor','o_precor'],
+   ['manga','o_manga'],['tmanga','o_tmanga'],['rutas','o_rutas']].forEach(([k,ok])=>{
+    set('int-m-'+k, ml);
+    set('int-o-'+k, d[ok]);
+  });
+  const rt=document.getElementById('int-rutas-txt');
+  if(rt) rt.innerHTML=d.rutas_txt;
+}
+
+function renderCon(){
+  const items = CON_DATA[mesSel];
+  const d = items[conItemSel] || items[0];
+  set('con-item-lbl', d.item);
+  set('con-obs-mes',  MESES_L[mesSel]);
+  set('con-obs-item', d.item);
+  set('con-obs-txt',  d.obs);
+
+  if(charts['con-main']){ charts['con-main'].destroy(); delete charts['con-main']; }
+  const el=document.getElementById('con-main-chart'); if(!el) return;
+  charts['con-main']=new Chart(el,{
+    type:'bar',
+    data:{
+      labels:[mesSel.toString()],
+      datasets:[{label:'VALOR',data:[d.valor],backgroundColor:'#1976d2',borderRadius:4,barPercentage:0.5,_sfx:''}]
+    },
+    options:{
+      responsive:true,
+      animation:{duration:300},
+      plugins:{
+        legend:{display:true,labels:{font:{size:10},boxWidth:14,padding:10}},
+        tooltip:{callbacks:{label:c=>` ${c.raw}`}}
+      },
+      scales:{
+        y:{beginAtZero:true,grid:{color:'#e8f0fb'},ticks:{font:{size:9}}},
+        x:{grid:{display:false},ticks:{font:{size:11,weight:'600'}}}
+      }
+    },
+    plugins:[labelPlugin]
+  });
+}
+
+function cambiarItem(v){
+  conItemSel=parseInt(v);
+  const items=CON_DATA[mesSel];
+  const d=items[conItemSel]||items[0];
+  set('con-item-lbl', d.item);
+  renderCon();
+}
+
+function switchPanel(panel){
+  panelSel=panel;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`panel-${panel}`).classList.add('active');
+  document.getElementById(`nav-${panel}`).classList.add('active');
+  setH('hdr-title', HDR[panel]||panel);
+
+  // Show/hide subrow extras
+  show('empresa-pill', panel==='ins');
+  show('kpi1-box',  ['nl','ec','tn'].includes(panel));
+  show('kpi2-box',  ['nl','ec','tn'].includes(panel));
+  document.getElementById('btn-det').classList.add('hidden');
+
+  setTimeout(()=>{
+    if(panel==='ins') renderIns();
+    else if(panel==='construccion') renderCon();
+    else if(panel==='interurbano') renderInt();
+    else if(panel==='retiro') renderRet();
+    else if(panel==='ttg') renderTTG();
+    else if(['nl','ec','tn'].includes(panel)) renderSop(panel);
+  }, 50);
+}
+
+function cambiarMes(v){
+  mesSel=parseInt(v);
+  set('mes-lbl', MESES_L[mesSel]);
+  switchPanel(panelSel);
+}
+
+function cambiarEmpresa(v){
+  empSel=v;
+  set('emp-lbl', v==='todas'?'Todas':v);
+  renderIns();
+}
+
+function toggleSidebar(){
+  const sb=document.querySelector('.sidebar');
+  const mn=document.querySelector('.main');
+  const collapsed=sb.style.width==='40px';
+  sb.style.width=collapsed?'155px':'40px';
+  mn.style.marginLeft=collapsed?'155px':'40px';
+  document.querySelectorAll('.sidebar-item span:last-child, .sidebar-item').forEach(el=>{
+    if(el.classList.contains('sidebar-item')){
+      el.style.justifyContent=collapsed?'':'center';
+    }
+  });
+  document.querySelector('.sidebar-collapse').textContent=collapsed?'‹':'›';
+}
+
+// ════════════════════════════════
+//  INIT
+// ════════════════════════════════
+window.addEventListener('load',()=>{
+  // Add PDF button to header
+  const subrow = document.querySelector('.subrow');
+  if(subrow && !document.getElementById('pdf-btn-added')) {
+    const btn = document.createElement('button');
+    btn.id = 'pdf-btn-added';
+    btn.className = 'btn-pdf';
+    btn.onclick = exportarPDF;
+    btn.innerHTML = '🖨️ Exportar PDF';
+    btn.style.marginLeft = 'auto';
+    subrow.appendChild(btn);
+  }
+  switchPanel('ins');
+});
+</script>
+</body>
+</html>
