@@ -220,7 +220,7 @@ canvas { max-height: 160px; }
 .placeholder-icon { font-size: 40px; margin-bottom: 10px; }
 
 @media print {
-  .sidebar, .btn-pdf, .btn-det-visible, .mes-pill select,
+  .sidebar, .btn-pdf, .mes-pill select,
   select, .sidebar-collapse { display:none !important; }
   .main { margin-left:0 !important; }
   .card, .pie-card, .chart-card { break-inside:avoid; }
@@ -241,6 +241,12 @@ canvas { max-height: 160px; }
 
 <!-- ══ SIDEBAR ══ -->
 <div class="sidebar">
+  <a href="https://telconet-adc-ia.github.io/telconet-adc/" style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+     background:#003087;color:white;font-size:11px;font-weight:700;text-decoration:none;
+     border-bottom:1px solid rgba(255,255,255,0.15);transition:background 0.2s;"
+     onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#003087'">
+    <span style="font-size:14px">◀</span> PANEL
+  </a>
   <div class="sidebar-item active" id="nav-ins" onclick="switchPanel('ins')">
     <span class="sidebar-icon">⚙️</span> INS X SOP X CAN
   </div>
@@ -279,9 +285,7 @@ canvas { max-height: 160px; }
       <div class="logo-latam">L A T A M</div>
     </div>
     <div class="header-title" id="hdr-title">INSTALADOS vs CANCELADOS vs SOPORTES<br>2026</div>
-    <a class="btn-det-visible hidden" id="btn-det" href="https://telconet-adc-ia.github.io/telconet-adc/" target="_blank">
-        <i>↗</i> <span id="btn-det-label">VER DETALLE</span>
-      </a>
+    
   </div>
 
   <!-- SUBROW -->
@@ -966,11 +970,7 @@ const SOP_DATA = {
   }
 };
 
-const URLS = {
-  nl:'https://telconet-adc-ia.github.io/telconet-adc/',
-  ec:'https://telconet-adc-ia.github.io/telconet-adc/',
-  tn:'https://telconet-adc-ia.github.io/telconet-adc/',
-};
+
 const HDR = {
   ins:'INSTALADOS vs CANCELADOS vs SOPORTES<br>2026',
   nl:'SOPORTES NL<br>2026', ec:'SOPORTES EC<br>2026', tn:'SOPORTES TN<br>2026',
@@ -1105,16 +1105,7 @@ function renderSop(tab){
   set('k1-val', d.activos ? Number(d.activos).toLocaleString('es-EC') : '—');
   set('k2-val', d.vsActivos.toFixed(2).replace('.',',')+' %');
 
-  const btn=document.getElementById('btn-det');
-  const btnLabels = {
-    nl: 'Ver Detalle Megadatos',
-    ec: 'Ver Detalle Ecuanet',
-    tn: 'Ver Detalle Telconet'
-  };
-  const labelEl = document.getElementById('btn-det-label');
-  if(labelEl) labelEl.textContent = btnLabels[tab] || 'VER DETALLE';
-  if(URLS[tab]){ btn.href=URLS[tab]; btn.classList.remove('hidden'); }
-  else btn.classList.add('hidden');
+  // btn-det removed
 
   mkSingle(`${tab}-c-sop`,   d.soportes,    B, '',  null);
   mkSingle(`${tab}-c-rev`,   d.revisitas,   T, '%', getSemaforo(tab,'revisitas',d.revisitas));
@@ -1304,7 +1295,7 @@ function switchPanel(panel){
   show('empresa-pill', panel==='ins');
   show('kpi1-box',  ['nl','ec','tn'].includes(panel));
   show('kpi2-box',  ['nl','ec','tn'].includes(panel));
-  document.getElementById('btn-det').classList.add('hidden');
+
 
   setTimeout(()=>{
     if(panel==='ins') renderIns();
