@@ -525,7 +525,7 @@ function cambiarMesDashboard(mes) {
 
 // ── Cargar datos de un mes desde el script
 async function cargarDesdeScript(mes) {
-  // Show loading indicator in header
+  console.log('cargarDesdeScript called with mes:', mes);
   const mesNombres = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
                       'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   document.getElementById('hdr-mes').textContent = mesNombres[mes] + '...';
@@ -539,8 +539,11 @@ async function cargarDesdeScript(mes) {
 
     setMsg('Descargando datos del mes...');
     const url = `${APPS_SCRIPT_URL}?accion=datos&empresa=${EMPRESA}&mes=${mes}&anio=${ANIO}`;
+    console.log('Fetching URL:', url);
     const resp = await fetch(url);
+    console.log('Response status:', resp.status);
     const data = await resp.json();
+    console.log('Data received:', data.error || `${data.totalFilas} filas, archivo: ${data.archivo}`);
 
     if (data.error) throw new Error(data.error);
 
@@ -555,8 +558,8 @@ async function cargarDesdeScript(mes) {
     }, 100);
 
   } catch(err) {
+    console.error('ERROR en cargarDesdeScript:', err.message, err);
     alert('Error al cargar desde Drive: ' + err.message);
-    resetDashboard();
   }
 }
 
