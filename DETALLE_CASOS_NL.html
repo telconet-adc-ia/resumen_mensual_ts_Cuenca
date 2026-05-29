@@ -651,6 +651,17 @@ function setMsg(m) { document.getElementById('loading-msg').textContent = m; }
 //  DATA PROCESSING
 // ════════════════════════════════════════
 function processData(raw, pctRevSheet=null, pctRecSheet=null) {
+  // Debug: log first row to console
+  if (raw && raw.length > 0) {
+    console.log('DEBUG first row keys:', Object.keys(raw[0]));
+    console.log('DEBUG first row sample:', JSON.stringify(raw[0]).substring(0, 300));
+    console.log('DEBUG total rows:', raw.length);
+  } else {
+    console.log('DEBUG: raw is empty or null', raw);
+    document.getElementById('hdr-pct4h').textContent = 'Sin datos';
+    return;
+  }
+
   // Deduplicate by NUMERO_CASO
   const seen = new Set();
   const casos = raw.filter(r => {
