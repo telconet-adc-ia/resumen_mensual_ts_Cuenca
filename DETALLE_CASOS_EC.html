@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalle Casos EC — Ecuanet</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #dce8f5;
+  color: #222;
+  font-size: 12px;
+  min-height: 100vh;
+}
+
+/* ── UPLOAD SCREEN ── */
+#upload-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 20px;
+}
+.upload-card {
+  background: white;
+  border: 2px dashed #b0c8e8;
+  border-radius: 16px;
+  padding: 48px 60px;
+  text-align: center;
+  max-width: 440px;
+  width: 90%;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.upload-card:hover, .upload-card.drag { border-color: #003087; background: #f0f6ff; }
+.upload-icon { font-size: 52px; margin-bottom: 14px; }
+.upload-title { font-size: 17px; font-weight: 700; color: #003087; margin-bottom: 6px; }
+.upload-sub { font-size: 11px; color: #777; margin-bottom: 18px; line-height: 1.5; }
+.upload-btn {
+  background: #003087; color: white;
+  border: none; border-radius: 8px;
+  padding: 10px 24px; font-size: 12px;
+  font-weight: 700; cursor: pointer;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  transition: background 0.2s;
+}
+.upload-btn:hover { background: #1565c0; }
+#file-input { display: none; }
+.upload-note { font-size: 10px; color: #aaa; margin-top: 10px; }
+
+/* ── LOADING ── */
+#loading-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+}
+.spinner-big {
+  width: 48px; height: 48px;
+  border: 4px solid #b0c8e8;
+  border-top-color: #003087;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-txt { font-size: 14px; color: #003087; font-weight: 600; }
+
+/* ── DASHBOARD ── */
+#dashboard { display: none; }
+
+/* HEADER */
+.header {
+  background: white;
+  border: 1.5px solid #b0c8e8;
+  border-radius: 8px;
+  margin: 10px 10px 8px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.logo-box {
+  background: linear-gradient(135deg, #e8782a, #f5a623);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: white;
+  font-size: 16px;
+  font-weight: 900;
+  font-style: italic;
+  min-width: 90px;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+.logo-box span { color: #003087; }
+
+.estado-box {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 10px;
+}
+.estado-row { display: flex; align-items: center; gap: 5px; margin: 1px 0; }
+.cb { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.cb-fin { background: #1565c0; }
+.cb-can { background: #aaa; }
+.cb-dash { background: #f59e0b; }
+
+.gauge-wrap { text-align: center; flex: 1; }
+.gauge-lbl { font-size: 10px; font-weight: 700; color: #555; margin-bottom: 2px; }
+.gauge-val { font-size: 24px; font-weight: 900; color: #e8782a; }
+
+.pct-box {
+  border: 2px solid #1565c0;
+  border-radius: 8px;
+  padding: 6px 14px;
+  text-align: center;
+}
+.pct-lbl { font-size: 8px; font-weight: 700; color: #777; text-transform: uppercase; }
+.pct-val { font-size: 17px; font-weight: 900; color: #1565c0; }
+
+.canton-pill {
+  border: 2px solid #1565c0;
+  border-radius: 20px;
+  padding: 5px 14px;
+  color: #1565c0;
+  font-size: 10px;
+  font-weight: 700;
+}
+.mes-pill {
+  border: 1.5px solid #1565c0;
+  border-radius: 20px;
+  padding: 4px 12px;
+  color: #1565c0;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* upload new file btn */
+.btn-upload-new {
+  margin-left: auto;
+  background: none;
+  border: 1.5px solid #aaa;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 10px;
+  color: #777;
+  cursor: pointer;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  transition: all 0.2s;
+}
+.btn-upload-new:hover { border-color: #003087; color: #003087; }
+
+/* CHARTS */
+.chart-card {
+  background: white;
+  border: 1.5px solid #b0c8e8;
+  border-radius: 8px;
+  padding: 10px 14px 8px;
+  margin-bottom: 10px;
+}
+.chart-card-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #003087;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.chart-card-title::before { content: '◆'; color: #1565c0; font-size: 8px; }
+canvas { max-height: 180px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 10px 10px; }
+.full-col { margin: 0 10px 10px; }
+
+/* PIE CARDS */
+.pie-card { background: white; border: 1.5px solid #b0c8e8; border-radius: 8px; padding: 10px 14px 8px; }
+.pie-card canvas { max-height: 220px; }
+
+/* TABLE */
+.table-card { background: white; border: 1.5px solid #b0c8e8; border-radius: 8px; padding: 10px 14px 8px; margin: 0 10px 10px; }
+.table-title { font-size: 13px; font-weight: 700; color: #1565c0; text-align: center; margin-bottom: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 10px; }
+thead tr { background: #f0f6ff; }
+th { padding: 5px 8px; text-align: left; font-size: 9px; font-weight: 700; color: #555; text-transform: uppercase; border-bottom: 1px solid #e0eaf5; }
+td { padding: 5px 8px; border-bottom: 1px solid #f0f6ff; color: #444; }
+td.num { font-weight: 700; color: #1565c0; text-align: center; }
+tr:hover { background: #f8fbff; }
+
+/* REVISITAS */
+.rev-section { background: white; border: 1.5px solid #b0c8e8; border-radius: 8px; padding: 12px 14px; margin: 0 10px 10px; }
+.rev-title { font-size: 18px; font-weight: 900; color: #1565c0; text-align: center; margin-bottom: 10px; }
+.rev-grid { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; }
+.gauge-mini { text-align: center; }
+.rev-pct { font-size: 22px; font-weight: 900; color: #333; }
+.rev-sub { font-size: 9px; color: #888; }
+
+/* DETAIL TABLE */
+.detail-rows { font-size: 10px; max-height: 160px; overflow-y: auto; }
+.detail-row { display: grid; grid-template-columns: 40px 1fr; gap: 8px; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+.detail-caso { font-weight: 700; color: #003087; font-size: 9px; }
+.detail-obs { color: #555; font-size: 9px; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<!-- ══ UPLOAD SCREEN ══ -->
+<div id="upload-screen">
+  <div style="text-align:center">
+    <div style="font-size:22px;font-weight:900;color:#003087;letter-spacing:1px">DETALLE CASOS EC</div>
+    <div style="font-size:11px;color:#777;margin-top:4px">Ecuanet — Reporte Mensual</div>
+  </div>
+  <div class="upload-card" style="cursor:default;max-width:480px">
+    <div class="upload-icon">📅</div>
+    <div class="upload-title">Seleccionar mes a consultar</div>
+    <div class="upload-sub" id="meses-status">Cargando historial...</div>
+    <div id="meses-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;"></div>
+    <div style="font-size:10px;color:#aaa">Los archivos se leen automáticamente desde Google Drive</div>
+  </div>
+  <div style="color:#aaa;font-size:11px">— o sube un archivo nuevo —</div>
+  <div class="upload-card" id="drop-zone" onclick="document.getElementById('file-input').click()"
+       style="max-width:480px;padding:22px 40px">
+    <div style="font-size:26px;margin-bottom:8px">📂</div>
+    <div class="upload-title" style="font-size:13px">Subir Excel manualmente</div>
+    <div class="upload-sub">Para agregar un nuevo mes arrastra el archivo<br>o haz clic para buscarlo</div>
+    <button class="upload-btn" onclick="event.stopPropagation();document.getElementById('file-input').click()">
+      Seleccionar archivo
+    </button>
+    <div class="upload-note">Formatos aceptados: .xlsx · .xls</div>
+  </div>
+  <input type="file" id="file-input" accept=".xlsx,.xls" onchange="handleFile(this.files[0])">
+</div>
+
+
+<!-- ══ LOADING ══ -->
+<div id="loading-screen">
+  <div class="spinner-big"></div>
+  <div class="loading-txt" id="loading-msg">Procesando archivo...</div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="dashboard">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-box">ECUANET</div>
+
+    <div class="estado-box">
+      <div style="font-size:9px;font-weight:700;color:#555;margin-bottom:3px">✓ ESTADO CASO &nbsp; NUMERO_...</div>
+      <div class="estado-row"><span class="cb cb-fin"></span> Finalizada <span style="margin-left:auto;font-weight:700;padding-left:8px" id="hdr-fin">—</span></div>
+      <div class="estado-row"><span class="cb cb-can"></span> Cancelada <span style="margin-left:auto;font-weight:700;padding-left:8px" id="hdr-can">—</span></div>
+      <div class="estado-row"><span class="cb cb-dash"></span> - <span style="margin-left:auto;font-weight:700;padding-left:8px" id="hdr-dash">—</span></div>
+    </div>
+
+    <div class="mes-pill">Mes: <span id="hdr-mes">abril</span> &nbsp;(1)</div>
+
+    <div class="gauge-wrap">
+      <div class="gauge-lbl">NUMERO_CASO</div>
+      <svg width="130" height="75" viewBox="0 0 130 75">
+        <path d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke="#eee" stroke-width="11" stroke-linecap="round"/>
+        <path d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke="#e8782a" stroke-width="11" stroke-linecap="round"
+              stroke-dasharray="173 173" id="gauge-arc"/>
+        <text x="65" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#e8782a" id="gauge-num">—</text>
+      </svg>
+    </div>
+
+    <div class="pct-box">
+      <div class="pct-lbl">% CIERRE 4 HORAS</div>
+      <div class="pct-val" id="hdr-pct4h">—</div>
+    </div>
+
+    <div class="canton-pill">PUNTO CANTON ▼</div>
+    <button class="btn-upload-new" onclick="resetDashboard()">↩ Nuevo archivo</button>
+    
+  </div>
+
+  <!-- CASOS POR DÍA -->
+  <div class="full-col">
+    <div class="chart-card">
+      <div class="chart-card-title">#CASOS &nbsp;<span style="color:#aaa;font-weight:400;font-size:9px" id="avg-label"></span></div>
+      <canvas id="chart-dias"></canvas>
+    </div>
+  </div>
+
+  <!-- HORA APERTURA / HORA CIERRE -->
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-card-title">CASOS X HORA DE APERTURA</div>
+      <canvas id="chart-hora-ap"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">CASOS X HORA DE CIERRE</div>
+      <canvas id="chart-hora-ci"></canvas>
+    </div>
+  </div>
+
+  <!-- PIES -->
+  <div class="two-col">
+    <div class="pie-card">
+      <div class="chart-card-title">Casos Por Cuadrilla</div>
+      <canvas id="chart-cuadrilla"></canvas>
+    </div>
+    <div class="pie-card">
+      <div class="chart-card-title">Casos Por Hipótesis Final</div>
+      <canvas id="chart-hipotesis"></canvas>
+    </div>
+  </div>
+
+  <!-- TABLA CAJAS -->
+  <div class="table-card">
+    <div class="table-title">Cantidad de Casos por Cantón</div>
+    <table>
+      <thead><tr><th>CANTÓN</th><th style="text-align:center">#CASOS</th></tr></thead>
+      <tbody id="tabla-cajas"></tbody>
+    </table>
+  </div>
+
+  <!-- DETALLE CASOS -->
+  <div class="table-card">
+    <div class="table-title">Detalle de Casos</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>NUMERO_CASO</th><th>TÍTULO HIPÓTESIS</th>
+          <th>FE_APERTURA</th><th>FECHA_FINALIZADA</th><th style="text-align:center">#CASOS</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-detalle"></tbody>
+    </table>
+    <div style="font-size:9px;color:#aaa;text-align:right;margin-top:4px" id="detalle-pag"></div>
+  </div>
+
+  <!-- REVISITAS -->
+  <div class="rev-section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="rev-title">REVISITAS</div>
+      <div class="mes-pill">MES: <span id="rev-mes">abril</span> &nbsp;(1)</div>
+    </div>
+    <div class="rev-grid">
+      <!-- Gauge revisitas -->
+      <div class="gauge-mini">
+        <svg width="170" height="105" viewBox="0 0 170 105">
+          <path d="M 15 95 A 68 68 0 0 1 155 95" fill="none" stroke="#eee" stroke-width="13" stroke-linecap="round"/>
+          <path d="M 15 95 A 68 68 0 0 1 155 95" fill="none" stroke="#555" stroke-width="13" stroke-linecap="round"
+                stroke-dasharray="213 213" id="rev-arc"/>
+          <text x="85" y="80" text-anchor="middle" font-size="10" fill="#888">VALOR</text>
+          <text x="85" y="65" text-anchor="middle" font-size="20" font-weight="bold" fill="#333" id="rev-pct-val">—</text>
+          <text x="15" y="108" text-anchor="middle" font-size="8" fill="#aaa">0%</text>
+          <text x="155" y="108" text-anchor="middle" font-size="8" fill="#aaa">10.000%</text>
+        </svg>
+      </div>
+      <!-- Top revisitas por login -->
+      <div>
+        <table>
+          <thead>
+            <tr style="background:#1565c0">
+              <th style="color:white">#</th>
+              <th style="color:white">LOGIN_PUNTO</th>
+              <th style="color:white;text-align:center">Record Count</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-rev-login"></tbody>
+        </table>
+        <div style="font-size:9px;color:#aaa;margin-top:4px" id="rev-pag"></div>
+      </div>
+    </div>
+
+    <!-- Detalle revisitas -->
+    <div style="margin-top:12px">
+      <table>
+        <thead>
+          <tr style="background:#f0f6ff">
+            <th>NUMERO_CASO</th><th>FECHA_TAREA</th><th>VERSION_FIN</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-rev-detalle"></tbody>
+      </table>
+      <div style="font-size:9px;color:#aaa;margin-top:4px" id="rev-det-pag"></div>
+    </div>
+  </div>
+
+
+  <!-- CASOS BACKBONE -->
+  <div class="rev-section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="rev-title">CASOS BACKBONE</div>
+      <div style="display:flex;gap:10px">
+        <div class="pct-box" style="min-width:90px">
+          <div class="pct-lbl">TOTAL BB</div>
+          <div class="pct-val" style="font-size:20px" id="bb-total">—</div>
+        </div>
+        <div class="pct-box" style="min-width:90px">
+          <div class="pct-lbl">FINALIZADOS</div>
+          <div class="pct-val" style="font-size:20px;color:#22c55e" id="bb-fin">—</div>
+        </div>
+        <div class="pct-box" style="min-width:90px">
+          <div class="pct-lbl">CANCELADOS</div>
+          <div class="pct-val" style="font-size:20px;color:#ef4444" id="bb-can">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="two-col" style="margin:0 0 10px">
+      <div class="pie-card" style="border:none;padding:0">
+        <div class="chart-title">BB por Hipótesis Final</div>
+        <canvas id="chart-bb-hip" style="max-height:200px"></canvas>
+      </div>
+      <div>
+        <div class="chart-title" style="margin-bottom:6px">Detalle Casos BB Finalizados</div>
+        <table>
+          <thead><tr><th>#</th><th>NUMERO_CASO</th><th>HIPÓTESIS</th><th>FE_APERTURA</th><th>FECHA_FINALIZADA</th></tr></thead>
+          <tbody id="tabla-bb-det"></tbody>
+        </table>
+        <div style="font-size:9px;color:#aaa;margin-top:4px" id="bb-det-pag"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECURRENCIAS -->
+  <div class="rev-section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="rev-title">RECURRENCIAS</div>
+      <div class="mes-pill">MES: <span id="rec-mes">—</span> &nbsp;(1)</div>
+    </div>
+    <div class="rev-grid">
+      <div style="text-align:center">
+        <svg width="170" height="105" viewBox="0 0 170 105">
+          <path d="M 15 95 A 68 68 0 0 1 155 95" fill="none" stroke="#eee" stroke-width="13" stroke-linecap="round"/>
+          <path d="M 15 95 A 68 68 0 0 1 155 95" fill="none" stroke="#ef4444" stroke-width="13" stroke-linecap="round"
+                stroke-dasharray="213 213" id="rec-arc"/>
+          <text x="85" y="80" text-anchor="middle" font-size="10" fill="#888">VALOR</text>
+          <text x="85" y="63" text-anchor="middle" font-size="20" font-weight="bold" fill="#ef4444" id="rec-pct-val">—</text>
+          <text x="15" y="108" text-anchor="middle" font-size="8" fill="#aaa">0%</text>
+          <text x="155" y="108" text-anchor="middle" font-size="8" fill="#aaa">10.000%</text>
+        </svg>
+        <div style="font-size:9px;color:#777;margin-top:4px;line-height:1.4">Mismo técnico +<br>misma hipótesis de cierre</div>
+      </div>
+      <div>
+        <table>
+          <thead><tr style="background:#ef4444"><th style="color:white">#</th><th style="color:white">LOGIN_PUNTO</th><th style="color:white;text-align:center">Casos Atendidos</th></tr></thead>
+          <tbody id="tabla-rec-login"></tbody>
+        </table>
+        <div style="font-size:9px;color:#aaa;margin-top:4px" id="rec-pag"></div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <table>
+        <thead><tr style="background:#f0f6ff"><th>NUMERO_CASO</th><th>HIPÓTESIS DE CIERRE</th><th>LOGIN_PUNTO</th><th>OBSERVACIÓN</th></tr></thead>
+        <tbody id="tabla-rec-det"></tbody>
+      </table>
+      <div style="font-size:9px;color:#aaa;margin-top:4px" id="rec-det-pag"></div>
+    </div>
+  </div>
+
+
+</div><!-- /dashboard -->
+
+<script>
+// ════════════════════════════════════════
+//  CONFIGURACIÓN GOOGLE APPS SCRIPT
+// ════════════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7EgJ2INnGKrhC6qt7bX8K-Rzdysr-hc8EZOOUGVHH1YUkB-LhDicZTcO3-2VTGAbR/exec';
+const EMPRESA = 'EC';
+const ANIO    = '2026';
+
+async function cargarMesesDisponibles() {
+  const statusEl = document.getElementById('meses-status');
+  const gridEl   = document.getElementById('meses-grid');
+  try {
+    const url = `${APPS_SCRIPT_URL}?accion=listar&empresa=${EMPRESA}&anio=${ANIO}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    if (!data.meses || data.meses.length === 0) {
+      statusEl.textContent = 'No hay archivos disponibles en Drive aún.';
+      return;
+    }
+    statusEl.textContent = `${data.meses.length} mes(es) disponibles en el historial:`;
+    gridEl.innerHTML = '';
+    const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    data.meses.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'upload-btn';
+      btn.style.cssText = 'padding:8px 4px;font-size:11px;border-radius:8px;width:100%';
+      btn.textContent = MESES_NOMBRES[m.mes];
+      btn.onclick = () => cargarDesdeScript(m.mes);
+      gridEl.appendChild(btn);
+    });
+  } catch(err) {
+    statusEl.innerHTML = `<span style="color:#e57373">⚠ No se pudo conectar con Google Drive.<br>Usa la carga manual.</span>`;
+  }
+}
+
+async function cargarDesdeScript(mes) {
+  document.getElementById('upload-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  setMsg('Conectando con Google Drive...');
+  try {
+    setMsg('Leyendo informe mensual...');
+    const sheetVals = await fetchSheetValues(mes);
+    setMsg('Descargando datos del mes...');
+    const url = `${APPS_SCRIPT_URL}?accion=datos&empresa=${EMPRESA}&mes=${mes}&anio=${ANIO}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    setMsg('Procesando ' + data.totalFilas + ' registros...');
+    setTimeout(() => { processData(data.datos, sheetVals.pctRev, sheetVals.pctRec); }, 100);
+  } catch(err) {
+    alert('Error al cargar desde Drive: ' + err.message);
+    resetDashboard();
+  }
+}
+
+// ════════════════════════════════════════
+//  DRAG & DROP
+// ════════════════════════════════════════
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) handleFile(f);
+});
+
+
+// ════════════════════════════════════════
+//  GOOGLE SHEET — leer % revisitas y recurrencias
+// ════════════════════════════════════════
+const SHEET_URL_NL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRYC4Pcu-dIf5MkBjHQu4-m_6Df3tKLyujUkxMgd7a3FnNo0RySyNXKRnNFlLJJ1N4xzlTtaV8M9r4-/pub?gid=1492206953&single=true&output=csv";
+
+async function fetchSheetValues(mesNum) {
+  try {
+    const resp = await fetch(SHEET_URL_NL);
+    const text = await resp.text();
+    const rows = text.trim().split('\n').map(r => r.split(','));
+    
+    let pctRev = null, pctRec = null;
+    for (const row of rows) {
+      const mes   = row[0]?.trim().replace(/"/g,'');
+      const item  = row[1]?.trim().replace(/"/g,'');
+      const valor = row[2]?.trim().replace(/"/g,'');
+      if (mes === String(mesNum)) {
+        if (item === '% DE REVISITAS')   pctRev = (parseFloat(valor) * 100).toFixed(1);
+        if (item === '% DE RECURRENCIA') pctRec = (parseFloat(valor) * 100).toFixed(2);
+      }
+    }
+    return { pctRev, pctRec };
+  } catch(e) {
+    console.warn('No se pudo leer Google Sheet:', e);
+    return { pctRev: null, pctRec: null };
+  }
+}
+
+// ════════════════════════════════════════
+//  FILE HANDLER
+// ════════════════════════════════════════
+let charts = {};
+
+function handleFile(file) {
+  if (!file) return;
+  document.getElementById('upload-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  setMsg('Leyendo archivo...');
+
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      setMsg('Procesando datos...');
+      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+      setMsg('Consultando informe mensual...');
+      // Detectar mes del archivo
+      const primerFecha = raw.find(r => r['FE_APERTURA']);
+      let mesNum = 4; // default abril
+      if (primerFecha) {
+        const d = new Date(primerFecha['FE_APERTURA']);
+        if (!isNaN(d)) mesNum = d.getMonth() + 1;
+      }
+
+      // Leer % revisitas y recurrencias del Google Sheet
+      const sheetVals = await fetchSheetValues(mesNum);
+
+      setMsg('Calculando métricas...');
+      setTimeout(() => {
+        processData(raw, sheetVals.pctRev, sheetVals.pctRec);
+      }, 100);
+    } catch(err) {
+      alert('Error al leer el archivo: ' + err.message);
+      resetDashboard();
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function setMsg(m) { document.getElementById('loading-msg').textContent = m; }
+
+// ════════════════════════════════════════
+//  DATA PROCESSING
+// ════════════════════════════════════════
+function processData(raw, pctRevSheet=null, pctRecSheet=null) {
+  // Deduplicate by NUMERO_CASO
+  const seen = new Set();
+  const casos = raw.filter(r => {
+    if (seen.has(r['NUMERO_CASO'])) return false;
+    seen.add(r['NUMERO_CASO']);
+    return true;
+  });
+
+  // ── KPIs
+  const totalCasos = casos.reduce((a, r) => a + (Number(r['#CASOS']) || 0), 0);
+  const finalizadas = casos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Finalizada').length;
+  const canceladas  = casos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Cancelada').length;
+  const otros = casos.length - finalizadas - canceladas;
+
+  // % cierre 4H
+  const pctCol = '%CASOS 4 Hlab (Lunes a Domingo)';
+  const pcts = casos.map(r => parseFloat(r[pctCol])).filter(v => !isNaN(v));
+  const pct4h = pcts.length ? (pcts.reduce((a,b)=>a+b,0)/pcts.length*100).toFixed(2) : '—';
+
+  // Mes desde primera apertura
+  const fechas = casos.map(r => parseDate(r['FE_APERTURA'])).filter(Boolean);
+  const mesNum = fechas.length ? fechas[0].getMonth() : 3;
+  const mesNom = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][mesNum];
+
+  // ── CASOS POR DÍA
+  const porDia = {};
+  casos.forEach(r => {
+    const d = parseDate(r['FE_APERTURA']);
+    if (!d) return;
+    const dia = d.getDate();
+    porDia[dia] = (porDia[dia] || 0) + (Number(r['#CASOS']) || 0);
+  });
+  const diasOrden = Object.keys(porDia).map(Number).sort((a,b)=>a-b);
+  const casosArr = diasOrden.map(d => porDia[d]);
+  const avg = casosArr.length ? (casosArr.reduce((a,b)=>a+b,0)/casosArr.length).toFixed(2) : 0;
+
+  // ── HORA APERTURA
+  const porHoraAp = {};
+  casos.forEach(r => {
+    const d = parseDate(r['FE_APERTURA']); if (!d) return;
+    const h = d.getHours();
+    porHoraAp[h] = (porHoraAp[h] || 0) + (Number(r['#CASOS']) || 0);
+  });
+  const horasAp = Array.from({length:24},(_,i)=>i);
+  const casosHoraAp = horasAp.map(h => porHoraAp[h] || 0);
+
+  // ── HORA CIERRE
+  const porHoraCi = {};
+  casos.forEach(r => {
+    const d = parseDate(r['FECHA_FINALIZADA']); if (!d) return;
+    const h = d.getHours();
+    porHoraCi[h] = (porHoraCi[h] || 0) + (Number(r['#CASOS']) || 0);
+  });
+  const horasCi = Array.from({length:24},(_,i)=>i).filter(h => porHoraCi[h]);
+  const casosHoraCi = horasCi.map(h => porHoraCi[h] || 0);
+
+  // ── CUADRILLA
+  const cuadMap = {};
+  casos.forEach(r => {
+    const c = r['ULT_ASIGNADO_NOMBRE'] || 'Sin asignar';
+    cuadMap[c] = (cuadMap[c] || 0) + (Number(r['#CASOS']) || 0);
+  });
+  const cuadSort = Object.entries(cuadMap).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const cuadTop = cuadSort.slice(0,8);
+  const cuadOtros = cuadSort.slice(8).reduce((a,b)=>a+b[1],0);
+  if (cuadOtros > 0) cuadTop.push(['Otros', cuadOtros]);
+
+  // ── HIPÓTESIS
+  const hipMap = {};
+  casos.forEach(r => {
+    const h = r['TITULO_FIN_HIP'] || 'Sin hipótesis';
+    hipMap[h] = (hipMap[h] || 0) + (Number(r['#CASOS']) || 0);
+  });
+  const hipSort = Object.entries(hipMap).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+  const hipTop = hipSort.slice(0,9);
+  const hipOtros = hipSort.slice(9).reduce((a,b)=>a+b[1],0);
+  if (hipOtros > 0) hipTop.push(['Otros', hipOtros]);
+
+  // ── CAJAS
+  const cajaMap = {};
+  casos.forEach(r => {
+    const c = r['PUNTO_CANTON'] || '-';
+    if (c === '-') return;
+    cajaMap[c] = (cajaMap[c] || 0) + (Number(r['#CASOS']) || 0);
+  });
+  const cajas = Object.entries(cajaMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  // ── BACKBONE
+  const bbCasos = casos.filter(r => String(r['TIPO_CASO']||'').toUpperCase().includes('BACK'));
+  const bbFin   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Finalizada');
+  const bbCan   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Cancelada');
+
+  const bbHipMap = {};
+  bbCasos.forEach(r => {
+    const h = r['TITULO_FIN_HIP'] || 'Sin hipótesis';
+    bbHipMap[h] = (bbHipMap[h]||0) + 1;
+  });
+  const bbHipTop = Object.entries(bbHipMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // ── REVISITAS: mismo CLIENTE (NOMBRE_CLI_AFECTADO) + diferente TITULO_FIN_HIP
+  // ── RECURRENCIAS: mismo CLIENTE + misma TITULO_FIN_HIP
+  // Solo sobre casos FINALIZADOS
+  const casosFinalizados = casos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Finalizada');
+  const totalTec = casos.length;
+
+  // Agrupar por cliente
+  const clienteMap = {};
+  casosFinalizados.forEach(r => {
+    const cli = r['NOMBRE_CLI_AFECTADO'] || '—';
+    if (!clienteMap[cli]) clienteMap[cli] = [];
+    clienteMap[cli].push(r['TITULO_FIN_HIP'] || '');
+  });
+
+  const revClientesSet = new Set();
+  const recClientesSet = new Set();
+  Object.entries(clienteMap).forEach(([cli, hips]) => {
+    if (hips.length < 2) return;
+    const uniqueHips = new Set(hips);
+    if (uniqueHips.size > 1) revClientesSet.add(cli);  // diferente hip = revisita
+    else recClientesSet.add(cli);                        // misma hip = recurrencia
+  });
+
+  // Casos que pertenecen a clientes con revisita/recurrencia
+  const revCasos  = casosFinalizados.filter(r => revClientesSet.has(r['NOMBRE_CLI_AFECTADO'] || '—'));
+  const recCasos  = casosFinalizados.filter(r => recClientesSet.has(r['NOMBRE_CLI_AFECTADO'] || '—'));
+
+  // Usar valores del Google Sheet si están disponibles, sino calcular del Excel
+  const pctRevReal = pctRevSheet !== null ? pctRevSheet : (totalTec ? (revCasos.length / totalTec * 100).toFixed(1) : 0);
+  const pctRec     = pctRecSheet !== null ? pctRecSheet : (totalTec ? (recCasos.length / totalTec * 100).toFixed(1) : 0);
+
+  // Top LOGIN_PUNTO en revisitas
+  const revLoginMap = {};
+  revCasos.forEach(r => { const l=r['LOGIN_PUNTO']||'—'; revLoginMap[l]=(revLoginMap[l]||0)+1; });
+  const revLoginTopReal = Object.entries(revLoginMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  // Top LOGIN_PUNTO en recurrencias
+  const recLoginMap = {};
+  recCasos.forEach(r => { const l=r['LOGIN_PUNTO']||'—'; recLoginMap[l]=(recLoginMap[l]||0)+1; });
+  const recLoginTop = Object.entries(recLoginMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  // ── REVISITAS (VERSION_FIN para el detalle)
+  const revisitas = casos.filter(r => {
+    const v = String(r['VERSION_FIN'] || '').trim();
+    return v !== '' && v !== '-' && v !== 'nan';
+  });
+  const pctRev = casos.length ? (revisitas.length / casos.length * 100).toFixed(1) : 0;
+
+  // Top login revisitas
+  const revLogin = {};
+  raw.filter(r => {
+    const v = String(r['VERSION_FIN'] || '').trim();
+    return v !== '' && v !== '-' && v !== 'nan';
+  }).forEach(r => {
+    const l = r['LOGIN_PUNTO'] || '—';
+    revLogin[l] = (revLogin[l] || 0) + 1;
+  });
+  const revLoginSort = Object.entries(revLogin).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  // ── RENDER
+  setMsg('Generando gráficas...');
+  setTimeout(() => {
+    renderDashboard({
+      totalCasos, finalizadas, canceladas, otros,
+      pct4h, mesNom,
+      diasOrden, casosArr, avg,
+      horasAp, casosHoraAp,
+      horasCi, casosHoraCi,
+      cuadTop, hipTop, cajas,
+      casos, pctRevReal, revisitas, revLoginTopReal,
+      raw,
+      bbCasos, bbFin, bbCan, bbHipTop,
+      recCasos, revCasos: revCasos || [], pctRec, recLoginTop
+    });
+  }, 100);
+}
+
+// ════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════
+const BLUE_COLORS = ['#1565c0','#1976d2','#1a6bb5','#2196f3','#42a5f5','#64b5f6','#90caf9','#0d47a1','#1e88e5','#4fc3f7'];
+const MIX_COLORS  = ['#e65100','#1a6bb5','#ef6c00','#1976d2','#f57c00','#2196f3','#fb8c00','#42a5f5','#ffa726','#64b5f6'];
+
+const labelPlugin = {
+  id:'lbl',
+  afterDatasetsDraw(chart){
+    if(chart.config.type==='pie') return;
+    const ctx=chart.ctx;
+    chart.data.datasets.forEach((ds,i)=>{
+      if(ds.pointRadius===0) return;
+      chart.getDatasetMeta(i).data.forEach((pt,j)=>{
+        const v=ds.data[j];
+        if(!v && v!==0) return;
+        ctx.save();
+        ctx.font='bold 9px Segoe UI';
+        ctx.fillStyle='#1565c0';
+        ctx.textAlign='center';
+        ctx.fillText(v, pt.x, pt.y-6);
+        ctx.restore();
+      });
+    });
+  }
+};
+
+function mkLineChart(id, labels, data, avg=null) {
+  if(charts[id]) charts[id].destroy();
+  const ds = [{
+    data, borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,0.08)',
+    pointBackgroundColor:'#1565c0', pointRadius:3, tension:0.3, fill:true
+  }];
+  if(avg !== null) ds.push({
+    data: Array(labels.length).fill(parseFloat(avg)),
+    borderColor:'#aaa', borderDash:[5,3], borderWidth:1.5, pointRadius:0, fill:false
+  });
+  charts[id] = new Chart(document.getElementById(id),{
+    type:'line', data:{labels, datasets:ds},
+    options:{responsive:true,layout:{padding:{top:14}},
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{font:{size:8}}},
+        x:{grid:{display:false},ticks:{font:{size:7},maxRotation:45}}
+      }
+    },
+    plugins:[labelPlugin]
+  });
+}
+
+function mkPie(id, labels, data, colors) {
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id),{
+    type:'pie',
+    data:{labels, datasets:[{data, backgroundColor:colors, borderWidth:1, borderColor:'#fff'}]},
+    options:{responsive:true,plugins:{legend:{position:'right',labels:{font:{size:8},padding:4,boxWidth:10}}}}
+  });
+}
+
+function renderDashboard(d) {
+  // Header
+  document.getElementById('hdr-fin').textContent  = d.finalizadas;
+  document.getElementById('hdr-can').textContent  = d.canceladas;
+  document.getElementById('hdr-dash').textContent = d.otros;
+  document.getElementById('hdr-mes').textContent  = d.mesNom;
+  document.getElementById('hdr-pct4h').textContent = d.pct4h + ' %';
+  document.getElementById('gauge-num').textContent = d.totalCasos;
+  document.getElementById('rev-mes').textContent   = d.mesNom;
+
+  // Gauge arc (orange)
+  const arc = document.getElementById('gauge-arc');
+  const offset = Math.max(10, 173 - (d.totalCasos / 700) * 173);
+  arc.setAttribute('stroke-dashoffset', offset);
+
+  // Avg label
+  document.getElementById('avg-label').textContent = `— Promedio de casos diarios (${d.avg})`;
+
+  // ── Días
+  mkLineChart('chart-dias', d.diasOrden.map(x=>x+' abr'), d.casosArr, d.avg);
+
+  // ── Hora apertura
+  const apLabels = d.horasAp.filter((_,i)=>d.casosHoraAp[i]>0||true).map(h=>String(h).padStart(2,'0')+':00');
+  mkLineChart('chart-hora-ap', apLabels, d.casosHoraAp);
+
+  // ── Hora cierre
+  mkLineChart('chart-hora-ci', d.horasCi.map(h=>String(h).padStart(2,'0')+':00'), d.casosHoraCi);
+
+  // ── Pies
+  mkPie('chart-cuadrilla', d.cuadTop.map(x=>x[0]), d.cuadTop.map(x=>x[1]), BLUE_COLORS);
+  mkPie('chart-hipotesis', d.hipTop.map(x=>x[0]), d.hipTop.map(x=>x[1]), MIX_COLORS);
+
+  // ── Tabla cajas
+  const tc = document.getElementById('tabla-cajas');
+  tc.innerHTML = d.cajas.map(([caja,cnt])=>`
+    <tr><td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${caja}">${caja}</td>
+    <td class="num">${cnt}</td></tr>`).join('');
+
+  // ── Detalle casos (primeros 20)
+  const td = document.getElementById('tabla-detalle');
+  td.innerHTML = d.casos.slice(0,20).map((r,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td><b>${r['NUMERO_CASO']}</b></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r['TITULO_FIN_HIP']}">${r['TITULO_FIN_HIP']||'—'}</td>
+      <td>${fmtDate(r['FE_APERTURA'])}</td>
+      <td>${fmtDate(r['FECHA_FINALIZADA'])}</td>
+      <td class="num">${r['#CASOS']||0}</td>
+    </tr>`).join('');
+  document.getElementById('detalle-pag').textContent = `1 – 20 de ${d.casos.length}`;
+
+  // revisitas rendered below with recurrencias block
+
+  // Detalle revisitas
+  const trd = document.getElementById('tabla-rev-detalle');
+  const revRows = d.raw.filter(r=>{
+    const v=String(r['VERSION_FIN']||'').trim();
+    return v!==''&&v!=='-'&&v!=='nan';
+  }).slice(0,5);
+  trd.innerHTML = revRows.map(r=>`
+    <tr>
+      <td><b>${r['NUMERO_CASO']}</b></td>
+      <td>${fmtDate(r['FECHA_TAREA'])}</td>
+      <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r['VERSION_FIN']}">${String(r['VERSION_FIN']).substring(0,80)}...</td>
+    </tr>`).join('');
+  document.getElementById('rev-det-pag').textContent = `1 – ${revRows.length} de ${d.raw.filter(r=>{const v=String(r['VERSION_FIN']||'').trim();return v!==''&&v!=='-'&&v!=='nan';}).length}`;
+
+  // ── REVISITAS (recalculado con login+hipotesis)
+  document.getElementById('rev-pct-val').textContent = d.pctRevReal + ' %';
+  const revArc = document.getElementById('rev-arc');
+  revArc.setAttribute('stroke-dashoffset', Math.max(5, 213 - (parseFloat(d.pctRevReal)/100)*213));
+
+  document.getElementById('tabla-rev-login').innerHTML = d.revLoginTopReal.map(([l,c],i)=>
+    `<tr><td>${i+1}.</td><td>${l}</td><td class="num">${c}</td></tr>`).join('');
+  document.getElementById('rev-pag').textContent = `1 – ${d.revLoginTopReal.length} de ${d.revCasos ? d.revCasos.length : '—'}`;
+
+  // ── BACKBONE
+  document.getElementById('bb-total').textContent = d.bbCasos.length;
+  document.getElementById('bb-fin').textContent   = d.bbFin.length;
+  document.getElementById('bb-can').textContent   = d.bbCan.length;
+
+  mkPie('chart-bb-hip', d.bbHipTop.map(x=>x[0]), d.bbHipTop.map(x=>x[1]), MIX_COLORS);
+
+  document.getElementById('tabla-bb-det').innerHTML = d.bbFin.slice(0,10).map((r,i)=>`
+    <tr><td>${i+1}</td><td><b>${r['NUMERO_CASO']}</b></td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r['TITULO_FIN_HIP']||''}">${r['TITULO_FIN_HIP']||'—'}</td>
+    <td>${fmtDate(r['FE_APERTURA'])}</td>
+    <td>${fmtDate(r['FECHA_FINALIZADA'])}</td></tr>`).join('');
+  document.getElementById('bb-det-pag').textContent = `1 – ${Math.min(10,d.bbFin.length)} de ${d.bbFin.length}`;
+
+  // ── RECURRENCIAS
+  const mesNomR = d.mesNom;
+  document.getElementById('rec-mes').textContent   = mesNomR;
+  document.getElementById('rec-pct-val').textContent = d.pctRec + ' %';
+  const recArc = document.getElementById('rec-arc');
+  recArc.setAttribute('stroke-dashoffset', Math.max(5, 213 - (parseFloat(d.pctRec)/10)*213));
+
+  document.getElementById('tabla-rec-login').innerHTML = d.recLoginTop.map(([l,c],i)=>
+    `<tr><td>${i+1}.</td><td>${l}</td><td class="num">${c}</td></tr>`).join('');
+  document.getElementById('rec-pag').textContent = `1 – ${d.recLoginTop.length} de ${d.recCasos.length}`;
+
+  document.getElementById('tabla-rec-det').innerHTML = d.recCasos.slice(0,8).map(r=>`
+    <tr><td><b>${r['NUMERO_CASO']}</b></td>
+    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r['TITULO_FIN_HIP']||''}">${r['TITULO_FIN_HIP']||'—'}</td>
+    <td>${r['LOGIN_PUNTO']||'—'}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r['OBS_ULT_DET_HIS']||''}">${String(r['OBS_ULT_DET_HIS']||'').substring(0,80)}</td>
+    </tr>`).join('');
+  document.getElementById('rec-det-pag').textContent = `1 – ${Math.min(8,d.recCasos.length)} de ${d.recCasos.length}`;
+
+  // Show dashboard
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+// ════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════
+function parseDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return v;
+  const d = new Date(v);
+  return isNaN(d) ? null : d;
+}
+
+function fmtDate(v) {
+  const d = parseDate(v); if (!d) return '—';
+  return d.toLocaleDateString('es-EC', {day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('es-EC', {hour:'2-digit',minute:'2-digit'});
+}
+
+function resetDashboard() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('upload-screen').style.display = 'flex';
+  document.getElementById('file-input').value = '';
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+  cargarMesesDisponibles();
+}
+</script>
+</body>
+</html>
