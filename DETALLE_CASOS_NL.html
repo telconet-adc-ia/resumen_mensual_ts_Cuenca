@@ -18,7 +18,7 @@ body {
 
 /* ── UPLOAD SCREEN ── */
 #upload-screen {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -72,7 +72,7 @@ body {
 .loading-txt { font-size: 14px; color: #003087; font-weight: 600; }
 
 /* ── DASHBOARD ── */
-#dashboard { display: none; }
+#dashboard { display: block; }
 
 /* HEADER */
 .header {
@@ -264,7 +264,13 @@ tr:hover { background: #f8fbff; }
       <div class="estado-row"><span class="cb cb-dash"></span> - <span style="margin-left:auto;font-weight:700;padding-left:8px" id="hdr-dash">—</span></div>
     </div>
 
-    <div class="mes-pill">Mes: <span id="hdr-mes">abril</span> &nbsp;(1)</div>
+    <div class="mes-pill" style="position:relative;cursor:pointer">
+      Mes: <span id="hdr-mes">Cargando...</span> &nbsp;▼
+      <select id="mes-selector" onchange="cambiarMesDashboard(this.value)"
+        style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%">
+        <option value="">Selecciona...</option>
+      </select>
+    </div>
 
     <div class="gauge-wrap">
       <div class="gauge-lbl">NUMERO_CASO</div>
@@ -282,7 +288,7 @@ tr:hover { background: #f8fbff; }
     </div>
 
     <div class="canton-pill">PUNTO CANTON ▼</div>
-    <button class="btn-upload-new" onclick="resetDashboard()">↩ Nuevo archivo</button>
+    
     
   </div>
 
@@ -476,9 +482,8 @@ const ANIO    = '2026';
 
 // ── Cargar meses disponibles al inicio
 async function cargarMesesDisponibles() {
-  const statusEl = document.getElementById('meses-status');
-  const gridEl   = document.getElementById('meses-grid');
-
+  const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                         'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   try {
     const url = `${APPS_SCRIPT_URL}?accion=listar&empresa=${EMPRESA}&anio=${ANIO}`;
     const resp = await fetch(url);
@@ -486,36 +491,45 @@ async function cargarMesesDisponibles() {
 
     if (data.error) throw new Error(data.error);
     if (!data.meses || data.meses.length === 0) {
-      statusEl.textContent = 'No hay archivos disponibles en Drive aún.';
+      document.getElementById('hdr-mes').textContent = 'Sin datos';
       return;
     }
 
-    statusEl.textContent = `${data.meses.length} mes(es) disponibles en el historial:`;
-    gridEl.innerHTML = '';
+    // Populate month selector in dashboard header
+    const sel = document.getElementById('mes-selector');
+    if (sel) {
+      sel.innerHTML = '';
+      data.meses.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.mes;
+        opt.textContent = MESES_NOMBRES[m.mes];
+        sel.appendChild(opt);
+      });
+    }
 
-    const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-
-    data.meses.forEach(m => {
-      const btn = document.createElement('button');
-      btn.className = 'upload-btn';
-      btn.style.cssText = 'padding:8px 4px;font-size:11px;border-radius:8px;width:100%';
-      btn.textContent = MESES_NOMBRES[m.mes];
-      btn.onclick = () => cargarDesdeScript(m.mes);
-      gridEl.appendChild(btn);
-    });
+    // Auto-load the most recent month
+    const ultimoMes = data.meses[data.meses.length - 1];
+    if (sel) sel.value = ultimoMes.mes;
+    await cargarDesdeScript(ultimoMes.mes);
 
   } catch(err) {
-    statusEl.innerHTML = `<span style="color:#e57373">⚠ No se pudo conectar con Google Drive.<br>
-      Usa la carga manual o configura el script.</span>`;
+    document.getElementById('hdr-mes').textContent = 'Error';
     console.warn('Drive error:', err);
   }
 }
 
+function cambiarMesDashboard(mes) {
+  if (!mes) return;
+  cargarDesdeScript(parseInt(mes));
+}
+
 // ── Cargar datos de un mes desde el script
 async function cargarDesdeScript(mes) {
-  document.getElementById('upload-screen').style.display = 'none';
-  document.getElementById('loading-screen').style.display = 'flex';
+  // Show loading indicator in header
+  const mesNombres = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                      'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('hdr-mes').textContent = mesNombres[mes] + '...';
+  document.getElementById('loading-screen').style.display = 'none';
   setMsg('Conectando con Google Drive...');
 
   try {
@@ -531,8 +545,13 @@ async function cargarDesdeScript(mes) {
     if (data.error) throw new Error(data.error);
 
     setMsg('Procesando ' + data.totalFilas + ' registros...');
+    const mesNombres2 = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                         'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     setTimeout(() => {
       processData(data.datos, sheetVals.pctRev, sheetVals.pctRec);
+      document.getElementById('hdr-mes').textContent = mesNombres2[mes];
+      const sel = document.getElementById('mes-selector');
+      if(sel) sel.value = mes;
     }, 100);
 
   } catch(err) {
@@ -976,9 +995,8 @@ function renderDashboard(d) {
     </tr>`).join('');
   document.getElementById('rec-det-pag').textContent = `1 – ${Math.min(8,d.recCasos.length)} de ${d.recCasos.length}`;
 
-  // Show dashboard
+  // Dashboard always visible - just update month label
   document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
 }
 
 // ════════════════════════════════════════
@@ -998,10 +1016,6 @@ function fmtDate(v) {
 }
 
 function resetDashboard() {
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('upload-screen').style.display = 'flex';
-  document.getElementById('file-input').value = '';
   Object.values(charts).forEach(c => c.destroy());
   charts = {};
   cargarMesesDisponibles();
