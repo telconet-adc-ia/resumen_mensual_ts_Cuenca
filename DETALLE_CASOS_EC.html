@@ -263,8 +263,7 @@ tr:hover { background: #f8fbff; }
       Mes: <span id="hdr-mes">Cargando...</span> &nbsp;▼
       <select id="mes-selector" onchange="cambiarMesDashboard(this.value)"
         style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%">
-        <option value="">Selecciona...</option>
-      </select>
+        </select>
     </div>
 
     <div class="gauge-wrap">
@@ -564,8 +563,8 @@ async function cargarDesdeScript(mes) {
       const sel = document.getElementById('mes-selector');
       if(sel) sel.value = mes;
 
-      // Cargar backbone de forma asíncrona
-      cargarBackbone(mes);
+      // Cargar backbone de forma asíncrona solo en carga nueva
+      if (!esFiltro) cargarBackbone(mes);
     }, 100);
 
   } catch(err) {
@@ -858,7 +857,8 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null, esFiltro=false) {
       casos, pctRevReal, revisitas, revLoginTopReal,
       raw, rawFinal,
       bbCasos, bbFin, bbCan, bbHipTop,
-      recCasos, revCasos: revCasos || [], pctRec, recLoginTop
+      recCasos, revCasos: revCasos || [], pctRec, recLoginTop,
+      esFiltro
     });
   }, 100);
 }
@@ -1051,10 +1051,12 @@ function renderDashboard(d) {
     `<tr><td>${i+1}.</td><td>${l}</td><td class="num">${c}</td></tr>`).join('');
   document.getElementById('rev-pag').textContent = `1 – ${d.revLoginTopReal.length} de ${d.revCasos ? d.revCasos.length : '—'}`;
 
-  // ── BACKBONE — se carga async por cargarBackbone()
-  document.getElementById('bb-total').textContent = '...';
-  document.getElementById('bb-fin').textContent   = '...';
-  document.getElementById('bb-can').textContent   = '...';
+  // ── BACKBONE — solo resetear si no es filtro de cantón
+  if (!d.esFiltro) {
+    document.getElementById('bb-total').textContent = '...';
+    document.getElementById('bb-fin').textContent   = '...';
+    document.getElementById('bb-can').textContent   = '...';
+  }
 
   // ── RECURRENCIAS
   const mesNomR = d.mesNom;
