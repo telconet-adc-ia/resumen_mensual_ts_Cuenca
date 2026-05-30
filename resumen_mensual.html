@@ -1332,6 +1332,24 @@ function cambiarItem(v){
   renderCon();
 }
 
+
+function actualizarSelectorMeses(mesesDisponibles) {
+  const sel = document.getElementById('mesSelect');
+  if (!sel) return;
+  const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                         'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const currentVal = sel.value;
+  mesesDisponibles.forEach(m => {
+    if (!sel.querySelector(`option[value="${m}"]`)) {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = MESES_NOMBRES[m] || 'Mes ' + m;
+      sel.appendChild(opt);
+    }
+  });
+  if (currentVal) sel.value = currentVal;
+}
+
 function switchPanel(panel){
   panelSel=panel;
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
