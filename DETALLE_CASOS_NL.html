@@ -500,11 +500,15 @@ async function cargarMesesDisponibles() {
       return;
     }
 
-    // Populate month selector in dashboard header
+    // Populate month selector - clear first to avoid duplicates
     const sel = document.getElementById('mes-selector');
     if (sel) {
       sel.innerHTML = '';
+      // Deduplicate months
+      const mesesVistos = new Set();
       data.meses.forEach(m => {
+        if (mesesVistos.has(m.mes)) return;
+        mesesVistos.add(m.mes);
         const opt = document.createElement('option');
         opt.value = m.mes;
         opt.textContent = MESES_NOMBRES[m.mes];
@@ -574,7 +578,7 @@ async function cargarDesdeScript(mes) {
       if(sel) sel.value = mes;
 
       // Cargar backbone de forma asíncrona solo en carga nueva
-      if (!esFiltro) cargarBackbone(mes);
+      cargarBackbone(mes);
     }, 100);
 
   } catch(err) {
@@ -1207,7 +1211,19 @@ function filtrarCanton(canton) {
     ? _rawFull.filter(r => String(r['PUNTO_CANTON']||'').trim() === canton)
     : _rawFull;
 
+  // Guardar valores de backbone antes de re-renderizar
+  const bbTotal = document.getElementById('bb-total').textContent;
+  const bbFin   = document.getElementById('bb-fin').textContent;
+  const bbCan   = document.getElementById('bb-can').textContent;
+
   processData(rawFiltrado, _pctRevS, _pctRecS, true);
+
+  // Restaurar valores backbone después del render
+  setTimeout(() => {
+    if (bbTotal !== '...') document.getElementById('bb-total').textContent = bbTotal;
+    if (bbFin   !== '...') document.getElementById('bb-fin').textContent   = bbFin;
+    if (bbCan   !== '...') document.getElementById('bb-can').textContent   = bbCan;
+  }, 200);
 }
 
 window.addEventListener('load', () => {
