@@ -287,7 +287,13 @@ tr:hover { background: #f8fbff; }
       <div class="pct-val" id="hdr-pct4h">—</div>
     </div>
 
-    <div class="canton-pill">PUNTO CANTON ▼</div>
+    <div class="canton-pill" style="position:relative;cursor:pointer;min-width:140px">
+      <span id="canton-lbl">PUNTO CANTÓN</span> ▼
+      <select id="canton-select" onchange="filtrarCanton(this.value)"
+        style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%">
+        <option value="">Todos los cantones</option>
+      </select>
+    </div>
     
     
   </div>
@@ -555,6 +561,13 @@ async function cargarDesdeScript(mes) {
     setMsg('Procesando ' + data.totalFilas + ' registros...');
     const mesNombres2 = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
                          'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    // Guardar datos completos para filtro de cantón
+    _rawFull = data.datos;
+    _pctRevS = sheetVals.pctRev;
+    _pctRecS = sheetVals.pctRec;
+    // Reset selector cantón
+    const cantonSel = document.getElementById('canton-select');
+    if (cantonSel) { cantonSel.value = ''; document.getElementById('canton-lbl').textContent = 'PUNTO CANTÓN'; }
     setTimeout(() => {
       processData(data.datos, sheetVals.pctRev, sheetVals.pctRec);
       document.getElementById('hdr-mes').textContent = mesNombres2[mes];
@@ -703,6 +716,9 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
 
   // Reemplazar raw con rawNorm para el resto del procesamiento
   const rawFinal = rawNorm;
+
+  // Poblar selector de cantones con los datos actuales
+  poblarSelectorCanton(rawFinal);
 
   // ── KPIs
   const totalCasos = casos.reduce((a, r) => a + (Number(r['#CASOS']) || 0), 0);
@@ -1151,6 +1167,43 @@ async function cargarBackbone(mes) {
   } catch(err) {
     console.warn('Error cargando backbone:', err.message);
   }
+}
+
+
+// ════════════════════════════════════════
+//  FILTRO POR CANTÓN
+// ════════════════════════════════════════
+let _rawFull = null;     // datos completos sin filtrar
+let _pctRevS = null;
+let _pctRecS = null;
+
+function poblarSelectorCanton(rawFinal) {
+  const cantones = [...new Set(
+    rawFinal.map(r => String(r['PUNTO_CANTON']||'').trim()).filter(c => c)
+  )].sort();
+
+  const sel = document.getElementById('canton-select');
+  if (!sel) return;
+  // Mantener opción "Todos"
+  sel.innerHTML = '<option value="">Todos los cantones</option>';
+  cantones.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    sel.appendChild(opt);
+  });
+}
+
+function filtrarCanton(canton) {
+  if (!_rawFull) return;
+  document.getElementById('canton-lbl').textContent = canton || 'PUNTO CANTÓN';
+
+  // Filtrar datos por cantón seleccionado
+  const rawFiltrado = canton
+    ? _rawFull.filter(r => String(r['PUNTO_CANTON']||'').trim() === canton)
+    : _rawFull;
+
+  processData(rawFiltrado, _pctRevS, _pctRecS);
 }
 
 window.addEventListener('load', () => {
