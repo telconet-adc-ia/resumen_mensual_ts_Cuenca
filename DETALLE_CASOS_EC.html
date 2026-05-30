@@ -657,7 +657,7 @@ function setMsg(m) { document.getElementById('loading-msg').textContent = m; }
 // ════════════════════════════════════════
 //  DATA PROCESSING
 // ════════════════════════════════════════
-function processData(raw, pctRevSheet=null, pctRecSheet=null) {
+function processData(raw, pctRevSheet=null, pctRecSheet=null, esFiltro=false) {
   // Normalizar claves y filtrar filas inválidas (ej: fila "Totales" sin NUMERO_CASO)
   const rawNorm = raw
     .map(r => {
@@ -696,8 +696,8 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
   // Reemplazar raw con rawNorm para el resto del procesamiento
   const rawFinal = rawNorm;
 
-  // Poblar selector de cantones con los datos actuales
-  poblarSelectorCanton(rawFinal);
+  // Poblar selector de cantones solo en carga nueva (no al filtrar por cantón)
+  if (!esFiltro) poblarSelectorCanton(rawFinal);
 
   // ── KPIs
   const totalCasos = casos.reduce((a, r) => a + (Number(r['#CASOS']) || 0), 0);
@@ -1156,8 +1156,10 @@ let _pctRevS = null;
 let _pctRecS = null;
 
 function poblarSelectorCanton(rawFinal) {
+  // Usar siempre los datos completos para el selector
+  const source = _rawFull || rawFinal;
   const cantones = [...new Set(
-    rawFinal.map(r => String(r['PUNTO_CANTON']||'').trim()).filter(c => c)
+    source.map(r => String(r['PUNTO_CANTON']||'').trim()).filter(c => c)
   )].sort();
 
   const sel = document.getElementById('canton-select');
@@ -1181,7 +1183,7 @@ function filtrarCanton(canton) {
     ? _rawFull.filter(r => String(r['PUNTO_CANTON']||'').trim() === canton)
     : _rawFull;
 
-  processData(rawFiltrado, _pctRevS, _pctRecS);
+  processData(rawFiltrado, _pctRevS, _pctRecS, true);
 }
 
 window.addEventListener('load', () => {
