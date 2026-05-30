@@ -560,6 +560,9 @@ async function cargarDesdeScript(mes) {
       document.getElementById('hdr-mes').textContent = mesNombres2[mes];
       const sel = document.getElementById('mes-selector');
       if(sel) sel.value = mes;
+
+      // Cargar backbone de forma asíncrona
+      cargarBackbone(mes);
     }, 100);
 
   } catch(err) {
@@ -777,33 +780,13 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
   });
   const cajas = Object.entries(cajaMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
-  // ── BACKBONE — filtrar directamente de rawFinal por NUMERO_CASO terminado en B
-  // o por TIPO_CASO que contenga BACK
-  // Sample TIPO_CASO values to debug
-  const tiposMuestra = [...new Set(rawFinal.slice(0,20).map(r => String(r['TIPO_CASO']||'').trim()))];
-  console.log('DEBUG TIPO_CASO sample values:', tiposMuestra);
-  console.log('DEBUG rawFinal length:', rawFinal.length);
-
-  const seenBB = new Set();
-  const bbCasos = rawFinal.filter(r => {
-    const num = String(r[keyCaso]||'').trim();
-    const tipo = String(r['TIPO_CASO']||'').toUpperCase();
-    const esBackbone = tipo.includes('BACK') || num.endsWith('B');
-    if (!esBackbone || seenBB.has(num)) return false;
-    seenBB.add(num);
-    return true;
-  });
-  console.log('DEBUG bbCasos found:', bbCasos.length);
-  const bbFin = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Finalizada');
-  const bbCan = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Cancelada');
+  // ── BACKBONE — se carga desde archivo separado vía Apps Script
+  // Se usarán valores vacíos por ahora; se cargarán async después
+  let bbCasos = [], bbFin = [], bbCan = [];
 
 
-  const bbHipMap = {};
-  bbCasos.forEach(r => {
-    const h = r['TITULO_FIN_HIP'] || 'Sin hipótesis';
-    bbHipMap[h] = (bbHipMap[h]||0) + 1;
-  });
-  const bbHipTop = Object.entries(bbHipMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  // bbHipTop se calculará cuando llegue el backbone async
+  let bbHipTop = [];
 
   // ── REVISITAS: mismo CLIENTE (NOMBRE_CLI_AFECTADO) + diferente TITULO_FIN_HIP
   // ── RECURRENCIAS: mismo CLIENTE + misma TITULO_FIN_HIP
@@ -1127,6 +1110,53 @@ function resetDashboard() {
   Object.values(charts).forEach(c => c.destroy());
   charts = {};
   cargarMesesDisponibles();
+}
+
+
+async function cargarBackbone(mes) {
+  try {
+    const url = `${APPS_SCRIPT_URL}?accion=backbone&empresa=NL&mes=${mes}&anio=${ANIO}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    if (data.error) {
+      console.warn('Backbone no disponible:', data.error);
+      document.getElementById('bb-total').textContent = '0';
+      document.getElementById('bb-fin').textContent   = '0';
+      document.getElementById('bb-can').textContent   = '0';
+      return;
+    }
+
+    const bbCasos = data.datos || [];
+    const bbFin   = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Finalizada');
+    const bbCan   = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Cancelada');
+
+    // KPIs
+    document.getElementById('bb-total').textContent = bbCasos.length;
+    document.getElementById('bb-fin').textContent   = bbFin.length;
+    document.getElementById('bb-can').textContent   = bbCan.length;
+
+    // Pie hipótesis
+    const hipMap = {};
+    bbCasos.forEach(r => {
+      const h = r['TITULO_FIN_HIP'] || 'Sin hipótesis';
+      hipMap[h] = (hipMap[h]||0) + 1;
+    });
+    const hipTop = Object.entries(hipMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const MIX = ['#e65100','#1a6bb5','#ef6c00','#1976d2','#f57c00','#2196f3','#fb8c00','#42a5f5','#ffa726','#0d47a1'];
+    mkPie('chart-bb-hip', hipTop.map(x=>x[0]), hipTop.map(x=>x[1]), MIX);
+
+    // Tabla detalle BB finalizados
+    document.getElementById('tabla-bb-det').innerHTML = bbFin.slice(0,10).map((r,i)=>`
+      <tr><td>${i+1}</td><td><b>${r['NUMERO_CASO']}</b></td>
+      <td class="ell" style="max-width:150px" title="${r['TITULO_FIN_HIP']||''}">${r['TITULO_FIN_HIP']||'—'}</td>
+      <td>${fmtDate(r['FE_APERTURA'])}</td>
+      <td>${fmtDate(r['FE_CIERRE']||r['FECHA_FINALIZADA'])}</td></tr>`).join('');
+    document.getElementById('bb-det-pag').textContent = `1 – ${Math.min(10,bbFin.length)} de ${bbFin.length}`;
+
+  } catch(err) {
+    console.warn('Error cargando backbone:', err.message);
+  }
 }
 
 window.addEventListener('load', () => {
