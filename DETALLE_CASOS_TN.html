@@ -152,16 +152,6 @@ tr:hover td{background:#f5f9ff}
       <canvas id="c-medio" style="max-height:160px"></canvas>
     </div>
     <div class="card">
-      <div class="card-title">TIPO NOTIFICACIÓN</div>
-      <canvas id="c-notif" style="max-height:160px"></canvas>
-    </div>
-  </div>
-  <div class="row2">
-    <div class="card">
-      <div class="card-title">TIPO AFECTACIÓN</div>
-      <canvas id="c-afec" style="max-height:160px"></canvas>
-    </div>
-    <div class="card">
       <div class="card-title">CASOS POR CUADRILLA</div>
       <canvas id="c-cuad" style="max-height:160px"></canvas>
     </div>
@@ -480,9 +470,21 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
   mkTopPie('c-dept','DEPARTAMENTO_CREA_CASO',tec,COLORS_M);
   mkTopPie('c-hip','TITULO_FIN_HIP',tec,COLORS_M);
   mkTopPie('c-medio','NOMBRE_TIPO_MEDIO',tec,COLORS_B);
-  mkTopPie('c-notif','TIPO_NOTIFICACION',tec,COLORS_M);
-  mkTopPie('c-afec','TIPO_AFECTACION',tec,COLORS_B);
-  mkTopPie('c-cuad','ULT_ASIGNADO_NOMBRE',tec,COLORS_M);
+
+  // Cuadrilla desde TRAZABILIDAD_TAREA — último segmento después del último |
+  const cuadMap = {};
+  tec.forEach(r => {
+    const traz = String(r['TRAZABILIDAD_TAREA']||'').trim();
+    if(!traz || traz==='-') return;
+    const partes = traz.split('|').map(p=>p.trim()).filter(p=>p);
+    // Usar el último segmento que sea cuadrilla (ej: CUE PROV CUE STN 02)
+    const cuadrilla = partes[partes.length-1] || 'Sin cuadrilla';
+    cuadMap[cuadrilla] = (cuadMap[cuadrilla]||0) + 1;
+  });
+  const cuadTop = Object.entries(cuadMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const cuadOtros = Object.entries(cuadMap).filter(([k])=>!cuadTop.find(([t])=>t===k)).reduce((a,[,v])=>a+v,0);
+  if(cuadOtros>0) cuadTop.push(['Otros',cuadOtros]);
+  mkPie('c-cuad', cuadTop.map(x=>x[0]), cuadTop.map(x=>x[1]), COLORS_M);
 
   // Tabla detalle
   document.getElementById('tabla-det').innerHTML = tec.slice(0,20).map((r,i)=>`
