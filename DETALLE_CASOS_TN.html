@@ -169,6 +169,63 @@ tr:hover td{background:#f5f9ff}
     <div class="pag" id="det-pag">—</div>
   </div>
 
+
+  <!-- ══ REVISITAS ══ -->
+  <div class="sec-title">REVISITAS</div>
+  <div class="row2">
+    <div class="card" style="display:flex;align-items:center;justify-content:center;min-height:160px">
+      <div style="text-align:center">
+        <svg width="200" height="130" viewBox="0 0 200 130">
+          <path d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#e8f0fb" stroke-width="18" stroke-linecap="round"/>
+          <path id="rev-arc" d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#1565c0" stroke-width="18"
+                stroke-linecap="round" stroke-dasharray="251 251" stroke-dashoffset="251"/>
+          <text x="20" y="125" font-size="9" fill="#aaa">0 %</text>
+          <text x="165" y="125" font-size="9" fill="#aaa">100 %</text>
+        </svg>
+        <div style="font-size:10px;color:#555;font-weight:700;margin-top:-20px">% REVISITAS</div>
+        <div style="font-size:22px;font-weight:900;color:#1565c0" id="rev-pct">—</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">LOGIN AFECTADOS</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>LOGIN_AFECTADOS</th></tr></thead>
+          <tbody id="tabla-rev-login"></tbody>
+        </table>
+      </div>
+      <div class="pag" id="rev-login-pag">—</div>
+    </div>
+  </div>
+
+  <!-- ══ RECURRENCIAS ══ -->
+  <div class="sec-title">RECURRENCIAS</div>
+  <div class="row2">
+    <div class="card" style="display:flex;align-items:center;justify-content:center;min-height:160px">
+      <div style="text-align:center">
+        <svg width="200" height="130" viewBox="0 0 200 130">
+          <path d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#e8f0fb" stroke-width="18" stroke-linecap="round"/>
+          <path id="rec-arc" d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#ef4444" stroke-width="18"
+                stroke-linecap="round" stroke-dasharray="251 251" stroke-dashoffset="251"/>
+          <text x="20" y="125" font-size="9" fill="#aaa">0 %</text>
+          <text x="165" y="125" font-size="9" fill="#aaa">100 %</text>
+        </svg>
+        <div style="font-size:10px;color:#555;font-weight:700;margin-top:-20px">% RECURRENCIAS</div>
+        <div style="font-size:22px;font-weight:900;color:#ef4444" id="rec-pct">—</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">LOGIN AFECTADOS</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>LOGIN_AFECTADOS</th><th>VECES</th></tr></thead>
+          <tbody id="tabla-rec-login"></tbody>
+        </table>
+      </div>
+      <div class="pag" id="rec-login-pag">—</div>
+    </div>
+  </div>
+
   <!-- ══ BACKBONE ══ -->
   <div class="sec-title">CASOS BACKBONE</div>
   <div class="bb-stats">
@@ -494,6 +551,58 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
     <td>${fmtDate(r['FE_CIERRE'])}</td>
     <td>${r['ESTADO_CASO']||'—'}</td></tr>`).join('');
   document.getElementById('det-pag').textContent = `1 – ${Math.min(20,tec.length)} de ${tec.length}`;
+
+  // ── REVISITAS y RECURRENCIAS — valores del Google Sheet
+  const pctRevNum = pctRevSheet !== null ? parseFloat(pctRevSheet) : null;
+  const pctRecNum = pctRecSheet !== null ? parseFloat(pctRecSheet) : null;
+
+  // Gauge revisitas
+  if (pctRevNum !== null) {
+    document.getElementById('rev-pct').textContent = pctRevNum.toFixed(1).replace('.',',') + ' %';
+    const arcRev = document.getElementById('rev-arc');
+    const offsetRev = 251 - Math.min(251, pctRevNum/100*251);
+    arcRev.setAttribute('stroke-dashoffset', offsetRev.toFixed(0));
+  }
+
+  // Gauge recurrencias
+  if (pctRecNum !== null) {
+    document.getElementById('rec-pct').textContent = pctRecNum.toFixed(1).replace('.',',') + ' %';
+    const arcRec = document.getElementById('rec-arc');
+    const offsetRec = 251 - Math.min(251, pctRecNum/100*251);
+    arcRec.setAttribute('stroke-dashoffset', offsetRec.toFixed(0));
+  }
+
+  // Tabla revisitas — clientes con más de 1 caso (login repetido)
+  const loginMap = {};
+  tec.forEach(r => {
+    const login = String(r['LOGIN_AFECTADOS']||'').trim();
+    if(login) loginMap[login] = (loginMap[login]||0) + 1;
+  });
+  const revLogins = Object.entries(loginMap).filter(([,n])=>n>1).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('tabla-rev-login').innerHTML = revLogins.slice(0,10).map(([l,n],i)=>
+    `<tr><td>${l}</td></tr>`).join('') ||
+    '<tr><td style="color:#aaa;text-align:center">Sin revisitas</td></tr>';
+  document.getElementById('rev-login-pag').textContent =
+    revLogins.length ? `1 – ${Math.min(10,revLogins.length)} / ${revLogins.length}` : '—';
+
+  // Tabla recurrencias — mismo login, misma hipótesis
+  const recMap = {};
+  tec.forEach(r => {
+    const login = String(r['LOGIN_AFECTADOS']||'').trim();
+    const hip   = String(r['TITULO_FIN_HIP']||'').trim();
+    if(login && hip) {
+      const key = login+'||'+hip;
+      recMap[key] = (recMap[key]||0) + 1;
+    }
+  });
+  const recLogins = Object.entries(recMap).filter(([,n])=>n>1)
+    .map(([k,n])=>{ const [l,h]=k.split('||'); return [l,n]; })
+    .sort((a,b)=>b[1]-a[1]);
+  document.getElementById('tabla-rec-login').innerHTML = recLogins.slice(0,10).map(([l,n],i)=>
+    `<tr><td>${l}</td><td class="num">${n}</td></tr>`).join('') ||
+    '<tr><td colspan="2" style="color:#aaa;text-align:center">Sin recurrencias</td></tr>';
+  document.getElementById('rec-login-pag').textContent =
+    recLogins.length ? `1 – ${Math.min(10,recLogins.length)} / ${recLogins.length}` : '—';
 
   // ── BACKBONE
   const bb_cer=bb.filter(r=>['Cerrado','Finalizada'].includes(String(r['ESTADO_CASO']||'').trim()));
