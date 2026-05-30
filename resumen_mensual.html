@@ -737,6 +737,29 @@ function exportarPDF() {
 // ════════════════════════════════
 //  DATA
 // ════════════════════════════════
+
+// ════════════════════════════════════════
+//  LEER KPIs DESDE GOOGLE SHEET (via Apps Script)
+// ════════════════════════════════════════
+const APPS_URL    = 'https://script.google.com/macros/s/AKfycbz7EgJ2INnGKrhC6qt7bX8K-Rzdysr-hc8EZOOUGVHH1YUkB-LhDicZTcO3-2VTGAbR/exec';
+const SHEET_ID_KPI = '1nDPwaqVCzE2M8L_e7c3Kut8w5Uh2ZzZMKHic5RcjKUQ';
+const GIDS_KPI = { nl:'1212648034', ec:'2038502531', tn:'' };
+
+async function fetchSheetKPIs(tab, mes) {
+  const gid = GIDS_KPI[tab];
+  if (!gid) return null;
+  try {
+    const url = `${APPS_URL}?accion=sheet&empresa=${tab.toUpperCase()}&mes=${mes}&sheetId=${SHEET_ID_KPI}&gid=${gid}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.pctRev !== undefined) return data;
+    return null;
+  } catch(e) {
+    console.warn('fetchSheetKPIs error:', e.message);
+    return null;
+  }
+}
+
 const MESES_L = ['','enero','febrero','marzo','abril'];
 const MESES_F = ['','Enero','Febrero','Marzo','Abril'];
 
@@ -1096,7 +1119,7 @@ function renderIns(){
 // ════════════════════════════════
 //  RENDER SOPORTE
 // ════════════════════════════════
-function renderSop(tab){
+async function renderSop(tab){
   const d=SOP_DATA[tab][mesSel];
   const ml=MESES_L[mesSel];
   const B='#1565c0', T='#0097a7';
@@ -1104,6 +1127,13 @@ function renderSop(tab){
   set('k1-lbl', tab==='tn'?'SERVICIOS ACTIVOS':'TOTAL ACTIVOS');
   set('k1-val', d.activos ? Number(d.activos).toLocaleString('es-EC') : '—');
   set('k2-val', d.vsActivos.toFixed(2).replace('.',',')+' %');
+
+  // Leer revisitas y recurrencias del Google Sheet
+  const sheetKPI = await fetchSheetKPIs(tab, mesSel);
+  if (sheetKPI) {
+    if (sheetKPI.pctRev !== null) d.revisitas   = parseFloat(sheetKPI.pctRev);
+    if (sheetKPI.pctRec !== null) d.recurrencia = parseFloat(sheetKPI.pctRec);
+  }
 
   // btn-det removed
 
