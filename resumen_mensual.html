@@ -1040,6 +1040,7 @@ function mkChart(id, labels, datasets, opts={}){
     options:{
       responsive:true,
       animation:{duration:300},
+      layout:{padding:{top:20}},
       plugins:{
         legend: opts.legend || {display:false},
         tooltip:{callbacks:{label:c=>` ${c.raw}${c.dataset._sfx||''}`}}
