@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detalle Casos TN — Telconet</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#dce8f5;color:#1a1a1a;font-size:12px}
+
+/* ── HEADER */
+.hdr{background:white;padding:10px 18px;display:flex;align-items:center;gap:16px;
+     box-shadow:0 2px 8px rgba(0,0,0,0.1);position:sticky;top:0;z-index:100}
+.logo-box{background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:8px;
+          padding:6px 12px;color:white;font-weight:900;font-size:14px;letter-spacing:1px}
+.hdr-kpis{display:flex;gap:10px;align-items:center;flex:1}
+.kpi-badge{background:#f0f4ff;border:1.5px solid #1565c0;border-radius:8px;
+           padding:4px 10px;text-align:center}
+.kpi-badge .lbl{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.3px}
+.kpi-badge .val{font-size:16px;font-weight:900;color:#c0392b}
+.gauge-wrap{position:relative;text-align:center}
+.gauge-lbl{font-size:9px;color:#555;font-weight:700}
+.mes-pill{border:1.5px solid #c0392b;border-radius:20px;padding:4px 12px;
+          color:#c0392b;font-size:11px;font-weight:700;position:relative;cursor:pointer}
+.mes-pill select{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.cierre-badge{background:#1565c0;color:white;border-radius:8px;padding:5px 14px;
+              font-size:10px;font-weight:700;text-align:center;white-space:nowrap}
+.cierre-badge .pct{font-size:18px;font-weight:900}
+
+/* ── MAIN */
+.main{padding:14px;display:flex;flex-direction:column;gap:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.row4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+/* ── CARDS */
+.card{background:white;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.card-title{font-size:10px;font-weight:700;color:#1565c0;text-transform:uppercase;
+            letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.card-title::before{content:'◆';color:#c0392b;font-size:8px}
+canvas{max-height:180px}
+.full{grid-column:1/-1}
+
+/* ── ESTADO BADGES */
+.est-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.est-badge{display:flex;align-items:center;gap:6px;font-size:11px}
+.est-dot{width:12px;height:12px;border-radius:2px}
+.est-n{font-weight:700;font-size:13px}
+
+/* ── TABLES */
+.tbl-wrap{overflow-x:auto;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th{background:#e8f0fb;color:#003087;font-weight:700;padding:5px 6px;text-align:left;white-space:nowrap}
+td{padding:4px 6px;border-bottom:1px solid #f0f4ff;vertical-align:top}
+tr:hover td{background:#f5f9ff}
+.num{text-align:right;font-weight:700}
+.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── SECCIÓN */
+.sec-title{font-size:13px;font-weight:900;color:#003087;letter-spacing:.5px;
+           border-left:4px solid #c0392b;padding-left:8px;margin:4px 0 10px}
+
+/* ── BB */
+.bb-stats{display:flex;gap:10px;margin-bottom:10px}
+.bb-stat{background:#f5f9ff;border:1px solid #e8f0fb;border-radius:8px;
+         padding:6px 12px;text-align:center;flex:1}
+.bb-stat .n{font-size:20px;font-weight:900;color:#c0392b}
+.bb-stat .l{font-size:9px;color:#555}
+
+/* ── PAGINACIÓN */
+.pag{font-size:10px;color:#777;text-align:right;margin-top:4px}
+
+@media print{
+  .hdr select,.mes-pill select{display:none}
+  .card{break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div class="logo-box">TELCONET</div>
+
+  <div class="est-row" style="margin:0">
+    <div class="est-badge"><div class="est-dot" style="background:#1565c0"></div>Cerrado <span class="est-n" id="hdr-cer">—</span></div>
+    <div class="est-badge"><div class="est-dot" style="background:#f59e0b"></div>Cancelado <span class="est-n" id="hdr-can">—</span></div>
+    <div class="est-badge"><div class="est-dot" style="background:#94a3b8"></div>- <span class="est-n" id="hdr-otros">—</span></div>
+  </div>
+
+  <div class="mes-pill">
+    Mes: <span id="hdr-mes">Cargando...</span> ▼
+    <select id="mes-selector" onchange="cambiarMesDashboard(this.value)"></select>
+  </div>
+
+  <div class="gauge-wrap">
+    <div class="gauge-lbl">NUMERO_CASO</div>
+    <svg width="130" height="80" viewBox="0 0 130 80">
+      <path d="M15,70 A50,50 0 0,1 115,70" fill="none" stroke="#e8f0fb" stroke-width="13" stroke-linecap="round"/>
+      <path id="gauge-arc" d="M15,70 A50,50 0 0,1 115,70" fill="none" stroke="#c0392b" stroke-width="13" stroke-linecap="round"
+            stroke-dasharray="157 157" stroke-dashoffset="157"/>
+      <text x="65" y="60" text-anchor="middle" font-size="18" font-weight="bold" fill="#c0392b" id="gauge-val">0</text>
+    </svg>
+  </div>
+
+  <div class="cierre-badge">
+    PROM. TIEMPO
+    <div class="pct" id="hdr-pct4h">—</div>
+    <div style="font-size:8px">horas</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- #CASOS POR DÍA -->
+  <div class="card full">
+    <div class="card-title">#CASOS &nbsp;<span style="color:#aaa;font-weight:400" id="avg-lbl">— Promedio de casos diarios (0.00)</span></div>
+    <canvas id="c-dias"></canvas>
+  </div>
+
+  <!-- HORAS -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">APERTURA DE CASOS X HORA</div>
+      <canvas id="c-ap"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">CIERRE DE CASOS X HORA</div>
+      <canvas id="c-ci"></canvas>
+    </div>
+  </div>
+
+  <!-- DEPTS + HIPOTESIS -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">CASO CREADO POR DEPARTAMENTO</div>
+      <canvas id="c-dept" style="max-height:160px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">MOTIVO DE FINALIZACIÓN</div>
+      <canvas id="c-hip" style="max-height:160px"></canvas>
+    </div>
+  </div>
+
+  <!-- TIPO MEDIO + NOTIF + AFECTACIÓN + CUADRILLA -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">TIPO MEDIO</div>
+      <canvas id="c-medio" style="max-height:160px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">TIPO NOTIFICACIÓN</div>
+      <canvas id="c-notif" style="max-height:160px"></canvas>
+    </div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">TIPO AFECTACIÓN</div>
+      <canvas id="c-afec" style="max-height:160px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">CASOS POR CUADRILLA</div>
+      <canvas id="c-cuad" style="max-height:160px"></canvas>
+    </div>
+  </div>
+
+  <!-- DETALLE TOP 20 -->
+  <div class="card full">
+    <div class="card-title">DETALLE DE CASOS</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>NÚMERO CASO</th><th>HIPÓTESIS FINAL</th><th>F. APERTURA</th><th>F. CIERRE</th><th>ESTADO</th></tr></thead>
+        <tbody id="tabla-det"></tbody>
+      </table>
+    </div>
+    <div class="pag" id="det-pag">—</div>
+  </div>
+
+  <!-- ══ BACKBONE ══ -->
+  <div class="sec-title">CASOS BACKBONE</div>
+  <div class="bb-stats">
+    <div class="bb-stat"><div class="n" id="bb-total">...</div><div class="l">TOTAL</div></div>
+    <div class="bb-stat"><div class="n" id="bb-fin">...</div><div class="l">FINALIZADOS</div></div>
+    <div class="bb-stat"><div class="n" id="bb-can">...</div><div class="l">CANCELADOS</div></div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">HIPÓTESIS BACKBONE</div>
+      <canvas id="c-bb-hip" style="max-height:160px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">DETALLE BACKBONE FINALIZADOS</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>NÚMERO CASO</th><th>HIPÓTESIS</th><th>F. APERTURA</th><th>F. CIERRE</th></tr></thead>
+          <tbody id="tabla-bb"></tbody>
+        </table>
+      </div>
+      <div class="pag" id="bb-pag">—</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmhLCibNYYOddBZfUzrWWCxRR1BkIPQamQ-FefHdQfr0MMKFaQE_7XjeY3nzzmNFA5JQ/exec';
+const EMPRESA = 'TN';
+const ANIO    = '2026';
+const SHEET_ID = '1nDPwaqVCzE2M8L_e7c3Kut8w5Uh2ZzZMKHic5RcjKUQ';
+const GID_TN   = '2125407970';
+
+const MESES_N = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const COLORS_B = ['#1565c0','#1976d2','#1a6bb5','#2196f3','#42a5f5','#64b5f6','#90caf9','#0d47a1'];
+const COLORS_M = ['#e65100','#1a6bb5','#ef6c00','#1976d2','#f57c00','#2196f3','#fb8c00','#42a5f5','#ffa726','#0d47a1'];
+let charts = {};
+let _rawFull = null, _pctRevS = null, _pctRecS = null;
+
+// ── Chart helpers
+function mkBar(id, labels, vals, color='#1565c0', sfx='') {
+  if(charts[id]) { charts[id].destroy(); delete charts[id]; }
+  const el = document.getElementById(id); if(!el) return;
+  charts[id] = new Chart(el, {
+    type:'bar',
+    data:{labels, datasets:[{data:vals, backgroundColor:color, borderRadius:4, barPercentage:0.5}]},
+    options:{
+      responsive:true, layout:{padding:{top:18}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.raw}${sfx}`}}},
+      scales:{
+        y:{beginAtZero:true, grid:{color:'#e8f0fb'}, ticks:{font:{size:9}, callback:v=>v+sfx}},
+        x:{grid:{display:false}, ticks:{font:{size:9}}}
+      }
+    },
+    plugins:[labelPlugin]
+  });
+}
+
+function mkLine(id, labels, vals, avg) {
+  if(charts[id]) { charts[id].destroy(); delete charts[id]; }
+  const el = document.getElementById(id); if(!el) return;
+  document.getElementById('avg-lbl').textContent = `— Promedio de casos diarios (${avg})`;
+  charts[id] = new Chart(el, {
+    type:'line',
+    data:{labels, datasets:[
+      {data:vals, borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,.1)',
+       fill:true, tension:.3, pointRadius:4, pointBackgroundColor:'#1565c0', _sfx:''},
+      {data:Array(labels.length).fill(avg), borderColor:'#f59e0b', borderDash:[5,5],
+       pointRadius:0, fill:false, tension:0, _sfx:''}
+    ]},
+    options:{
+      responsive:true, layout:{padding:{top:14}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>` ${c.raw}`}}},
+      scales:{
+        y:{beginAtZero:true, grid:{color:'#e8f0fb'}, ticks:{font:{size:9}}},
+        x:{grid:{display:false}, ticks:{font:{size:9}}}
+      }
+    },
+    plugins:[labelPlugin]
+  });
+}
+
+function mkPie(id, labels, vals, colors) {
+  if(charts[id]) { charts[id].destroy(); delete charts[id]; }
+  const el = document.getElementById(id); if(!el) return;
+  const total = vals.reduce((a,b)=>a+b,0);
+  charts[id] = new Chart(el, {
+    type:'pie',
+    data:{labels, datasets:[{data:vals, backgroundColor:colors, borderWidth:1, borderColor:'#fff'}]},
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{position:'right', labels:{font:{size:8}, padding:4, boxWidth:10,
+          generateLabels: chart => chart.data.labels.map((lbl,i)=>({
+            text:`${lbl} (${total?(chart.data.datasets[0].data[i]/total*100).toFixed(1):0}%)`,
+            fillStyle:chart.data.datasets[0].backgroundColor[i], strokeStyle:'#fff', lineWidth:1, index:i
+          }))
+        }},
+        tooltip:{callbacks:{label:c=>{const p=total?(c.raw/total*100).toFixed(1):0; return ` ${c.label}: ${c.raw} (${p}%)`;}}},
+      }
+    },
+    plugins:[{
+      id:'pieLabels',
+      afterDatasetsDraw(chart){
+        const ctx=chart.ctx, ds=chart.data.datasets[0], tot=ds.data.reduce((a,b)=>a+b,0);
+        chart.getDatasetMeta(0).data.forEach((arc,i)=>{
+          const pct=(ds.data[i]/tot*100).toFixed(1);
+          if(parseFloat(pct)<4) return;
+          const angle=(arc.startAngle+arc.endAngle)/2, r=arc.outerRadius*.65;
+          ctx.save(); ctx.font='bold 9px Segoe UI'; ctx.fillStyle='white';
+          ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.fillText(pct+'%', arc.x+Math.cos(angle)*r, arc.y+Math.sin(angle)*r);
+          ctx.restore();
+        });
+      }
+    }]
+  });
+}
+
+const labelPlugin = {
+  id:'lbl',
+  afterDatasetsDraw(chart){
+    if(chart.config.type==='pie') return;
+    const ctx=chart.ctx;
+    chart.data.datasets.forEach((ds,i)=>{
+      if(ds.pointRadius===0) return;
+      chart.getDatasetMeta(i).data.forEach((bar,j)=>{
+        const v=ds.data[j]; if(v===null||v===undefined) return;
+        const yPos=Math.min(bar.y-5,(chart.chartArea?chart.chartArea.top:0)+14);
+        ctx.save(); ctx.font='bold 10px Segoe UI'; ctx.fillStyle='#003087';
+        ctx.textAlign='center'; ctx.textBaseline='bottom';
+        ctx.fillText(String(v)+(ds._sfx||''),bar.x,yPos); ctx.restore();
+      });
+    });
+  }
+};
+
+function tbl(id, rows) {
+  const el = document.getElementById(id);
+  if(el) el.innerHTML = typeof rows === 'string' ? rows : rows;
+}
+
+function parseDate(v) {
+  if(!v) return null;
+  if(v instanceof Date) return v;
+  const d = new Date(v);
+  if(!isNaN(d)) return d;
+  const s = parseFloat(v);
+  if(!isNaN(s) && s>40000) return new Date((s-25569)*86400*1000);
+  return null;
+}
+
+function fmtDate(v) {
+  const d=parseDate(v); if(!d) return '—';
+  return d.toLocaleDateString('es-EC',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+
+         d.toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── Google Sheet
+async function fetchSheetValues(mesNum) {
+  try {
+    const url = `${APPS_SCRIPT_URL}?accion=sheet&empresa=TN&mes=${mesNum}&sheetId=${SHEET_ID}&gid=${GID_TN}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if(data.pctRev !== undefined) return data;
+    return {pctRev:null, pctRec:null};
+  } catch(e) { return {pctRev:null, pctRec:null}; }
+}
+
+// ── Cargar meses disponibles
+async function cargarMesesDisponibles() {
+  try {
+    const url = `${APPS_SCRIPT_URL}?accion=listar&empresa=${EMPRESA}&anio=${ANIO}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if(data.error || !data.meses?.length) { document.getElementById('hdr-mes').textContent='Sin datos'; return; }
+
+    const sel = document.getElementById('mes-selector');
+    if(sel) {
+      sel.innerHTML = '';
+      const vistos = new Set();
+      data.meses.forEach(m => {
+        if(vistos.has(m.mes)) return; vistos.add(m.mes);
+        const opt=document.createElement('option');
+        opt.value=m.mes; opt.textContent=MESES_N[m.mes]; sel.appendChild(opt);
+      });
+    }
+    const ultimo = data.meses[data.meses.length-1];
+    if(sel) sel.value = ultimo.mes;
+    await cargarDesdeScript(ultimo.mes);
+  } catch(e) { console.warn('Error cargando meses:', e); }
+}
+
+function cambiarMesDashboard(mes) { if(mes) cargarDesdeScript(parseInt(mes)); }
+
+async function cargarDesdeScript(mes) {
+  document.getElementById('hdr-mes').textContent = (MESES_N[mes]||'...')+'...';
+  try {
+    let sheetVals = {pctRev:null, pctRec:null};
+    try { sheetVals = await fetchSheetValues(mes); } catch(e) {}
+
+    const url = `${APPS_SCRIPT_URL}?accion=datos&empresa=${EMPRESA}&mes=${mes}&anio=${ANIO}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if(data.error) throw new Error(data.error);
+
+    _rawFull = data.datos;
+    _pctRevS = sheetVals.pctRev;
+    _pctRecS = sheetVals.pctRec;
+
+    setTimeout(() => {
+      processData(data.datos, sheetVals.pctRev, sheetVals.pctRec);
+      document.getElementById('hdr-mes').textContent = MESES_N[mes] || mes;
+      const sel=document.getElementById('mes-selector'); if(sel) sel.value=mes;
+    }, 100);
+  } catch(e) { alert('Error: '+e.message); }
+}
+
+// ════════════════════════════════════════
+//  PROCESS DATA
+// ════════════════════════════════════════
+function processData(raw, pctRevSheet=null, pctRecSheet=null) {
+  // Normalizar y filtrar Totales
+  const rawNorm = raw.map(r=>{
+    const obj={}; Object.keys(r).forEach(k=>{obj[k.trim()]=r[k]}); return obj;
+  }).filter(r => String(r['NUMERO_CASO']||'').trim() !== '' &&
+                 String(r['NUMERO_CASO']||'').trim().toLowerCase() !== 'totales');
+
+  // Separar técnicos y backbone
+  const seenT=new Set(), seenB=new Set();
+  const tec=[], bb=[];
+  rawNorm.forEach(r=>{
+    const id=String(r['NUMERO_CASO']||'').trim();
+    const tipo=String(r['TIPO_CASO']||'').toUpperCase();
+    if(tipo.includes('BACK')) {
+      if(id && !seenB.has(id)){ seenB.add(id); bb.push(r); }
+    } else {
+      if(id && !seenT.has(id)){ seenT.add(id); tec.push(r); }
+    }
+  });
+
+  const total=tec.length;
+  const cer=tec.filter(r=>['Cerrado','Finalizada'].includes(String(r['ESTADO_CASO']||'').trim()));
+  const can=tec.filter(r=>String(r['ESTADO_CASO']||'').trim()==='Cancelada');
+  const otros=total-cer.length-can.length;
+
+  // Tiempo promedio
+  const tiempos=cer.map(r=>parseFloat(r['T. CASO(HH)']||0)).filter(v=>!isNaN(v)&&v>0);
+  const prom_t=tiempos.length?(tiempos.reduce((a,b)=>a+b,0)/tiempos.length).toFixed(2):'—';
+
+  // Header KPIs
+  document.getElementById('hdr-cer').textContent   = cer.length;
+  document.getElementById('hdr-can').textContent   = can.length;
+  document.getElementById('hdr-otros').textContent = otros;
+  document.getElementById('hdr-pct4h').textContent = prom_t;
+
+  // Gauge
+  document.getElementById('gauge-val').textContent = total;
+  const arc=document.getElementById('gauge-arc');
+  const maxVal=200, offset=157-Math.min(157,total/maxVal*157);
+  arc.setAttribute('stroke-dashoffset', offset.toFixed(0));
+
+  // Por día
+  const dm={};
+  tec.forEach(r=>{
+    const d=parseDate(r['FE_APERTURA']); if(!d) return;
+    dm[d.getDate()]=(dm[d.getDate()]||0)+1;
+  });
+  const dias=Object.keys(dm).map(Number).sort((a,b)=>a-b);
+  const vd=dias.map(d=>dm[d]);
+  const avg=dias.length?(vd.reduce((a,b)=>a+b,0)/vd.length).toFixed(2):0;
+  mkLine('c-dias', dias.map(d=>d+' abr'), vd, parseFloat(avg));
+
+  // Por hora
+  const ham={}, hcm={};
+  tec.forEach(r=>{
+    const d=parseDate(r['FE_APERTURA']); if(d) ham[d.getHours()]=(ham[d.getHours()]||0)+1;
+    const d2=parseDate(r['FE_CIERRE']); if(d2) hcm[d2.getHours()]=(hcm[d2.getHours()]||0)+1;
+  });
+  mkBar('c-ap', Array.from({length:24},(_,h)=>`${String(h).padStart(2,'0')}:00`),
+        Array.from({length:24},(_,h)=>ham[h]||0), '#1565c0');
+  const hcierre=Object.keys(hcm).map(Number).sort((a,b)=>a-b);
+  mkBar('c-ci', hcierre.map(h=>`${String(h).padStart(2,'0')}:00`),
+        hcierre.map(h=>hcm[h]), '#0097a7');
+
+  // Pies
+  function mkTopPie(id, field, data, colors) {
+    const m={};
+    data.forEach(r=>{ const v=r[field]||'Sin info'; m[v]=(m[v]||0)+1; });
+    const top=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const otros=Object.entries(m).filter(([k])=>!top.find(([t])=>t===k)).reduce((a,[,v])=>a+v,0);
+    if(otros>0) top.push(['Otros',otros]);
+    mkPie(id, top.map(x=>x[0]), top.map(x=>x[1]), colors);
+  }
+
+  mkTopPie('c-dept','DEPARTAMENTO_CREA_CASO',tec,COLORS_M);
+  mkTopPie('c-hip','TITULO_FIN_HIP',tec,COLORS_M);
+  mkTopPie('c-medio','NOMBRE_TIPO_MEDIO',tec,COLORS_B);
+  mkTopPie('c-notif','TIPO_NOTIFICACION',tec,COLORS_M);
+  mkTopPie('c-afec','TIPO_AFECTACION',tec,COLORS_B);
+  mkTopPie('c-cuad','ULT_ASIGNADO_NOMBRE',tec,COLORS_M);
+
+  // Tabla detalle
+  document.getElementById('tabla-det').innerHTML = tec.slice(0,20).map((r,i)=>`
+    <tr><td>${i+1}</td><td><b>${r['NUMERO_CASO']}</b></td>
+    <td class="ell" style="max-width:160px" title="${r['TITULO_FIN_HIP']||''}">${r['TITULO_FIN_HIP']||'—'}</td>
+    <td>${fmtDate(r['FE_APERTURA'])}</td>
+    <td>${fmtDate(r['FE_CIERRE'])}</td>
+    <td>${r['ESTADO_CASO']||'—'}</td></tr>`).join('');
+  document.getElementById('det-pag').textContent = `1 – ${Math.min(20,tec.length)} de ${tec.length}`;
+
+  // ── BACKBONE
+  const bb_cer=bb.filter(r=>['Cerrado','Finalizada'].includes(String(r['ESTADO_CASO']||'').trim()));
+  const bb_can=bb.filter(r=>String(r['ESTADO_CASO']||'').trim()==='Cancelada');
+  document.getElementById('bb-total').textContent = bb.length;
+  document.getElementById('bb-fin').textContent   = bb_cer.length;
+  document.getElementById('bb-can').textContent   = bb_can.length;
+
+  mkTopPie('c-bb-hip','TITULO_FIN_HIP',bb,COLORS_M);
+
+  document.getElementById('tabla-bb').innerHTML = bb_cer.slice(0,10).map((r,i)=>`
+    <tr><td>${i+1}</td><td><b>${r['NUMERO_CASO']}</b></td>
+    <td class="ell" style="max-width:130px" title="${r['TITULO_FIN_HIP']||''}">${r['TITULO_FIN_HIP']||'—'}</td>
+    <td>${fmtDate(r['FE_APERTURA'])}</td>
+    <td>${fmtDate(r['FE_CIERRE'])}</td></tr>`).join('');
+  document.getElementById('bb-pag').textContent = `1 – ${Math.min(10,bb_cer.length)} de ${bb_cer.length}`;
+}
+
+window.addEventListener('load', () => { cargarMesesDisponibles(); });
+</script>
+</body>
+</html>
