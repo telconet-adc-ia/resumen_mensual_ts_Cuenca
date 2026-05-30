@@ -1336,13 +1336,13 @@ function switchPanel(panel){
   show('kpi2-box',  ['nl','ec','tn'].includes(panel));
 
 
-  setTimeout(()=>{
+  setTimeout(async ()=>{
     if(panel==='ins') renderIns();
     else if(panel==='construccion') renderCon();
     else if(panel==='interurbano') renderInt();
     else if(panel==='retiro') renderRet();
     else if(panel==='ttg') renderTTG();
-    else if(['nl','ec','tn'].includes(panel)) renderSop(panel);
+    else if(['nl','ec','tn'].includes(panel)) await renderSop(panel);
   }, 50);
 }
 
