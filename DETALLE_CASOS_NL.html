@@ -770,21 +770,20 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
   });
   const cajas = Object.entries(cajaMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
-  // ── BACKBONE — usar rawFinal deduplicado (incluye casos con #CASOS=0)
-  const todosCasos = rawFinal.filter((r, i, arr) => {
-    const id = String(r[keyCaso]||'').trim();
-    return id && arr.findIndex(x => String(x[keyCaso]||'').trim() === id) === i;
+  // ── BACKBONE — filtrar directamente de rawFinal por NUMERO_CASO terminado en B
+  // o por TIPO_CASO que contenga BACK
+  const seenBB = new Set();
+  const bbCasos = rawFinal.filter(r => {
+    const num = String(r[keyCaso]||'').trim();
+    const tipo = String(r['TIPO_CASO']||r['TIPO_C']||'').toUpperCase();
+    const esBackbone = tipo.includes('BACK') || num.endsWith('B');
+    if (!esBackbone || seenBB.has(num)) return false;
+    seenBB.add(num);
+    return true;
   });
-  // Detect exact column name for TIPO_CASO (Apps Script may add spaces)
-  const keyTipo = Object.keys(rawFinal[0]||{}).find(k => 
-    k.trim().toUpperCase().replace(/[^A-Z_]/g,'') === 'TIPO_CASO'
-  ) || 'TIPO_CASO';
-  console.log('DEBUG TIPO_CASO key:', keyTipo);
-  
-  const bbCasos = todosCasos.filter(r => String(r[keyTipo]||'').toUpperCase().includes('BACK'));
-  console.log('DEBUG bbCasos count:', bbCasos.length, 'of', todosCasos.length, 'total');
-  const bbFin   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Finalizada');
-  const bbCan   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Cancelada');
+  const bbFin = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Finalizada');
+  const bbCan = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Cancelada');
+
 
   const bbHipMap = {};
   bbCasos.forEach(r => {
