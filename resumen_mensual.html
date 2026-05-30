@@ -220,19 +220,31 @@ canvas { max-height: 160px; }
 .placeholder-icon { font-size: 40px; margin-bottom: 10px; }
 
 @media print {
-  .sidebar, .btn-pdf, .mes-pill select,
-  select, .sidebar-collapse, .subrow, .tabs,
-  .btn-resumen, .btn-det-visible { display:none !important; }
-  .main { margin-left:0 !important; }
-  .card, .pie-card, .chart-card { break-inside:avoid; page-break-inside:avoid; }
-  body { background:white !important; }
-  /* Solo imprimir el panel activo */
+  /* Ocultar elementos de navegación */
+  .sidebar, .btn-pdf, .subrow, .tabs,
+  .btn-resumen, .btn-det-visible,
+  select { display:none !important; }
+  /* Ajustar layout */
+  .main { margin-left:0 !important; width:100% !important; }
+  body { background:white !important; margin:0; }
+  /* Solo panel activo */
   .panel { display:none !important; }
   .panel.active { display:block !important; }
-  /* Forzar canvas a mostrarse */
-  canvas { display:block !important; max-height:none !important; }
-  /* Header simplificado */
-  .header { box-shadow:none; border:1px solid #ccc; }
+  /* Gráficas sin cortes */
+  .card, .pie-card, .chart-card {
+    break-inside:avoid;
+    page-break-inside:avoid;
+    overflow:visible !important;
+    width:48% !important;
+    box-shadow:none;
+    border:1px solid #ddd;
+  }
+  .grid-4 { display:flex !important; flex-wrap:wrap !important; gap:10px !important; }
+  img._print-img { width:100% !important; height:auto !important; }
+  /* Header */
+  .header { box-shadow:none; border-bottom:2px solid #003087; margin-bottom:10px; }
+  /* KPIs visibles */
+  .kpi-pill { display:flex !important; }
 }
 .btn-pdf {
   border:1.5px solid #555; border-radius:20px;
@@ -736,44 +748,36 @@ async function exportarPDF() {
   const btn = document.querySelector('.btn-pdf');
   if (btn) { btn.textContent = '⏳ Preparando...'; btn.disabled = true; }
 
-  // Paso 1: Convertir todos los canvas visibles a imágenes
-  // para que window.print() los muestre correctamente
+  const titulo = document.getElementById('hdr-title').innerText.replace('\n',' ');
+  const mes    = document.getElementById('mes-lbl').textContent;
+  document.title = `${titulo} — ${mes} 2026`;
+
+  // Convertir canvas a imágenes y OCULTAR el canvas original
   const panelEl = document.getElementById('panel-' + panelSel);
   const canvasList = panelEl ? panelEl.querySelectorAll('canvas') : [];
   const reemplazos = [];
 
   canvasList.forEach(canvas => {
     const img = document.createElement('img');
-    img.src = canvas.toDataURL('image/png');
-    img.style.width  = canvas.style.width  || '100%';
-    img.style.height = canvas.style.height || 'auto';
-    img.style.display = 'block';
-    img.className = '_print-img'; // marcar para restaurar después
-    canvas.parentNode.insertBefore(img, canvas);
-    canvas.style.display = 'none';
-    reemplazos.push({ canvas, img });
+    img.src    = canvas.toDataURL('image/png');
+    img.style.cssText = 'width:100%;height:auto;display:block;';
+    img.className = '_print-img';
+    // Reemplazar el canvas con la imagen (no insertar antes)
+    canvas.parentNode.replaceChild(img, canvas);
+    reemplazos.push({ img, canvas });
   });
 
-  // Paso 2: Actualizar título
-  const titulo = document.getElementById('hdr-title').innerText.replace('\n',' ');
-  const mes    = document.getElementById('mes-lbl').textContent;
-  document.title = `${titulo} — ${mes} 2026`;
-
-  // Paso 3: Pequeña pausa para que el DOM se actualice
-  await new Promise(r => setTimeout(r, 150));
-
-  // Paso 4: Abrir diálogo de impresión (con vista previa)
+  await new Promise(r => setTimeout(r, 200));
   window.print();
 
-  // Paso 5: Restaurar canvas originales
+  // Restaurar canvas originales
   setTimeout(() => {
-    reemplazos.forEach(({ canvas, img }) => {
-      canvas.style.display = '';
-      if (img.parentNode) img.parentNode.removeChild(img);
+    reemplazos.forEach(({ img, canvas }) => {
+      if (img.parentNode) img.parentNode.replaceChild(canvas, img);
     });
     document.title = 'Reporte Mensual — Telconet';
     if (btn) { btn.textContent = '🖨️ Exportar PDF'; btn.disabled = false; }
-  }, 1000);
+  }, 2000);
 }
 
 
