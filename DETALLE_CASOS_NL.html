@@ -665,13 +665,33 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
     return;
   }
 
+  // Normalizar claves (eliminar espacios extra que pueden venir del Apps Script)
+  const rawNorm = raw.map(r => {
+    const obj = {};
+    Object.keys(r).forEach(k => { obj[k.trim()] = r[k]; });
+    return obj;
+  });
+
+  // Detectar nombre exacto de la columna NUMERO_CASO
+  const keyCaso = Object.keys(rawNorm[0] || {}).find(k =>
+    k.trim().toUpperCase().replace(/[^A-Z_]/g,'') === 'NUMERO_CASO'
+  ) || 'NUMERO_CASO';
+
+  console.log('DEBUG key NUMERO_CASO detectada:', keyCaso);
+
   // Deduplicate by NUMERO_CASO
   const seen = new Set();
-  const casos = raw.filter(r => {
-    if (seen.has(r['NUMERO_CASO'])) return false;
-    seen.add(r['NUMERO_CASO']);
+  const casos = rawNorm.filter(r => {
+    const id = String(r[keyCaso] || '').trim();
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
     return true;
   });
+
+  console.log('DEBUG total raw:', rawNorm.length, '→ únicos:', casos.length);
+
+  // Reemplazar raw con rawNorm para el resto del procesamiento
+  const rawFinal = rawNorm;
 
   // ── KPIs
   const totalCasos = casos.reduce((a, r) => a + (Number(r['#CASOS']) || 0), 0);
@@ -806,7 +826,7 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
   const recLoginTop = Object.entries(recLoginMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
   // ── REVISITAS (VERSION_FIN para el detalle)
-  const revisitas = casos.filter(r => {
+  const revisitas = rawFinal.filter(r => {
     const v = String(r['VERSION_FIN'] || '').trim();
     return v !== '' && v !== '-' && v !== 'nan';
   });
@@ -834,7 +854,7 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
       horasCi, casosHoraCi,
       cuadTop, hipTop, cajas,
       casos, pctRevReal, revisitas, revLoginTopReal,
-      raw,
+      raw, rawFinal,
       bbCasos, bbFin, bbCan, bbHipTop,
       recCasos, revCasos: revCasos || [], pctRec, recLoginTop
     });
@@ -955,7 +975,7 @@ function renderDashboard(d) {
 
   // Detalle revisitas
   const trd = document.getElementById('tabla-rev-detalle');
-  const revRows = d.raw.filter(r=>{
+  const revRows = d.rawFinal ? d.rawFinal.filter(r=>{
     const v=String(r['VERSION_FIN']||'').trim();
     return v!==''&&v!=='-'&&v!=='nan';
   }).slice(0,5);
