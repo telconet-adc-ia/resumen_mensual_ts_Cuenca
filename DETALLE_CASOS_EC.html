@@ -1032,19 +1032,10 @@ function renderDashboard(d) {
     `<tr><td>${i+1}.</td><td>${l}</td><td class="num">${c}</td></tr>`).join('');
   document.getElementById('rev-pag').textContent = `1 – ${d.revLoginTopReal.length} de ${d.revCasos ? d.revCasos.length : '—'}`;
 
-  // ── BACKBONE
-  document.getElementById('bb-total').textContent = d.bbCasos.length;
-  document.getElementById('bb-fin').textContent   = d.bbFin.length;
-  document.getElementById('bb-can').textContent   = d.bbCan.length;
-
-  mkPie('chart-bb-hip', d.bbHipTop.map(x=>x[0]), d.bbHipTop.map(x=>x[1]), MIX_COLORS);
-
-  document.getElementById('tabla-bb-det').innerHTML = d.bbFin.slice(0,10).map((r,i)=>`
-    <tr><td>${i+1}</td><td><b>${r['NUMERO_CASO']}</b></td>
-    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r['TITULO_FIN_HIP']||''}">${r['TITULO_FIN_HIP']||'—'}</td>
-    <td>${fmtDate(r['FE_APERTURA'])}</td>
-    <td>${fmtDate(r['FECHA_FINALIZADA'])}</td></tr>`).join('');
-  document.getElementById('bb-det-pag').textContent = `1 – ${Math.min(10,d.bbFin.length)} de ${d.bbFin.length}`;
+  // ── BACKBONE — se carga async por cargarBackbone()
+  document.getElementById('bb-total').textContent = '...';
+  document.getElementById('bb-fin').textContent   = '...';
+  document.getElementById('bb-can').textContent   = '...';
 
   // ── RECURRENCIAS
   const mesNomR = d.mesNom;
