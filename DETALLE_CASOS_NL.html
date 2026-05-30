@@ -476,7 +476,7 @@ tr:hover { background: #f8fbff; }
 // ════════════════════════════════════════
 //  CONFIGURACIÓN GOOGLE APPS SCRIPT
 // ════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7EgJ2INnGKrhC6qt7bX8K-Rzdysr-hc8EZOOUGVHH1YUkB-LhDicZTcO3-2VTGAbR/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmhLCibNYYOddBZfUzrWWCxRR1BkIPQamQ-FefHdQfr0MMKFaQE_7XjeY3nzzmNFA5JQ/exec';
 const EMPRESA = 'NL';
 const ANIO    = '2026';
 
@@ -590,7 +590,7 @@ const SHEET_URL_NL = "https://docs.google.com/spreadsheets/d/1nDPwaqVCzE2M8L_e7c
 async function fetchSheetValues(mesNum) {
   try {
     // Leer % revisitas y recurrencias via Apps Script
-    const url = `https://script.google.com/macros/s/AKfycbz7EgJ2INnGKrhC6qt7bX8K-Rzdysr-hc8EZOOUGVHH1YUkB-LhDicZTcO3-2VTGAbR/exec?accion=sheet&empresa=NL&mes=${mesNum}&sheetId=1nDPwaqVCzE2M8L_e7c3Kut8w5Uh2ZzZMKHic5RcjKUQ&gid=1212648034`;
+    const url = `https://script.google.com/macros/s/AKfycbzmhLCibNYYOddBZfUzrWWCxRR1BkIPQamQ-FefHdQfr0MMKFaQE_7XjeY3nzzmNFA5JQ/exec?accion=sheet&empresa=NL&mes=${mesNum}&sheetId=1nDPwaqVCzE2M8L_e7c3Kut8w5Uh2ZzZMKHic5RcjKUQ&gid=1212648034`;
     const resp = await fetch(url);
     const data = await resp.json();
     if (data.pctRev !== undefined) {
