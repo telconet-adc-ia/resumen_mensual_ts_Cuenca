@@ -775,7 +775,14 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
     const id = String(r[keyCaso]||'').trim();
     return id && arr.findIndex(x => String(x[keyCaso]||'').trim() === id) === i;
   });
-  const bbCasos = todosCasos.filter(r => String(r['TIPO_CASO']||'').toUpperCase().includes('BACK'));
+  // Detect exact column name for TIPO_CASO (Apps Script may add spaces)
+  const keyTipo = Object.keys(rawFinal[0]||{}).find(k => 
+    k.trim().toUpperCase().replace(/[^A-Z_]/g,'') === 'TIPO_CASO'
+  ) || 'TIPO_CASO';
+  console.log('DEBUG TIPO_CASO key:', keyTipo);
+  
+  const bbCasos = todosCasos.filter(r => String(r[keyTipo]||'').toUpperCase().includes('BACK'));
+  console.log('DEBUG bbCasos count:', bbCasos.length, 'of', todosCasos.length, 'total');
   const bbFin   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Finalizada');
   const bbCan   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Cancelada');
 
