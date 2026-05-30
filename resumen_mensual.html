@@ -1130,17 +1130,27 @@ async function renderSop(tab){
   set('k1-val', d.activos ? Number(d.activos).toLocaleString('es-EC') : '—');
   set('k2-val', d.vsActivos.toFixed(2).replace('.',',')+' %');
 
-  // Leer revisitas y recurrencias del Google Sheet
+  // Leer TODOS los KPIs del Google Sheet
   const sheetKPI = await fetchSheetKPIs(tab, mesSel);
-  console.log('sheetKPI response:', JSON.stringify(sheetKPI));
-  if (sheetKPI) {
-    if (sheetKPI.pctRev !== null && sheetKPI.pctRev !== undefined) {
-      d.revisitas   = parseFloat(sheetKPI.pctRev);
-      console.log('revisitas from sheet:', d.revisitas);
-    }
-    if (sheetKPI.pctRec !== null && sheetKPI.pctRec !== undefined) {
-      d.recurrencia = parseFloat(sheetKPI.pctRec);
-      console.log('recurrencia from sheet:', d.recurrencia);
+  if (sheetKPI && !sheetKPI.error) {
+    if (sheetKPI.soportes   != null) d.soportes    = sheetKPI.soportes;
+    if (sheetKPI.cierre     != null) d.cierre      = sheetKPI.cierre;
+    if (sheetKPI.revisitas  != null) d.revisitas   = sheetKPI.revisitas;
+    if (sheetKPI.recurrencia!= null) d.recurrencia = sheetKPI.recurrencia;
+    if (sheetKPI.bb         != null) d.bb          = sheetKPI.bb;
+    if (sheetKPI.tiempoBB   != null) d.tiempoBB    = sheetKPI.tiempoBB;
+    if (sheetKPI.activos    != null) d.activos     = sheetKPI.activos;
+    if (sheetKPI.vsActivos  != null) d.vsActivos   = sheetKPI.vsActivos;
+    if (sheetKPI.o_sop)  d.o_sop  = sheetKPI.o_sop;
+    if (sheetKPI.o_cierr) d.o_cierr = sheetKPI.o_cierr;
+    if (sheetKPI.o_rev)  d.o_rev  = sheetKPI.o_rev;
+    if (sheetKPI.o_rec)  d.o_rec  = sheetKPI.o_rec;
+    if (sheetKPI.o_bb)   d.o_bb   = sheetKPI.o_bb;
+    if (sheetKPI.o_tbb)  d.o_tbb  = sheetKPI.o_tbb;
+
+    // Actualizar selector de meses dinámicamente
+    if (sheetKPI.mesesDisponibles && sheetKPI.mesesDisponibles.length > 0) {
+      actualizarSelectorMeses(sheetKPI.mesesDisponibles);
     }
   }
 
