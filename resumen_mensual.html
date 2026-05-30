@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reporte Mensual — Telconet</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -221,11 +222,18 @@ canvas { max-height: 160px; }
 
 @media print {
   .sidebar, .btn-pdf, .mes-pill select,
-  select, .sidebar-collapse { display:none !important; }
+  select, .sidebar-collapse, .subrow, .tabs,
+  .btn-resumen, .btn-det-visible { display:none !important; }
   .main { margin-left:0 !important; }
-  .card, .pie-card, .chart-card { break-inside:avoid; }
-  body { background:white; }
-  .panel { display:block !important; }
+  .card, .pie-card, .chart-card { break-inside:avoid; page-break-inside:avoid; }
+  body { background:white !important; }
+  /* Solo imprimir el panel activo */
+  .panel { display:none !important; }
+  .panel.active { display:block !important; }
+  /* Forzar canvas a mostrarse */
+  canvas { display:block !important; max-height:none !important; }
+  /* Header simplificado */
+  .header { box-shadow:none; border:1px solid #ccc; }
 }
 .btn-pdf {
   border:1.5px solid #555; border-radius:20px;
@@ -725,12 +733,68 @@ function getSemaforoColor(estado) {
 // ══════════════════════════════════════════
 //  EXPORTAR A PDF
 // ══════════════════════════════════════════
-function exportarPDF() {
-  const titulo = document.getElementById('hdr-title').innerText.replace('\n','');
-  const mes = document.getElementById('mes-lbl').textContent;
-  document.title = titulo + ' - ' + mes + ' 2026';
-  window.print();
-  setTimeout(() => { document.title = 'Reporte Mensual — Telconet'; }, 1500);
+async function exportarPDF() {
+  const btn = document.querySelector('.btn-pdf');
+  if (btn) { btn.textContent = '⏳ Generando PDF...'; btn.disabled = true; }
+
+  try {
+    const titulo = document.getElementById('hdr-title').innerText.replace('\n',' ');
+    const mes    = document.getElementById('mes-lbl').textContent;
+
+    // Capturar el panel activo con html2canvas
+    const panelEl = document.getElementById('panel-' + panelSel);
+    const headerEl = document.querySelector('.header');
+    const subrowEl  = document.querySelector('.subrow');
+
+    // Crear contenedor temporal para captura
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:fixed;top:0;left:0;width:900px;background:white;padding:20px;z-index:9999;';
+
+    // Clonar header y panel
+    const hClone = headerEl.cloneNode(true);
+    const sClone = subrowEl.cloneNode(true);
+    const pClone = panelEl.cloneNode(true);
+
+    // Convertir canvas a img en el clon
+    const origCanvas = panelEl.querySelectorAll('canvas');
+    const cloneCanvas = pClone.querySelectorAll('canvas');
+    origCanvas.forEach((c, i) => {
+      if (cloneCanvas[i]) {
+        const img = document.createElement('img');
+        img.src = c.toDataURL('image/png');
+        img.style.width = '100%';
+        cloneCanvas[i].parentNode.replaceChild(img, cloneCanvas[i]);
+      }
+    });
+
+    wrapper.appendChild(hClone);
+    wrapper.appendChild(sClone);
+    wrapper.appendChild(pClone);
+    document.body.appendChild(wrapper);
+
+    // Capturar con html2canvas
+    const canvas = await html2canvas(wrapper, {
+      scale: 1.5,
+      useCORS: true,
+      backgroundColor: '#dce8f5',
+      width: 900,
+    });
+
+    document.body.removeChild(wrapper);
+
+    // Descargar como imagen PNG (o imprimir)
+    const link = document.createElement('a');
+    link.download = `${titulo} - ${mes} 2026.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+  } catch(err) {
+    console.error('PDF error:', err);
+    // Fallback a window.print
+    window.print();
+  }
+
+  if (btn) { btn.textContent = '🖨️ Exportar PDF'; btn.disabled = false; }
 }
 
 
