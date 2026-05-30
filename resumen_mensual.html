@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reporte Mensual — Telconet</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -735,66 +734,46 @@ function getSemaforoColor(estado) {
 // ══════════════════════════════════════════
 async function exportarPDF() {
   const btn = document.querySelector('.btn-pdf');
-  if (btn) { btn.textContent = '⏳ Generando PDF...'; btn.disabled = true; }
+  if (btn) { btn.textContent = '⏳ Preparando...'; btn.disabled = true; }
 
-  try {
-    const titulo = document.getElementById('hdr-title').innerText.replace('\n',' ');
-    const mes    = document.getElementById('mes-lbl').textContent;
+  // Paso 1: Convertir todos los canvas visibles a imágenes
+  // para que window.print() los muestre correctamente
+  const panelEl = document.getElementById('panel-' + panelSel);
+  const canvasList = panelEl ? panelEl.querySelectorAll('canvas') : [];
+  const reemplazos = [];
 
-    // Capturar el panel activo con html2canvas
-    const panelEl = document.getElementById('panel-' + panelSel);
-    const headerEl = document.querySelector('.header');
-    const subrowEl  = document.querySelector('.subrow');
+  canvasList.forEach(canvas => {
+    const img = document.createElement('img');
+    img.src = canvas.toDataURL('image/png');
+    img.style.width  = canvas.style.width  || '100%';
+    img.style.height = canvas.style.height || 'auto';
+    img.style.display = 'block';
+    img.className = '_print-img'; // marcar para restaurar después
+    canvas.parentNode.insertBefore(img, canvas);
+    canvas.style.display = 'none';
+    reemplazos.push({ canvas, img });
+  });
 
-    // Crear contenedor temporal para captura
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'position:fixed;top:0;left:0;width:900px;background:white;padding:20px;z-index:9999;';
+  // Paso 2: Actualizar título
+  const titulo = document.getElementById('hdr-title').innerText.replace('\n',' ');
+  const mes    = document.getElementById('mes-lbl').textContent;
+  document.title = `${titulo} — ${mes} 2026`;
 
-    // Clonar header y panel
-    const hClone = headerEl.cloneNode(true);
-    const sClone = subrowEl.cloneNode(true);
-    const pClone = panelEl.cloneNode(true);
+  // Paso 3: Pequeña pausa para que el DOM se actualice
+  await new Promise(r => setTimeout(r, 150));
 
-    // Convertir canvas a img en el clon
-    const origCanvas = panelEl.querySelectorAll('canvas');
-    const cloneCanvas = pClone.querySelectorAll('canvas');
-    origCanvas.forEach((c, i) => {
-      if (cloneCanvas[i]) {
-        const img = document.createElement('img');
-        img.src = c.toDataURL('image/png');
-        img.style.width = '100%';
-        cloneCanvas[i].parentNode.replaceChild(img, cloneCanvas[i]);
-      }
+  // Paso 4: Abrir diálogo de impresión (con vista previa)
+  window.print();
+
+  // Paso 5: Restaurar canvas originales
+  setTimeout(() => {
+    reemplazos.forEach(({ canvas, img }) => {
+      canvas.style.display = '';
+      if (img.parentNode) img.parentNode.removeChild(img);
     });
-
-    wrapper.appendChild(hClone);
-    wrapper.appendChild(sClone);
-    wrapper.appendChild(pClone);
-    document.body.appendChild(wrapper);
-
-    // Capturar con html2canvas
-    const canvas = await html2canvas(wrapper, {
-      scale: 1.5,
-      useCORS: true,
-      backgroundColor: '#dce8f5',
-      width: 900,
-    });
-
-    document.body.removeChild(wrapper);
-
-    // Descargar como imagen PNG (o imprimir)
-    const link = document.createElement('a');
-    link.download = `${titulo} - ${mes} 2026.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-
-  } catch(err) {
-    console.error('PDF error:', err);
-    // Fallback a window.print
-    window.print();
-  }
-
-  if (btn) { btn.textContent = '🖨️ Exportar PDF'; btn.disabled = false; }
+    document.title = 'Reporte Mensual — Telconet';
+    if (btn) { btn.textContent = '🖨️ Exportar PDF'; btn.disabled = false; }
+  }, 1000);
 }
 
 
