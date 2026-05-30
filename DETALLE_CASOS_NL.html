@@ -589,23 +589,16 @@ const SHEET_URL_NL = "https://docs.google.com/spreadsheets/d/1nDPwaqVCzE2M8L_e7c
 
 async function fetchSheetValues(mesNum) {
   try {
-    const resp = await fetch(SHEET_URL_NL);
-    const text = await resp.text();
-    const rows = text.trim().split('\n').map(r => r.split(','));
-    
-    let pctRev = null, pctRec = null;
-    for (const row of rows) {
-      const mes   = row[0]?.trim().replace(/"/g,'');
-      const item  = row[1]?.trim().replace(/"/g,'');
-      const valor = row[2]?.trim().replace(/"/g,'');
-      if (mes === String(mesNum)) {
-        if (item === '% DE REVISITAS')   pctRev = (parseFloat(valor) * 100).toFixed(1);
-        if (item === '% DE RECURRENCIA') pctRec = (parseFloat(valor) * 100).toFixed(2);
-      }
+    // Leer % revisitas y recurrencias via Apps Script
+    const url = `https://script.google.com/macros/s/AKfycbz7EgJ2INnGKrhC6qt7bX8K-Rzdysr-hc8EZOOUGVHH1YUkB-LhDicZTcO3-2VTGAbR/exec?accion=sheet&empresa=NL&mes=${mesNum}&sheetId=1nDPwaqVCzE2M8L_e7c3Kut8w5Uh2ZzZMKHic5RcjKUQ&gid=1212648034`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.pctRev !== undefined) {
+      return { pctRev: data.pctRev, pctRec: data.pctRec };
     }
-    return { pctRev, pctRec };
+    return { pctRev: null, pctRec: null };
   } catch(e) {
-    console.warn('No se pudo leer Google Sheet:', e);
+    console.warn('fetchSheetValues error:', e.message);
     return { pctRev: null, pctRec: null };
   }
 }
