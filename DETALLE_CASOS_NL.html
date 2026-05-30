@@ -770,8 +770,12 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
   });
   const cajas = Object.entries(cajaMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
 
-  // ── BACKBONE
-  const bbCasos = casos.filter(r => String(r['TIPO_CASO']||'').toUpperCase().includes('BACK'));
+  // ── BACKBONE — usar rawFinal deduplicado (incluye casos con #CASOS=0)
+  const todosCasos = rawFinal.filter((r, i, arr) => {
+    const id = String(r[keyCaso]||'').trim();
+    return id && arr.findIndex(x => String(x[keyCaso]||'').trim() === id) === i;
+  });
+  const bbCasos = todosCasos.filter(r => String(r['TIPO_CASO']||'').toUpperCase().includes('BACK'));
   const bbFin   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Finalizada');
   const bbCan   = bbCasos.filter(r => r['ESTADO_ULT_DET_HIS'] === 'Cancelada');
 
