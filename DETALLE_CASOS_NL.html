@@ -980,7 +980,7 @@ function renderDashboard(d) {
 
   // Detalle revisitas
   const trd = document.getElementById('tabla-rev-detalle');
-  const revRows = d.rawFinal ? d.rawFinal.filter(r=>{
+  const revRows = (d.rawFinal || d.raw || []).filter(r=>{
     const v=String(r['VERSION_FIN']||'').trim();
     return v!==''&&v!=='-'&&v!=='nan';
   }).slice(0,5);
