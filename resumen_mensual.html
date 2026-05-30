@@ -750,8 +750,10 @@ async function fetchSheetKPIs(tab, mes) {
   if (!gid) return null;
   try {
     const url = `${APPS_URL}?accion=sheet&empresa=${tab.toUpperCase()}&mes=${mes}&sheetId=${SHEET_ID_KPI}&gid=${gid}`;
+    console.log('fetchSheetKPIs URL:', url);
     const resp = await fetch(url);
     const data = await resp.json();
+    console.log('fetchSheetKPIs raw response:', JSON.stringify(data));
     if (data.pctRev !== undefined) return data;
     return null;
   } catch(e) {
@@ -1130,9 +1132,16 @@ async function renderSop(tab){
 
   // Leer revisitas y recurrencias del Google Sheet
   const sheetKPI = await fetchSheetKPIs(tab, mesSel);
+  console.log('sheetKPI response:', JSON.stringify(sheetKPI));
   if (sheetKPI) {
-    if (sheetKPI.pctRev !== null) d.revisitas   = parseFloat(sheetKPI.pctRev);
-    if (sheetKPI.pctRec !== null) d.recurrencia = parseFloat(sheetKPI.pctRec);
+    if (sheetKPI.pctRev !== null && sheetKPI.pctRev !== undefined) {
+      d.revisitas   = parseFloat(sheetKPI.pctRev);
+      console.log('revisitas from sheet:', d.revisitas);
+    }
+    if (sheetKPI.pctRec !== null && sheetKPI.pctRec !== undefined) {
+      d.recurrencia = parseFloat(sheetKPI.pctRec);
+      console.log('recurrencia from sheet:', d.recurrencia);
+    }
   }
 
   // btn-det removed
