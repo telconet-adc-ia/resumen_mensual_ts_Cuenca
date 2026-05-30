@@ -663,12 +663,19 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
     return;
   }
 
-  // Normalizar claves (eliminar espacios extra que pueden venir del Apps Script)
-  const rawNorm = raw.map(r => {
-    const obj = {};
-    Object.keys(r).forEach(k => { obj[k.trim()] = r[k]; });
-    return obj;
-  });
+  // Normalizar claves y filtrar filas inválidas (ej: fila "Totales" sin NUMERO_CASO)
+  const rawNorm = raw
+    .map(r => {
+      const obj = {};
+      Object.keys(r).forEach(k => { obj[k.trim()] = r[k]; });
+      return obj;
+    })
+    .filter(r => {
+      // Eliminar filas sin NUMERO_CASO o con PUNTO_JURISDICCION = "Totales"
+      const num = String(r['NUMERO_CASO']||'').trim();
+      const jur = String(r['PUNTO_JURISDICCION']||'').trim().toLowerCase();
+      return num !== '' && jur !== 'totales';
+    });
 
   // Detectar nombre exacto de la columna NUMERO_CASO
   const keyCaso = Object.keys(rawNorm[0] || {}).find(k =>
@@ -772,15 +779,21 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
 
   // ── BACKBONE — filtrar directamente de rawFinal por NUMERO_CASO terminado en B
   // o por TIPO_CASO que contenga BACK
+  // Sample TIPO_CASO values to debug
+  const tiposMuestra = [...new Set(rawFinal.slice(0,20).map(r => String(r['TIPO_CASO']||'').trim()))];
+  console.log('DEBUG TIPO_CASO sample values:', tiposMuestra);
+  console.log('DEBUG rawFinal length:', rawFinal.length);
+
   const seenBB = new Set();
   const bbCasos = rawFinal.filter(r => {
     const num = String(r[keyCaso]||'').trim();
-    const tipo = String(r['TIPO_CASO']||r['TIPO_C']||'').toUpperCase();
+    const tipo = String(r['TIPO_CASO']||'').toUpperCase();
     const esBackbone = tipo.includes('BACK') || num.endsWith('B');
     if (!esBackbone || seenBB.has(num)) return false;
     seenBB.add(num);
     return true;
   });
+  console.log('DEBUG bbCasos found:', bbCasos.length);
   const bbFin = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Finalizada');
   const bbCan = bbCasos.filter(r => String(r['ESTADO_ULT_DET_HIS']||'').trim() === 'Cancelada');
 
