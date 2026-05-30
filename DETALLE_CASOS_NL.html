@@ -533,9 +533,14 @@ async function cargarDesdeScript(mes) {
   setMsg('Conectando con Google Drive...');
 
   try {
-    // Leer % revisitas y recurrencias del Google Sheet
+    // Leer % revisitas y recurrencias del Google Sheet (no bloquea si falla)
     setMsg('Leyendo informe mensual...');
-    const sheetVals = await fetchSheetValues(mes);
+    let sheetVals = { pctRev: null, pctRec: null };
+    try {
+      sheetVals = await fetchSheetValues(mes);
+    } catch(sheetErr) {
+      console.warn('No se pudo leer Google Sheet (continuando sin %revisitas):', sheetErr.message);
+    }
 
     setMsg('Descargando datos del mes...');
     const url = `${APPS_SCRIPT_URL}?accion=datos&empresa=${EMPRESA}&mes=${mes}&anio=${ANIO}`;
