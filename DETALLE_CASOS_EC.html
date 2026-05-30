@@ -666,10 +666,13 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null) {
 
   console.log('DEBUG key NUMERO_CASO detectada:', keyCaso);
 
-  // Deduplicate by NUMERO_CASO
+  // Deduplicate by NUMERO_CASO — solo casos técnicos (excluir backbone)
   const seen = new Set();
   const casos = rawNorm.filter(r => {
-    const id = String(r[keyCaso] || '').trim();
+    const id   = String(r[keyCaso] || '').trim();
+    const tipo = String(r['TIPO_CASO'] || '').toUpperCase();
+    // Excluir backbone (TIPO_CASO=CASO BACKBONE o NUMERO_CASO termina en B)
+    if (tipo.includes('BACK') || id.endsWith('B')) return false;
     if (!id || seen.has(id)) return false;
     seen.add(id);
     return true;
