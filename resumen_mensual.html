@@ -335,7 +335,8 @@ canvas { max-height: 160px; }
         <option value="1">Enero</option>
         <option value="2">Febrero</option>
         <option value="3">Marzo</option>
-        <option value="4" selected>Abril</option>
+        <option value="4">Abril</option>
+        <option value="5" selected>Mayo</option>
       </select>
     </div>
     <div class="empresa-pill" id="empresa-pill" style="display:none">
@@ -1069,7 +1070,7 @@ const HDR = {
 // ════════════════════════════════
 //  STATE
 // ════════════════════════════════
-let mesSel=4, empSel='todas', panelSel='ins', charts={};
+let mesSel=5, empSel='todas', panelSel='ins', charts={};
 
 const labelPlugin = {
   id:'lbl',
@@ -1541,12 +1542,52 @@ async function fetchIns(mes) {
   } catch(e) { console.warn('fetchIns error:', e.message); return null; }
 }
 
+
+// ════════════════════════════════════════
+//  CARGAR MESES DISPONIBLES AL INICIO
+// ════════════════════════════════════════
+async function cargarMesesDisponiblesJefatura() {
+  try {
+    const url = `${APPS_URL}?accion=meses&sheetId=${SHEET_ID_KPI}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error || !data.meses?.length) return;
+
+    const sel = document.getElementById('mesSelect');
+    if (!sel) return;
+
+    const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+    // Rebuild selector with all available months
+    const currentVal = parseInt(sel.value);
+    sel.innerHTML = '';
+    data.meses.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = MESES_NOMBRES[m] || 'Mes ' + m;
+      sel.appendChild(opt);
+    });
+
+    // Select last month (most recent)
+    const lastMes = data.meses[data.meses.length - 1];
+    sel.value = data.meses.includes(currentVal) ? currentVal : lastMes;
+    mesSel = parseInt(sel.value);
+
+    // Update month label
+    set('mes-lbl', MESES_NOMBRES[mesSel]?.toLowerCase() || mesSel);
+    console.log('Meses disponibles:', data.meses, '→ seleccionado:', mesSel);
+  } catch(e) {
+    console.warn('Error cargando meses:', e.message);
+  }
+}
+
 function actualizarSelectorMeses(mesesDisponibles) {
   const sel = document.getElementById('mesSelect');
   if (!sel) return;
   const MESES_NOMBRES = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio',
                          'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const currentVal = sel.value;
+  const currentVal = sel.value || mesSel;
   mesesDisponibles.forEach(m => {
     if (!sel.querySelector(`option[value="${m}"]`)) {
       const opt = document.createElement('option');
@@ -1616,7 +1657,15 @@ function toggleSidebar(){
 // ════════════════════════════════
 //  INIT
 // ════════════════════════════════
-window.addEventListener('load',()=>{
+window.addEventListener('load', async ()=>{
+  // 1. Fetch all available months from sheet and update selector
+  await cargarMesesDisponiblesJefatura();
+
+  // Set mesSel to the last available month
+  const sel = document.getElementById('mesSelect');
+  if (sel && sel.options.length > 0) {
+    mesSel = parseInt(sel.value) || 5;
+  }
   // Add PDF button to header
   const subrow = document.querySelector('.subrow');
   if(subrow && !document.getElementById('pdf-btn-added')) {
