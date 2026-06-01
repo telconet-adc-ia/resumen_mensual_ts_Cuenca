@@ -841,8 +841,8 @@ async function fetchSheetKPIs(tab, mes) {
   }
 }
 
-const MESES_L = ['','enero','febrero','marzo','abril'];
-const MESES_F = ['','Enero','Febrero','Marzo','Abril'];
+const MESES_L = ['','enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MESES_F = ['','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 
 
@@ -1350,18 +1350,38 @@ function cambiarTTGTipo(v){
   renderTTG();
 }
 
-function renderInt(){
-  const d = INT_DATA[mesSel];
+async function renderInt(){
   const ml = MESES_L[mesSel];
   const G='#2e7d32', T='#0097a7', B='#1565c0';
 
-  mkSingle('int-c-inc',    d.incidentes, G, '');
-  mkSingle('int-c-tprom',  d.tprom,      T, 'h');
-  mkSingle('int-c-rec',    d.recorridos, B, '');
-  mkSingle('int-c-precor', d.precorridos,T, '%');
-  mkSingle('int-c-manga',  d.mangas,     B, '');
-  mkSingle('int-c-tmanga', d.tmanga,     T, 'h');
-  mkSingle('int-c-rutas',  d.rutas,      B, '');
+  // Leer desde Google Sheet, fallback a datos estáticos
+  const sheetData = await fetchInterurbano(mesSel);
+  const st = INT_DATA[mesSel] || {};
+  const d = {
+    incidentes:  sheetData?.incidentes  ?? st.incidentes  ?? 0,
+    tprom:       sheetData?.tprom       ?? st.tprom       ?? 0,
+    recorridos:  sheetData?.recorridos  ?? st.recorridos  ?? 0,
+    precorridos: sheetData?.precorridos ?? st.precorridos ?? 0,
+    mangas:      sheetData?.mangas      ?? st.mangas      ?? 0,
+    tmanga:      sheetData?.tmanga      ?? st.tmanga      ?? 0,
+    rutas:       sheetData?.rutas       ?? st.rutas       ?? 0,
+    o_inc:       sheetData?.o_inc       ?? st.o_inc       ?? '',
+    o_tprom:     sheetData?.o_tprom     ?? st.o_tprom     ?? '',
+    o_rec:       sheetData?.o_rec       ?? st.o_rec       ?? '',
+    o_precor:    sheetData?.o_precor    ?? st.o_precor    ?? '',
+    o_manga:     sheetData?.o_manga     ?? st.o_manga     ?? '',
+    o_tmanga:    sheetData?.o_tmanga    ?? st.o_tmanga    ?? '',
+    o_rutas:     sheetData?.o_rutas     ?? st.o_rutas     ?? '',
+    rutas_txt:   st.rutas_txt           ?? '',
+  };
+
+  mkSingle('int-c-inc',    d.incidentes,  G, '');
+  mkSingle('int-c-tprom',  d.tprom,       T, 'h');
+  mkSingle('int-c-rec',    d.recorridos,  B, '');
+  mkSingle('int-c-precor', d.precorridos, T, '%');
+  mkSingle('int-c-manga',  d.mangas,      B, '');
+  mkSingle('int-c-tmanga', d.tmanga,      T, 'h');
+  mkSingle('int-c-rutas',  d.rutas,       B, '');
 
   [['inc','o_inc'],['tprom','o_tprom'],['rec','o_rec'],['precor','o_precor'],
    ['manga','o_manga'],['tmanga','o_tmanga'],['rutas','o_rutas']].forEach(([k,ok])=>{
@@ -1413,6 +1433,28 @@ function cambiarItem(v){
 }
 
 
+
+// ════════════════════════════════════════
+//  LEER INTERURBANO DESDE GOOGLE SHEET
+// ════════════════════════════════════════
+const GID_INTERURBANO = '328250044';
+
+async function fetchInterurbano(mes) {
+  try {
+    const url = `${APPS_URL}?accion=interurbano&mes=${mes}&sheetId=${SHEET_ID_KPI}&gid=${GID_INTERURBANO}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) { console.warn('Interurbano error:', data.error); return null; }
+
+    // Actualizar selector de meses si hay nuevos
+    if (data.mesesDisponibles) actualizarSelectorMeses(data.mesesDisponibles);
+    return data;
+  } catch(e) {
+    console.warn('fetchInterurbano error:', e.message);
+    return null;
+  }
+}
+
 function actualizarSelectorMeses(mesesDisponibles) {
   const sel = document.getElementById('mesSelect');
   if (!sel) return;
@@ -1447,7 +1489,7 @@ function switchPanel(panel){
   setTimeout(async ()=>{
     if(panel==='ins') renderIns();
     else if(panel==='construccion') renderCon();
-    else if(panel==='interurbano') renderInt();
+    else if(panel==='interurbano') await renderInt();
     else if(panel==='retiro') renderRet();
     else if(panel==='ttg') renderTTG();
     else if(['nl','ec','tn'].includes(panel)) await renderSop(panel);
