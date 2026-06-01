@@ -1609,6 +1609,36 @@ async function cargarMesesDisponiblesJefatura() {
   }
 }
 
+const GID_RETIRO = '312925500';
+const GID_TTG    = '1830987182';
+
+async function fetchRetiro(mes) {
+  if (_retCache[mes]) return _retCache[mes];
+  try {
+    const url = `${APPS_URL}?accion=retiro&mes=${mes}&sheetId=${SHEET_ID_KPI}&gid=${GID_RETIRO}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) { console.warn('Retiro error:', data.error); return null; }
+    if (data.mesesDisponibles) actualizarSelectorMeses(data.mesesDisponibles);
+    _retCache[mes] = data;
+    return data;
+  } catch(e) { console.warn('fetchRetiro error:', e.message); return null; }
+}
+
+async function fetchTTG(mes) {
+  if (_ttgCache[mes]) return _ttgCache[mes];
+  try {
+    const url = `${APPS_URL}?accion=ttg&mes=${mes}&sheetId=${SHEET_ID_KPI}&gid=${GID_TTG}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) { console.warn('TTG error:', data.error); return null; }
+    if (data.mesesDisponibles) actualizarSelectorMeses(data.mesesDisponibles);
+    _ttgCache[mes] = data;
+    return data;
+  } catch(e) { console.warn('fetchTTG error:', e.message); return null; }
+}
+
+
 function actualizarSelectorMeses(mesesDisponibles) {
   const sel = document.getElementById('mesSelect');
   if (!sel) return;
