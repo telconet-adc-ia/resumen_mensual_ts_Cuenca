@@ -1163,11 +1163,11 @@ async function renderIns(){
     ? _insCache[mesSel]
     : { empresas: INS_DATA[mesSel] || {} };
 
-  // Map to same structure as INS_DATA
-  const mes = mesData.empresas
-    ? { NETLIFE: mesData.empresas['NETLIFE']||mesData.empresas['NL']||{ins:0,sop:0,can:0},
+  // Map to same structure as INS_DATA (mesObj to avoid conflict with global mesSel)
+  const mesObj = mesData.empresas
+    ? { NETLIFE:  mesData.empresas['NETLIFE'] ||mesData.empresas['NL']||{ins:0,sop:0,can:0},
         TELCONET: mesData.empresas['TELCONET']||mesData.empresas['TN']||{ins:0,sop:0,can:0},
-        ECUANET: mesData.empresas['ECUANET']||mesData.empresas['EC']||{ins:0,sop:0,can:0} }
+        ECUANET:  mesData.empresas['ECUANET'] ||mesData.empresas['EC']||{ins:0,sop:0,can:0} }
     : (INS_DATA[mesSel] || {NETLIFE:{ins:0,sop:0,can:0},TELCONET:{ins:0,sop:0,can:0},ECUANET:{ins:0,sop:0,can:0}});
 
   let empresas, labels;
@@ -1175,9 +1175,9 @@ async function renderIns(){
   if(empSel==='todas'){
     empresas=['NETLIFE','TELCONET','ECUANET'];
     labels=['4']; // mes number as x label like original
-    const ins=empresas.reduce((a,e)=>a+mes[e].ins,0);
-    const sop=empresas.reduce((a,e)=>a+mes[e].sop,0);
-    const can=empresas.reduce((a,e)=>a+mes[e].can,0);
+    const ins=empresas.reduce((a,e)=>a+mesObj[e].ins,0);
+    const sop=empresas.reduce((a,e)=>a+mesObj[e].sop,0);
+    const can=empresas.reduce((a,e)=>a+mesObj[e].can,0);
     mkChart('ins-main-chart',
       [mesSel.toString()],
       [
@@ -1188,7 +1188,7 @@ async function renderIns(){
       {legend:{display:true,labels:{font:{size:10},boxWidth:14,padding:12}}}
     );
   } else {
-    const d=mes[empSel];
+    const d=mesObj[empSel];
     mkChart('ins-main-chart',
       [mesSel.toString()],
       [
@@ -1572,13 +1572,13 @@ function switchPanel(panel){
   show('kpi2-box',  ['nl','ec','tn'].includes(panel));
 
 
-  setTimeout(async ()=>{
-    if(panel==='ins') await renderIns();
-    else if(panel==='construccion') await renderCon();
-    else if(panel==='interurbano') await renderInt();
-    else if(panel==='retiro') await renderRet();
-    else if(panel==='ttg') await renderTTG();
-    else if(['nl','ec','tn'].includes(panel)) await renderSop(panel);
+  setTimeout(()=>{
+    if(panel==='ins') renderIns();
+    else if(panel==='construccion') renderCon();
+    else if(panel==='interurbano') renderInt();
+    else if(panel==='retiro') renderRet();
+    else if(panel==='ttg') renderTTG();
+    else if(['nl','ec','tn'].includes(panel)) renderSop(panel);
   }, 50);
 }
 
