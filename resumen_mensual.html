@@ -1347,7 +1347,7 @@ async function renderTTG(){
   const cuadrillas = ttgMes[ttgTipoSel] || Object.values(ttgMes)[0] || [];
   const vals = cuadrillas.map(c => c.v);
   const prom = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : '—';
-  set('ttg-prom', prom);
+  set('ttg-prom', prom); // TTG index, no units
   set('ttg-total', cuadrillas.length);
   set('ttg-tipo-lbl', ttgTipoSel);
 
@@ -1363,12 +1363,12 @@ async function renderTTG(){
     data: {
       labels,
       datasets: [{
-        label: 'TTG (h)',
+        label: 'TTG',
         data: vals,
         backgroundColor: '#1565c0',
         borderRadius: 4,
         barPercentage: 0.6,
-        _sfx: 'h'
+        _sfx: ''
       }]
     },
     options: {
@@ -1377,26 +1377,26 @@ async function renderTTG(){
       animation: { duration: 300 },
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: c => ` ${c.raw}h — ${c.label}` } },
+        tooltip: { callbacks: { label: c => ` ${c.raw} — ${c.label}` } },
         annotation: {
           annotations: {
             lineMin: {
               type: 'line', yMin: TTG_MIN, yMax: TTG_MIN,
               borderColor: '#22c55e', borderWidth: 2, borderDash: [6,4],
-              label: { display: true, content: `Mín ${TTG_MIN}h`, position: 'end',
+              label: { display: true, content: `Mín ${TTG_MIN}`, position: 'end',
                        font: { size: 9 }, color: '#22c55e' }
             },
             lineMax: {
               type: 'line', yMin: TTG_MAX, yMax: TTG_MAX,
               borderColor: '#ef4444', borderWidth: 2, borderDash: [6,4],
-              label: { display: true, content: `Máx ${TTG_MAX}h`, position: 'end',
+              label: { display: true, content: `Máx ${TTG_MAX}`, position: 'end',
                        font: { size: 9 }, color: '#ef4444' }
             }
           }
         }
       },
       scales: {
-        y: { beginAtZero: true, grid: { color: '#e8f0fb' }, ticks: { font: { size: 9 }, callback: v => v+'h' } },
+        y: { beginAtZero: true, grid: { color: '#e8f0fb' }, ticks: { font: { size: 9 } } },
         x: { grid: { display: false }, ticks: { font: { size: 8 }, maxRotation: 45 } }
       }
     },
