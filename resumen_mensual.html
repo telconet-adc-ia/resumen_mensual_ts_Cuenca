@@ -1571,12 +1571,14 @@ async function cargarMesesDisponiblesJefatura() {
 
     // Select last month (most recent)
     const lastMes = data.meses[data.meses.length - 1];
-    sel.value = data.meses.includes(currentVal) ? currentVal : lastMes;
-    mesSel = parseInt(sel.value);
+    const selMes = data.meses.includes(currentVal) ? currentVal : lastMes;
+    sel.value = selMes;
+    mesSel = parseInt(selMes);
 
-    // Update month label
-    set('mes-lbl', MESES_NOMBRES[mesSel]?.toLowerCase() || mesSel);
-    console.log('Meses disponibles:', data.meses, '→ seleccionado:', mesSel);
+    // Update month label in header
+    const mesLabel = MESES_NOMBRES[mesSel] || ('Mes ' + mesSel);
+    set('mes-lbl', mesLabel.toLowerCase());
+    console.log('Meses disponibles:', data.meses, '→ seleccionado:', mesSel, mesLabel);
   } catch(e) {
     console.warn('Error cargando meses:', e.message);
   }
@@ -1661,10 +1663,13 @@ window.addEventListener('load', async ()=>{
   // 1. Fetch all available months from sheet and update selector
   await cargarMesesDisponiblesJefatura();
 
-  // Set mesSel to the last available month
+  // mesSel already set by cargarMesesDisponiblesJefatura
   const sel = document.getElementById('mesSelect');
   if (sel && sel.options.length > 0) {
-    mesSel = parseInt(sel.value) || 5;
+    mesSel = parseInt(sel.value) || mesSel;
+    const MESES_NOMBRES2 = ['','enero','febrero','marzo','abril','mayo','junio',
+                            'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    set('mes-lbl', MESES_NOMBRES2[mesSel] || mesSel);
   }
   // Add PDF button to header
   const subrow = document.querySelector('.subrow');
