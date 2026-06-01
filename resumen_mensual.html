@@ -1388,10 +1388,35 @@ async function renderInt(){
   if(rt) rt.innerHTML=d.rutas_txt;
 }
 
+// Cache de datos de construcción por mes
+const _conCache = {};
+
 async function renderCon(){
-  // Leer desde Google Sheet, fallback a datos estáticos
-  const sheetData = await fetchConstruccion(mesSel);
-  const items = sheetData?.items?.length ? sheetData.items : (CON_DATA[mesSel] || []);
+  // 1. Fetch solo si no está en cache para este mes
+  if (!_conCache[mesSel]) {
+    const sheetData = await fetchConstruccion(mesSel);
+    _conCache[mesSel] = sheetData?.items?.length
+      ? sheetData.items
+      : (CON_DATA[mesSel] || []);
+  }
+  renderConItems();
+}
+
+function renderConItems(){
+  const items = _conCache[mesSel] || CON_DATA[mesSel] || [];
+  if (!items.length) return;
+
+  // Poblar selector solo la primera vez o al cambiar mes
+  const itemSel = document.getElementById('con-item-sel');
+  if (itemSel) {
+    const currentLabels = [...itemSel.options].map(o=>o.text);
+    const newLabels = items.map(it=>it.item);
+    // Solo repoblar si cambiaron los items (evita reset del valor seleccionado)
+    if (JSON.stringify(currentLabels) !== JSON.stringify(newLabels)) {
+      itemSel.innerHTML = items.map((it,i)=>`<option value="${i}">${it.item}</option>`).join('');
+      conItemSel = 0;
+    }
+  }
 
   const d = items[conItemSel] || items[0] || {item:'—', valor:0, obs:'Sin datos'};
   set('con-item-lbl', d.item);
@@ -1399,32 +1424,26 @@ async function renderCon(){
   set('con-obs-item', d.item);
   set('con-obs-txt',  d.obs);
 
-  // Update item selector with items from sheet
-  const itemSel = document.getElementById('con-item-sel');
-  if(itemSel && items.length) {
-    const currentVal = itemSel.value;
-    itemSel.innerHTML = items.map((it,i)=>`<option value="${i}">${it.item}</option>`).join('');
-    itemSel.value = currentVal < items.length ? currentVal : 0;
-  }
-
   if(charts['con-main']){ charts['con-main'].destroy(); delete charts['con-main']; }
   const el=document.getElementById('con-main-chart'); if(!el) return;
   charts['con-main']=new Chart(el,{
     type:'bar',
     data:{
-      labels:[mesSel.toString()],
-      datasets:[{label:'VALOR',data:[d.valor],backgroundColor:'#1976d2',borderRadius:4,barPercentage:0.5,_sfx:''}]
+      labels:[MESES_F[mesSel]],
+      datasets:[{label:d.item, data:[d.valor], backgroundColor:'#1976d2',
+                 borderRadius:4, barPercentage:0.5, _sfx:''}]
     },
     options:{
       responsive:true,
+      layout:{padding:{top:20}},
       animation:{duration:300},
       plugins:{
-        legend:{display:true,labels:{font:{size:10},boxWidth:14,padding:10}},
+        legend:{display:false},
         tooltip:{callbacks:{label:c=>` ${c.raw}`}}
       },
       scales:{
-        y:{beginAtZero:true,grid:{color:'#e8f0fb'},ticks:{font:{size:9}}},
-        x:{grid:{display:false},ticks:{font:{size:11,weight:'600'}}}
+        y:{beginAtZero:true, grid:{color:'#e8f0fb'}, ticks:{font:{size:9}}},
+        x:{grid:{display:false}, ticks:{font:{size:11,weight:'600'}}}
       }
     },
     plugins:[labelPlugin]
@@ -1525,6 +1544,7 @@ function switchPanel(panel){
 
 function cambiarMes(v){
   mesSel=parseInt(v);
+  conItemSel=0; // reset item selection on month change
   set('mes-lbl', MESES_L[mesSel]);
   switchPanel(panelSel);
 }
