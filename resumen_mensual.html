@@ -1626,13 +1626,20 @@ function switchPanel(panel){
 }
 
 function cambiarMes(v){
-  mesSel=parseInt(v);
-  conItemSel=0; // reset item selection on month change
+  const mesAnterior = mesSel;
+  mesSel = parseInt(v);
+  conItemSel = 0;
+  // Borrar cache del mes anterior para forzar nuevo fetch si regresa
+  delete _conCache[mesAnterior];
+  delete _retCache[mesAnterior];
+  delete _ttgCache[mesAnterior];
+  delete _insCache[mesAnterior];
+  // También borrar cache del nuevo mes para forzar fetch fresco
   delete _conCache[mesSel];
   delete _retCache[mesSel];
   delete _ttgCache[mesSel];
-  delete _insCache[mesSel]; // clear cache to force fresh fetch
-  set('mes-lbl', MESES_L[mesSel]);
+  delete _insCache[mesSel];
+  set('mes-lbl', MESES_L[mesSel] || ('mes ' + mesSel));
   switchPanel(panelSel);
 }
 
