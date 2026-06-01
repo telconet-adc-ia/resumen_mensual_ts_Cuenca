@@ -1388,13 +1388,24 @@ async function renderInt(){
   if(rt) rt.innerHTML=d.rutas_txt;
 }
 
-function renderCon(){
-  const items = CON_DATA[mesSel];
-  const d = items[conItemSel] || items[0];
+async function renderCon(){
+  // Leer desde Google Sheet, fallback a datos estáticos
+  const sheetData = await fetchConstruccion(mesSel);
+  const items = sheetData?.items?.length ? sheetData.items : (CON_DATA[mesSel] || []);
+
+  const d = items[conItemSel] || items[0] || {item:'—', valor:0, obs:'Sin datos'};
   set('con-item-lbl', d.item);
   set('con-obs-mes',  MESES_L[mesSel]);
   set('con-obs-item', d.item);
   set('con-obs-txt',  d.obs);
+
+  // Update item selector with items from sheet
+  const itemSel = document.getElementById('con-item-sel');
+  if(itemSel && items.length) {
+    const currentVal = itemSel.value;
+    itemSel.innerHTML = items.map((it,i)=>`<option value="${i}">${it.item}</option>`).join('');
+    itemSel.value = currentVal < items.length ? currentVal : 0;
+  }
 
   if(charts['con-main']){ charts['con-main'].destroy(); delete charts['con-main']; }
   const el=document.getElementById('con-main-chart'); if(!el) return;
@@ -1451,6 +1462,26 @@ async function fetchInterurbano(mes) {
   }
 }
 
+
+// ════════════════════════════════════════
+//  LEER CONSTRUCCIÓN DESDE GOOGLE SHEET
+// ════════════════════════════════════════
+const GID_CONSTRUCCION = '1073962552';
+
+async function fetchConstruccion(mes) {
+  try {
+    const url = `${APPS_URL}?accion=construccion&mes=${mes}&sheetId=${SHEET_ID_KPI}&gid=${GID_CONSTRUCCION}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) { console.warn('Construccion error:', data.error); return null; }
+    if (data.mesesDisponibles) actualizarSelectorMeses(data.mesesDisponibles);
+    return data;
+  } catch(e) {
+    console.warn('fetchConstruccion error:', e.message);
+    return null;
+  }
+}
+
 function actualizarSelectorMeses(mesesDisponibles) {
   const sel = document.getElementById('mesSelect');
   if (!sel) return;
@@ -1484,7 +1515,7 @@ function switchPanel(panel){
 
   setTimeout(async ()=>{
     if(panel==='ins') renderIns();
-    else if(panel==='construccion') renderCon();
+    else if(panel==='construccion') await renderCon();
     else if(panel==='interurbano') await renderInt();
     else if(panel==='retiro') renderRet();
     else if(panel==='ttg') renderTTG();
