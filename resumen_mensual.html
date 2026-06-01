@@ -330,7 +330,7 @@ canvas { max-height: 160px; }
   <!-- SUBROW -->
   <div class="subrow">
     <div class="mes-pill">
-      MES: <span id="mes-lbl">abril</span>&nbsp;(1) ▼
+      MES: <span id="mes-lbl">mayo</span> ▼
       <select id="mesSelect" onchange="cambiarMes(this.value)">
         <option value="1">Enero</option>
         <option value="2">Febrero</option>
@@ -1070,7 +1070,7 @@ const HDR = {
 // ════════════════════════════════
 //  STATE
 // ════════════════════════════════
-let mesSel=5, empSel='todas', panelSel='ins', charts={};
+let mesSel=4, empSel='todas', panelSel='ins', charts={};
 
 const labelPlugin = {
   id:'lbl',
@@ -1416,8 +1416,10 @@ async function renderInt(){
   if(rt) rt.innerHTML=d.rutas_txt;
 }
 
-// Cache de datos de construcción por mes
+// Cache de datos por sección y mes
 const _conCache = {};
+const _retCache = {};
+const _ttgCache = {};
 
 async function renderCon(){
   // 1. Fetch solo si no está en cache para este mes
@@ -1579,6 +1581,8 @@ async function cargarMesesDisponiblesJefatura() {
     const mesLabel = MESES_NOMBRES[mesSel] || ('Mes ' + mesSel);
     set('mes-lbl', mesLabel.toLowerCase());
     console.log('Meses disponibles:', data.meses, '→ seleccionado:', mesSel, mesLabel);
+    // Update mesSel globally
+    mesSel = parseInt(sel.value);
   } catch(e) {
     console.warn('Error cargando meses:', e.message);
   }
@@ -1677,6 +1681,7 @@ window.addEventListener('load', async ()=>{
     const MESES_NOMBRES2 = ['','enero','febrero','marzo','abril','mayo','junio',
                             'julio','agosto','septiembre','octubre','noviembre','diciembre'];
     set('mes-lbl', MESES_NOMBRES2[mesSel] || mesSel);
+    console.log('mesSel after load:', mesSel);
   }
   // Add PDF button to header
   const subrow = document.querySelector('.subrow');
