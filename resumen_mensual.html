@@ -1327,8 +1327,10 @@ async function renderTTG(){
     const sheetData = await fetchTTG(mesSel);
     if (sheetData?.tipos && Object.keys(sheetData.tipos).length) {
       _ttgCache[mesSel] = sheetData.tipos;
+      console.log('TTG mes', mesSel, '- tipos from sheet:', Object.keys(sheetData.tipos));
     } else {
-      _ttgCache[mesSel] = TTG_DATA[mesSel] || TTG_DATA[4] || {};
+      _ttgCache[mesSel] = TTG_DATA[mesSel] || {};
+      console.log('TTG mes', mesSel, '- using static data or empty');
     }
   }
 
