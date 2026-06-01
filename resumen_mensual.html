@@ -545,11 +545,6 @@ canvas { max-height: 160px; }
         <div class="mes-pill" style="display:inline-flex;min-width:220px">
           ITEM: <span id="con-item-lbl">1.-ÍNDICE ÓPTICO</span>&nbsp;(1) ▼
           <select id="conItemSelect" onchange="cambiarItem(this.value)">
-            <option value="0">1.-ÍNDICE ÓPTICO</option>
-            <option value="1">2.-INCIDENCIAS</option>
-            <option value="2">3.-TRABAJOS REGULATORIO</option>
-            <option value="3">4.-CAJAS CONSTRUIDAS</option>
-            <option value="4">5.-SATURACIÓN</option>
           </select>
         </div>
       </div>
@@ -1407,15 +1402,11 @@ function renderConItems(){
   if (!items.length) return;
 
   // Poblar selector solo la primera vez o al cambiar mes
-  const itemSel = document.getElementById('con-item-sel');
+  // Siempre repoblar el selector con items del mes actual
+  const itemSel = document.getElementById('conItemSelect');
   if (itemSel) {
-    const currentLabels = [...itemSel.options].map(o=>o.text);
-    const newLabels = items.map(it=>it.item);
-    // Solo repoblar si cambiaron los items (evita reset del valor seleccionado)
-    if (JSON.stringify(currentLabels) !== JSON.stringify(newLabels)) {
-      itemSel.innerHTML = items.map((it,i)=>`<option value="${i}">${it.item}</option>`).join('');
-      conItemSel = 0;
-    }
+    itemSel.innerHTML = items.map((it,i)=>`<option value="${i}">${it.item}</option>`).join('');
+    itemSel.value = conItemSel < items.length ? conItemSel : 0;
   }
 
   const d = items[conItemSel] || items[0] || {item:'—', valor:0, obs:'Sin datos'};
@@ -1451,11 +1442,8 @@ function renderConItems(){
 }
 
 function cambiarItem(v){
-  conItemSel=parseInt(v);
-  const items=CON_DATA[mesSel];
-  const d=items[conItemSel]||items[0];
-  set('con-item-lbl', d.item);
-  renderCon();
+  conItemSel = parseInt(v);
+  renderConItems();
 }
 
 
@@ -1545,6 +1533,7 @@ function switchPanel(panel){
 function cambiarMes(v){
   mesSel=parseInt(v);
   conItemSel=0; // reset item selection on month change
+  delete _conCache[mesSel]; // clear cache to force fresh fetch
   set('mes-lbl', MESES_L[mesSel]);
   switchPanel(panelSel);
 }
