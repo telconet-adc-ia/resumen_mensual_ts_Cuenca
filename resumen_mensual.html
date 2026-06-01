@@ -637,14 +637,7 @@ canvas { max-height: 160px; }
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap">
         <div class="mes-pill" style="display:inline-flex;min-width:220px">
           ITEM: <span id="ret-item-lbl">1.- EQUIPOS NL</span>&nbsp;(1) ▼
-          <select id="retItemSelect" onchange="cambiarRetItem(this.value)">
-            <option value="0">1.- EQUIPOS NL</option>
-            <option value="1">2.- RETIRO FIBRA NL</option>
-            <option value="2">3.- EQUIPOS EN</option>
-            <option value="3">4.- RETIRO FIBRA EN</option>
-            <option value="4">5.- EQUIPOS TN</option>
-            <option value="5">6.- RETIRO FIBRA TN</option>
-          </select>
+          <select id="retItemSelect" onchange="cambiarRetItem(this.value)"></select>
         </div>
         <div class="kpi-pill" style="margin-left:auto;border-color:#003087">
           <div class="lbl">PORCENTAJE</div>
@@ -1156,8 +1149,27 @@ function show(id,v){ const e=document.getElementById(id); if(e) e.style.display=
 // ════════════════════════════════
 //  RENDER INS X SOP X CAN
 // ════════════════════════════════
-function renderIns(){
-  const mes=INS_DATA[mesSel];
+async function renderIns(){
+  // Fetch from sheet, fallback to static data
+  if (!_insCache[mesSel]) {
+    const sheetData = await fetchIns(mesSel);
+    if (sheetData?.empresas && Object.keys(sheetData.empresas).length) {
+      _insCache[mesSel] = sheetData;
+    }
+  }
+
+  // Use sheet data if available, else fall back to INS_DATA
+  const mesData = _insCache[mesSel]?.empresas
+    ? _insCache[mesSel]
+    : { empresas: INS_DATA[mesSel] || {} };
+
+  // Map to same structure as INS_DATA
+  const mes = mesData.empresas
+    ? { NETLIFE: mesData.empresas['NETLIFE']||mesData.empresas['NL']||{ins:0,sop:0,can:0},
+        TELCONET: mesData.empresas['TELCONET']||mesData.empresas['TN']||{ins:0,sop:0,can:0},
+        ECUANET: mesData.empresas['ECUANET']||mesData.empresas['EC']||{ins:0,sop:0,can:0} }
+    : (INS_DATA[mesSel] || {NETLIFE:{ins:0,sop:0,can:0},TELCONET:{ins:0,sop:0,can:0},ECUANET:{ins:0,sop:0,can:0}});
+
   let empresas, labels;
 
   if(empSel==='todas'){
@@ -1289,14 +1301,34 @@ function cambiarRetItem(v){
   renderRet();
 }
 
-function renderTTG(){
-  const cuadrillas=(TTG_DATA[mesSel]||TTG_DATA[4])[ttgTipoSel]||[];
-  const vals=cuadrillas.map(c=>c.v);
-  const prom=vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : '—';
+async function renderTTG(){
+  if (!_ttgCache[mesSel]) {
+    const sheetData = await fetchTTG(mesSel);
+    if (sheetData?.tipos && Object.keys(sheetData.tipos).length) {
+      _ttgCache[mesSel] = sheetData.tipos;
+    } else {
+      _ttgCache[mesSel] = TTG_DATA[mesSel] || TTG_DATA[4] || {};
+    }
+  }
+
+  const ttgMes = _ttgCache[mesSel] || TTG_DATA[mesSel] || TTG_DATA[4] || {};
+
+  // Update tipo selector dynamically
+  const tipoSel = document.getElementById('ttgTipoSelect');
+  if (tipoSel) {
+    const tipos = Object.keys(ttgMes);
+    const currentVal = tipoSel.value;
+    tipoSel.innerHTML = tipos.map(t=>`<option value="${t}">${t}</option>`).join('');
+    if (tipos.includes(currentVal)) tipoSel.value = currentVal;
+    else { ttgTipoSel = tipos[0] || ttgTipoSel; tipoSel.value = ttgTipoSel; }
+  }
+
+  const cuadrillas = ttgMes[ttgTipoSel] || Object.values(ttgMes)[0] || [];
+  const vals = cuadrillas.map(c=>c.v);
+  const prom = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : '—';
   set('ttg-prom', prom);
   set('ttg-total', cuadrillas.length);
   set('ttg-tipo-lbl', ttgTipoSel);
-
   if(charts['ttg-main']){ charts['ttg-main'].destroy(); delete charts['ttg-main']; }
   const el=document.getElementById('ttg-main-chart'); if(!el) return;
   const TTG_MIN=4, TTG_MAX=5;
@@ -1489,6 +1521,26 @@ async function fetchConstruccion(mes) {
   }
 }
 
+
+// ════════════════════════════════════════
+//  LEER INS X SOP X CAN DESDE GOOGLE SHEET
+// ════════════════════════════════════════
+const GID_INS   = '0';
+const _insCache = {};
+
+async function fetchIns(mes) {
+  if (_insCache[mes]) return _insCache[mes];
+  try {
+    const url = `${APPS_URL}?accion=ins&mes=${mes}&sheetId=${SHEET_ID_KPI}&gid=${GID_INS}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.error) { console.warn('INS error:', data.error); return null; }
+    if (data.mesesDisponibles) actualizarSelectorMeses(data.mesesDisponibles);
+    _insCache[mes] = data;
+    return data;
+  } catch(e) { console.warn('fetchIns error:', e.message); return null; }
+}
+
 function actualizarSelectorMeses(mesesDisponibles) {
   const sel = document.getElementById('mesSelect');
   if (!sel) return;
@@ -1521,11 +1573,11 @@ function switchPanel(panel){
 
 
   setTimeout(async ()=>{
-    if(panel==='ins') renderIns();
+    if(panel==='ins') await renderIns();
     else if(panel==='construccion') await renderCon();
     else if(panel==='interurbano') await renderInt();
-    else if(panel==='retiro') renderRet();
-    else if(panel==='ttg') renderTTG();
+    else if(panel==='retiro') await renderRet();
+    else if(panel==='ttg') await renderTTG();
     else if(['nl','ec','tn'].includes(panel)) await renderSop(panel);
   }, 50);
 }
@@ -1533,7 +1585,10 @@ function switchPanel(panel){
 function cambiarMes(v){
   mesSel=parseInt(v);
   conItemSel=0; // reset item selection on month change
-  delete _conCache[mesSel]; // clear cache to force fresh fetch
+  delete _conCache[mesSel];
+  delete _retCache[mesSel];
+  delete _ttgCache[mesSel];
+  delete _insCache[mesSel]; // clear cache to force fresh fetch
   set('mes-lbl', MESES_L[mesSel]);
   switchPanel(panelSel);
 }
