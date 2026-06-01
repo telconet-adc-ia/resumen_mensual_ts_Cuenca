@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reporte Mensual — Telconet</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -686,9 +687,7 @@ canvas { max-height: 160px; }
             <option value="OBRA CIVIL">OBRA CIVIL</option>
           </select>
         </div>
-        <div class="mes-pill" style="display:inline-flex;min-width:130px">
-          CUADRILLAS ▼
-        </div>
+
         <div class="kpi-pill">
           <div class="lbl">PROMEDIO</div>
           <div class="val" id="ttg-prom" style="color:#003087">—</div>
@@ -1346,49 +1345,65 @@ async function renderTTG(){
   }
 
   const cuadrillas = ttgMes[ttgTipoSel] || Object.values(ttgMes)[0] || [];
-  const vals = cuadrillas.map(c=>c.v);
+  const vals = cuadrillas.map(c => c.v);
   const prom = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : '—';
   set('ttg-prom', prom);
   set('ttg-total', cuadrillas.length);
   set('ttg-tipo-lbl', ttgTipoSel);
+
   if(charts['ttg-main']){ charts['ttg-main'].destroy(); delete charts['ttg-main']; }
-  const el=document.getElementById('ttg-main-chart'); if(!el) return;
-  const TTG_MIN=4, TTG_MAX=5;
-  charts['ttg-main']=new Chart(el,{
-    type:'bar',
-    data:{
-      labels:cuadrillas.map(c=>c.c),
-      datasets:[
-        {label:'TTG',data:vals,backgroundColor:'#1976d2',borderRadius:4,barPercentage:0.55,_sfx:''},
-        {label:'TTG MÁXIMO ('+TTG_MAX+')',data:Array(cuadrillas.length).fill(TTG_MAX),type:'line',borderColor:'#555',borderDash:[6,3],borderWidth:1.5,pointRadius:0,fill:false},
-        {label:'TTG MÍNIMO ('+TTG_MIN+')',data:Array(cuadrillas.length).fill(TTG_MIN),type:'line',borderColor:'#888',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false},
-      ]
+  const el = document.getElementById('ttg-main-chart'); if(!el) return;
+
+  const TTG_MIN = 4, TTG_MAX = 5;
+  const labels = cuadrillas.map(c => c.c);
+  const barColors = '#1565c0';
+
+  charts['ttg-main'] = new Chart(el, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'TTG (h)',
+        data: vals,
+        backgroundColor: '#1565c0',
+        borderRadius: 4,
+        barPercentage: 0.6,
+        _sfx: 'h'
+      }]
     },
-    options:{
-      responsive:true,
-      animation:{duration:300},
-      plugins:{
-        legend:{display:true,labels:{font:{size:9},boxWidth:12,padding:8}},
-        tooltip:{callbacks:{label:c=>` ${c.raw}`}}
+    options: {
+      responsive: true,
+      layout: { padding: { top: 20 } },
+      animation: { duration: 300 },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${c.raw}h — ${c.label}` } },
+        annotation: {
+          annotations: {
+            lineMin: {
+              type: 'line', yMin: TTG_MIN, yMax: TTG_MIN,
+              borderColor: '#22c55e', borderWidth: 2, borderDash: [6,4],
+              label: { display: true, content: `Mín ${TTG_MIN}h`, position: 'end',
+                       font: { size: 9 }, color: '#22c55e' }
+            },
+            lineMax: {
+              type: 'line', yMin: TTG_MAX, yMax: TTG_MAX,
+              borderColor: '#ef4444', borderWidth: 2, borderDash: [6,4],
+              label: { display: true, content: `Máx ${TTG_MAX}h`, position: 'end',
+                       font: { size: 9 }, color: '#ef4444' }
+            }
+          }
+        }
       },
-      scales:{
-        y:{beginAtZero:true,min:0,max:6,grid:{color:'#e8f0fb'},ticks:{font:{size:9}}},
-        x:{grid:{display:false},ticks:{font:{size:8},maxRotation:45}}
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#e8f0fb' }, ticks: { font: { size: 9 }, callback: v => v+'h' } },
+        x: { grid: { display: false }, ticks: { font: { size: 8 }, maxRotation: 45 } }
       }
     },
-    plugins:[labelPlugin]
+    plugins: [labelPlugin]
   });
-
-  // observaciones table
-  const tbl=document.getElementById('ttg-obs-table');
-  const withObs=cuadrillas.filter(c=>c.obs);
-  tbl.innerHTML=withObs.length ? withObs.map((c,i)=>`
-    <tr style="border-bottom:1px solid #e8f0fb">
-      <td style="padding:6px 12px;font-weight:700;color:#003087;white-space:nowrap;font-size:10px">${c.c}</td>
-      <td style="padding:6px 12px;color:#444;font-size:10px;line-height:1.4">${c.obs}</td>
-    </tr>`).join('') : '<tr><td colspan="2" style="padding:10px 12px;color:#888;font-size:10px">Sin observaciones para este grupo.</td></tr>';
-  set('ttg-nav-lbl', `1 – ${withObs.length} / ${withObs.length}`);
 }
+
 
 function cambiarTTGTipo(v){
   ttgTipoSel=v;
