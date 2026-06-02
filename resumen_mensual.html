@@ -1698,19 +1698,13 @@ function switchPanel(panel){
 }
 
 function cambiarMes(v){
-  const mesAnterior = mesSel;
   mesSel = parseInt(v);
   conItemSel = 0;
-  // Borrar cache del mes anterior para forzar nuevo fetch si regresa
-  delete _conCache[mesAnterior];
-  delete _retCache[mesAnterior];
-  delete _ttgCache[mesAnterior];
-  delete _insCache[mesAnterior];
-  // También borrar cache del nuevo mes para forzar fetch fresco
-  delete _conCache[mesSel];
-  delete _retCache[mesSel];
-  delete _ttgCache[mesSel];
-  delete _insCache[mesSel];
+  // Limpiar TODO el cache para forzar fetch fresco en todos los meses
+  Object.keys(_conCache).forEach(k => delete _conCache[k]);
+  Object.keys(_retCache).forEach(k => delete _retCache[k]);
+  Object.keys(_ttgCache).forEach(k => delete _ttgCache[k]);
+  Object.keys(_insCache).forEach(k => delete _insCache[k]);
   set('mes-lbl', MESES_L[mesSel] || ('mes ' + mesSel));
   switchPanel(panelSel);
 }
