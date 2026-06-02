@@ -1244,9 +1244,11 @@ async function renderSop(tab){
   // btn-det removed
 
   mkSingle(`${tab}-c-sop`,   d.soportes,    B, '',  null);
-  mkSingle(`${tab}-c-rev`,   d.revisitas,   T, '%', getSemaforo(tab,'revisitas',d.revisitas));
+  const revVal = d.revisitas ? parseFloat(d.revisitas.toFixed(2)) : 0;
+  mkSingle(`${tab}-c-rev`,   revVal,   T, '%', getSemaforo(tab,'revisitas',revVal));
   mkSingle(`${tab}-c-cierr`, d.cierre,      B, '%', getSemaforo(tab,'cierre',d.cierre));
-  mkSingle(`${tab}-c-rec`,   d.recurrencia, T, '%', getSemaforo(tab,'recurrencia',d.recurrencia));
+  const recVal = d.recurrencia ? parseFloat(d.recurrencia.toFixed(2)) : 0;
+  mkSingle(`${tab}-c-rec`,   recVal,   T, '%', getSemaforo(tab,'recurrencia',recVal));
   mkSingle(`${tab}-c-bb`,    d.bb,          B, '',  null);
   mkSingle(`${tab}-c-tbb`,   d.tiempoBB,    T, 'h', getSemaforo(tab,'tiempoBB',d.tiempoBB));
 
