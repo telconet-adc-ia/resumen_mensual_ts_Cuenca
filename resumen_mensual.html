@@ -806,7 +806,7 @@ async function exportarPDF() {
 // ════════════════════════════════════════
 const APPS_URL    = 'https://script.google.com/macros/s/AKfycbzmhLCibNYYOddBZfUzrWWCxRR1BkIPQamQ-FefHdQfr0MMKFaQE_7XjeY3nzzmNFA5JQ/exec';
 const SHEET_ID_KPI = '1nDPwaqVCzE2M8L_e7c3Kut8w5Uh2ZzZMKHic5RcjKUQ';
-const GIDS_KPI = { nl:'1212648034', ec:'2038502531', tn:'' };
+const GIDS_KPI = { nl:'1212648034', ec:'2038502531', tn:'2125407970' };
 
 async function fetchSheetKPIs(tab, mes) {
   const gid = GIDS_KPI[tab];
@@ -1212,8 +1212,6 @@ async function renderSop(tab){
   const B='#1565c0', T='#0097a7';
 
   set('k1-lbl', tab==='tn'?'SERVICIOS ACTIVOS':'TOTAL ACTIVOS');
-  set('k1-val', d.activos ? Number(d.activos).toLocaleString('es-EC') : '—');
-  set('k2-val', d.vsActivos ? d.vsActivos.toFixed(2).replace('.',',')+' %' : '—');
 
   // Leer TODOS los KPIs del Google Sheet
   const sheetKPI = await fetchSheetKPIs(tab, mesSel);
@@ -1238,6 +1236,10 @@ async function renderSop(tab){
       actualizarSelectorMeses(sheetKPI.mesesDisponibles);
     }
   }
+
+  // Update header KPIs AFTER sheet data is loaded
+  set('k1-val', d.activos ? Number(d.activos).toLocaleString('es-EC') : '—');
+  set('k2-val', d.vsActivos ? d.vsActivos.toFixed(2).replace('.',',')+' %' : '—');
 
   // btn-det removed
 
