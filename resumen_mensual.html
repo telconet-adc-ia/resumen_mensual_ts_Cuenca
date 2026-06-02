@@ -1205,13 +1205,15 @@ async function renderIns(){
 //  RENDER SOPORTE
 // ════════════════════════════════
 async function renderSop(tab){
-  const d=SOP_DATA[tab][mesSel];
-  const ml=MESES_L[mesSel];
+  // Get static data as fallback, use empty object if month not available
+  const staticD = SOP_DATA[tab]?.[mesSel] || {soportes:0,cierre:0,revisitas:0,recurrencia:0,bb:0,tiempoBB:0,activos:0,vsActivos:0,o_sop:'',o_cierr:'',o_rev:'',o_rec:'',o_bb:'',o_tbb:''};
+  const d = {...staticD}; // mutable copy
+  const ml=MESES_L[mesSel]||('mes '+mesSel);
   const B='#1565c0', T='#0097a7';
 
   set('k1-lbl', tab==='tn'?'SERVICIOS ACTIVOS':'TOTAL ACTIVOS');
   set('k1-val', d.activos ? Number(d.activos).toLocaleString('es-EC') : '—');
-  set('k2-val', d.vsActivos.toFixed(2).replace('.',',')+' %');
+  set('k2-val', d.vsActivos ? d.vsActivos.toFixed(2).replace('.',',')+' %' : '—');
 
   // Leer TODOS los KPIs del Google Sheet
   const sheetKPI = await fetchSheetKPIs(tab, mesSel);
