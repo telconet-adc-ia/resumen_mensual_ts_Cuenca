@@ -1255,7 +1255,9 @@ async function renderSop(tab){
 
   ['sop','rev','cierr','rec','bb','tbb'].forEach(k=>{
     set(`${tab}-m-${k}`, ml);
-    set(`${tab}-o-${k}`, d[`o_${k}`]||'');
+    const obsVal = d[`o_${k}`] || '';
+    console.log(`obs ${tab}-o-${k}:`, obsVal);
+    set(`${tab}-o-${k}`, obsVal);
   });
 }
 
@@ -1411,6 +1413,27 @@ async function renderTTG(){
     },
     plugins: [labelPlugin]
   });
+
+  // ── Tabla de observaciones por cuadrilla
+  const obsTable = document.getElementById('ttg-obs-table');
+  if (obsTable) {
+    const filas = cuadrillas.filter(c => c.obs && c.obs.trim() !== '');
+    if (filas.length) {
+      obsTable.innerHTML = `<thead><tr style="background:#e8f0fb">
+        <th style="padding:6px 10px;text-align:left;font-size:10px;color:#003087">CUADRILLA</th>
+        <th style="padding:6px 10px;text-align:center;font-size:10px;color:#003087">TTG</th>
+        <th style="padding:6px 10px;text-align:left;font-size:10px;color:#003087">OBSERVACIÓN</th>
+        </tr></thead><tbody>${filas.map(c=>`<tr style="border-bottom:1px solid #f0f4ff">
+          <td style="padding:5px 10px;font-size:10px;white-space:nowrap">${c.c}</td>
+          <td style="padding:5px 10px;font-size:10px;text-align:center;font-weight:700">${c.v}</td>
+          <td style="padding:5px 10px;font-size:10px;color:#444">${c.obs}</td>
+        </tr>`).join('')}</tbody>`;
+      document.getElementById('ttg-nav-lbl').textContent = `1 – ${filas.length} / ${filas.length}`;
+    } else {
+      obsTable.innerHTML = '<tr><td colspan="3" style="padding:8px 10px;font-size:10px;color:#aaa;text-align:center">Sin observaciones</td></tr>';
+      document.getElementById('ttg-nav-lbl').textContent = '—';
+    }
+  }
 }
 
 
