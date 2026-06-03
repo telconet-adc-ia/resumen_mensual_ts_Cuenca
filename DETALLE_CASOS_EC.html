@@ -718,7 +718,10 @@ function processData(raw, pctRevSheet=null, pctRecSheet=null, esFiltro=false) {
   // % cierre 4H
   const pctCol = '%CASOS 4 Hlab (Lunes a Domingo)';
   const pcts = casos.map(r => parseFloat(r[pctCol])).filter(v => !isNaN(v));
-  const pct4h = pcts.length ? (pcts.reduce((a,b)=>a+b,0)/pcts.length*100).toFixed(2) : '—';
+  // If value > 1, it's already a percentage (e.g. 93.69), otherwise multiply by 100 (e.g. 0.9369)
+  const pct4hAvg = pcts.length ? pcts.reduce((a,b)=>a+b,0)/pcts.length : 0;
+  // If avg > 1, values are already percentages (e.g. 93.69); else multiply by 100 (e.g. 0.9369)
+  const pct4h = pcts.length ? (pct4hAvg > 1 ? pct4hAvg : pct4hAvg * 100).toFixed(2) : '—';
 
   // Mes desde primera apertura
   const fechas = casos.map(r => parseDate(r['FE_APERTURA'])).filter(Boolean);
