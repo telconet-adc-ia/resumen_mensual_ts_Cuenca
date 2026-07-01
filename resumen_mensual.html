@@ -719,10 +719,7 @@ canvas { max-height: 160px; }
       <a class="btn-detalle" target="_self" href="https://telconet-adc-ia.github.io/telconet-adc/correlacion.html">↗ Problemática ADC</a>
       <a class="btn-detalle" target="_self" href="https://dcaguanatn2808-dotcom.github.io/Reporte-de-hilos-inteurbanos/" style="margin-left:8px">↗ Problemática Interurbanos</a>
 
-      <div id="prob-loading" style="text-align:center;padding:40px;color:#aaa;font-size:13px">
-        Cargando problemáticas...
-      </div>
-      <div id="prob-container" style="display:none;margin-top:10px"></div>
+
     </div>
 
   </div><!-- /content -->
@@ -1816,7 +1813,7 @@ function switchPanel(panel){
     else if(panel==='interurbano') renderInt();
     else if(panel==='retiro') renderRet();
     else if(panel==='ttg') renderTTG();
-    else if(panel==='problematicas') renderProblematicas();
+
     else if(['nl','ec','tn'].includes(panel)) renderSop(panel);
   }, 50);
 }
