@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Operativo — MEGADATOS S.A.</title>
+<style>
+  :root {
+    --azul:       #1a3c6e;
+    --azul-med:   #2563a8;
+    --azul-claro: #4a90d9;
+    --azul-suave: #dce8f5;
+    --gris:       #374151;
+    --gris-med:   #6b7280;
+    --gris-claro: #f3f6fa;
+    --borde:      #e2e8f0;
+    --blanco:     #ffffff;
+    --verde:      #16a34a;
+    --rojo:       #dc2626;
+    --sombra:     0 4px 20px rgba(26,60,110,0.09);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#eef2f7; color:var(--gris); }
+
+  /* HEADER */
+  .header {
+    background:linear-gradient(135deg,var(--azul) 0%,var(--azul-med) 100%);
+    color:#fff; padding:18px 32px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  }
+  .header-brand { display:flex; align-items:center; gap:14px; }
+  .header-icon { width:46px; height:46px; background:rgba(255,255,255,0.15); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .header h1 { font-size:20px; font-weight:700; letter-spacing:-0.2px; }
+  .header p  { font-size:12px; opacity:.75; margin-top:2px; }
+  .header-date { font-size:11px; opacity:.7; text-align:right; }
+
+  /* KPI CARDS */
+  .kpis { display:flex; gap:16px; padding:20px 32px 0; flex-wrap:wrap; }
+  .kpi {
+    background:var(--blanco); border-radius:12px; padding:18px 24px;
+    box-shadow:var(--sombra); border-left:4px solid var(--azul-med);
+    min-width:180px; flex:1; max-width:260px;
+  }
+  .kpi.verde { border-left-color:var(--verde); }
+  .kpi-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--gris-med); margin-bottom:6px; }
+  .kpi-value { font-size:32px; font-weight:800; color:var(--azul); line-height:1; }
+  .kpi.verde .kpi-value { color:var(--verde); }
+  .kpi-sub { font-size:11px; color:var(--gris-med); margin-top:5px; }
+
+  /* MAIN GRID */
+  .main { padding:20px 32px 32px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media(max-width:900px){ .main{grid-template-columns:1fr;} }
+
+  /* CARD */
+  .card { background:var(--blanco); border-radius:14px; box-shadow:var(--sombra); overflow:hidden; display:flex; flex-direction:column; }
+  .card-head {
+    background:var(--azul); color:#fff; padding:14px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .card-head h2 { font-size:14px; font-weight:700; letter-spacing:.5px; }
+  .card-head .badge {
+    background:rgba(255,255,255,0.18); border-radius:20px;
+    font-size:11px; padding:3px 10px; font-weight:600;
+  }
+
+  /* TABLA RESUMEN */
+  .tbl-wrap { overflow-y:auto; max-height:340px; }
+  table { width:100%; border-collapse:collapse; }
+  thead th {
+    background:var(--azul-suave); color:var(--azul); font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.5px; padding:10px 14px;
+    position:sticky; top:0; z-index:1; text-align:left; border-bottom:2px solid var(--borde);
+  }
+  tbody tr { border-bottom:1px solid var(--borde); transition:background .15s; }
+  tbody tr:hover { background:var(--azul-suave); }
+  tbody td { padding:9px 14px; font-size:12px; vertical-align:middle; }
+  .td-caja { font-size:11px; line-height:1.4; color:var(--gris); word-break:break-word; cursor:pointer; transition:color .15s; }
+  .td-caja:hover { color:var(--azul-med); }
+  .td-caja:hover > div:first-child { color:var(--rojo); text-decoration:underline; }
+  .foto-link { display:inline-flex; align-items:center; gap:4px; background:#1a3c6e; color:#fff; border-radius:5px; padding:3px 9px; font-size:10px; font-weight:600; text-decoration:none; white-space:nowrap; }
+  .foto-link:hover { background:var(--rojo); }
+  .sin-foto { color:#9ca3af; font-size:10px; font-style:italic; }
+  .td-num {
+    font-size:16px; font-weight:800; color:var(--azul-med);
+    cursor:pointer; text-align:center; white-space:nowrap;
+    transition:color .15s;
+  }
+  .td-num:hover { color:var(--rojo); text-decoration:underline; }
+  .td-num.activo { color:var(--blanco); background:var(--azul); border-radius:6px; padding:2px 10px; }
+  .row-activa td { background:#dce8f5 !important; }
+
+  /* DETALLE */
+  .detalle-wrap {
+    border-top:2px solid var(--azul-suave); background:var(--gris-claro);
+    flex:1; display:flex; flex-direction:column;
+  }
+  .detalle-head {
+    background:var(--azul-suave); padding:10px 16px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;
+  }
+  .detalle-head h3 { font-size:12px; font-weight:700; color:var(--azul); }
+  .detalle-head .caja-nombre { font-size:10px; color:var(--gris-med); margin-top:2px; word-break:break-word; }
+  .btn-limpiar {
+    background:var(--azul); color:#fff; border:none; border-radius:6px;
+    padding:4px 12px; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .btn-limpiar:hover { background:var(--rojo); }
+  .detalle-tbl-wrap { overflow-y:auto; max-height:220px; }
+  .detalle-empty {
+    padding:20px; text-align:center; font-size:12px; color:var(--gris-med);
+    font-style:italic;
+  }
+  thead.det-head th {
+    background:#c7d9f0; color:var(--azul); font-size:10px;
+    font-weight:700; text-transform:uppercase; letter-spacing:.4px;
+    padding:8px 12px; position:sticky; top:0; z-index:1; border-bottom:1px solid var(--borde);
+  }
+  .det-row td { padding:7px 12px; font-size:11px; }
+  .det-row:nth-child(even) { background:#f8fafc; }
+
+  /* FOOTER */
+  footer { background:var(--azul); color:rgba(255,255,255,.55); text-align:center; padding:10px; font-size:11px; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">
+    <div class="header-icon">📡</div>
+    <div>
+      <h1>Dashboard Operativo — MEGADATOS S.A.</h1>
+      <p>Análisis de Revisitas y Recurrencias · Junio 2026</p>
+    </div>
+  </div>
+  <div class="header-date">
+    Actualizado: junio 2026<br>
+    <span style="background:rgba(255,255,255,.15);border-radius:4px;padding:2px 8px;font-size:10px">Confidencial · Uso Gerencial</span>
+  </div>
+</header>
+
+<!-- KPIs -->
+<div class="kpis">
+  <div class="kpi" style="border-left-color:#1a3c6e;background:linear-gradient(135deg,#1a3c6e,#2563a8);color:#fff">
+    <div class="kpi-label" style="color:rgba(255,255,255,0.75)">Total de Casos</div>
+    <div class="kpi-value" style="color:#fff">373</div>
+    <div class="kpi-sub" style="color:rgba(255,255,255,0.7)">Casos totales del período</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">% Revisitas</div>
+    <div class="kpi-value">10.02<span style="font-size:18px;font-weight:600">%</span></div>
+    <div class="kpi-sub">Tasa de revisitas del período</div>
+  </div>
+  <div class="kpi verde">
+    <div class="kpi-label">% Recurrencias</div>
+    <div class="kpi-value">4.10<span style="font-size:18px;font-weight:600">%</span></div>
+    <div class="kpi-sub">Tasa de recurrencias del período</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total Revisitas</div>
+    <div class="kpi-value">62</div>
+    <div class="kpi-sub">Registros en el período</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total Recurrencias</div>
+    <div class="kpi-value">30</div>
+    <div class="kpi-sub">Registros en el período</div>
+  </div>
+</div>
+
+
+<!-- TABLAS PRINCIPALES -->
+<div class="main">
+
+  <!-- TABLA REVISITAS -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h2>📋 REVISITAS</h2>
+        <div style="font-size:11px;opacity:.75;margin-top:2px">Haz clic en el número de casos para ver el detalle</div>
+      </div>
+      <span class="badge" id="rev-badge">62 registros</span>
+    </div>
+
+    <div class="tbl-wrap">
+      <table id="rev-tabla">
+        <thead>
+          <tr>
+            <th>Caja</th>
+            <th style="text-align:center;min-width:100px">N° de Casos</th>
+          </tr>
+        </thead>
+        <tbody id="rev-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="detalle-wrap">
+      <div class="detalle-head">
+        <div>
+          <h3 id="rev-det-title">👆 Selecciona una caja para ver el detalle</h3>
+          <div class="caja-nombre" id="rev-det-caja"></div>
+        </div>
+        <button class="btn-limpiar" onclick="limpiarDetalle('rev')" id="rev-btn-limpiar" style="display:none">✕ Limpiar</button>
+      </div>
+      <div class="detalle-tbl-wrap">
+        <div class="detalle-empty" id="rev-empty">Ninguna caja seleccionada</div>
+        <table id="rev-det-tabla" style="display:none;width:100%">
+          <thead class="det-head">
+            <tr>
+              <th>Login</th>
+              <th>Caso</th>
+              <th>Revisita</th>
+              <th>Motivo 2</th>
+              <th>2da VT</th>
+              <th>Foto</th>
+            </tr>
+          </thead>
+          <tbody id="rev-det-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA RECURRENCIAS -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h2>🔁 RECURRENCIAS</h2>
+        <div style="font-size:11px;opacity:.75;margin-top:2px">Haz clic en el número de casos para ver el detalle</div>
+      </div>
+      <span class="badge" id="rec-badge">30 registros</span>
+    </div>
+
+    <div class="tbl-wrap">
+      <table id="rec-tabla">
+        <thead>
+          <tr>
+            <th>Caja</th>
+            <th style="text-align:center;min-width:100px">N° de Casos</th>
+          </tr>
+        </thead>
+        <tbody id="rec-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="detalle-wrap">
+      <div class="detalle-head">
+        <div>
+          <h3 id="rec-det-title">👆 Selecciona una caja para ver el detalle</h3>
+          <div class="caja-nombre" id="rec-det-caja"></div>
+        </div>
+        <button class="btn-limpiar" onclick="limpiarDetalle('rec')" id="rec-btn-limpiar" style="display:none">✕ Limpiar</button>
+      </div>
+      <div class="detalle-tbl-wrap">
+        <div class="detalle-empty" id="rec-empty">Ninguna caja seleccionada</div>
+        <table id="rec-det-tabla" style="display:none;width:100%">
+          <thead class="det-head">
+            <tr>
+              <th>Login</th>
+              <th>Caso</th>
+              <th>Caso Recurrente</th>
+              <th>Título Fin Recurrente</th>
+              <th>2da VT</th>
+              <th>Foto</th>
+            </tr>
+          </thead>
+          <tbody id="rec-det-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PLAN DE ACCIÓN -->
+<div style="padding:0 32px 28px">
+  <div style="background:#fff;border-radius:14px;box-shadow:0 4px 20px rgba(26,60,110,0.09);overflow:hidden">
+    <div style="background:linear-gradient(135deg,#1a3c6e,#2563a8);padding:14px 22px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:20px">📋</span>
+      <h2 style="color:#fff;font-size:14px;font-weight:700;letter-spacing:.5px">PLAN DE ACCIÓN</h2>
+    </div>
+    <div style="padding:20px 24px;border-left:4px solid #2563a8;margin:16px 22px;background:#f8faff;border-radius:0 8px 8px 0">
+      <p style="font-size:13px;color:#374151;line-height:1.9;text-align:justify">
+        Con el fin de reducir las revisitas generadas por los trabajos de cambio de postes ejecutados por la empresa eléctrica <strong style="color:#1a3c6e">CENTROSUR</strong> en la ciudad de Cuenca, se propone implementar un <strong>procedimiento de inspección preventiva</strong> una vez concluidas estas intervenciones. Para ello, se debe asignar una cuadrilla que realice la revisión completa de la fibra óptica de las últimas millas asociadas a la caja afectada.
+      </p>
+      <p style="font-size:13px;color:#374151;line-height:1.9;text-align:justify;margin-top:12px">
+        En los casos donde el cambio de poste no involucre una caja de distribución, se deberá identificar la caja más cercana y revisar las últimas millas de los clientes que podrían quedar afectados luego del cambio de postes. Durante la revisión se validará la <strong>continuidad del servicio</strong>, el <strong>estado físico de la fibra óptica</strong>, la correcta conexión y aseguramiento de los capuchones y conectores, así como cualquier afectación ocasionada durante los trabajos.
+      </p>
+      <p style="font-size:13px;color:#374151;line-height:1.9;text-align:justify;margin-top:12px">
+        Esta actividad permitirá detectar y corregir de forma preventiva posibles daños, minimizando las interrupciones del servicio, <strong>reduciendo el número de revisitas o recurrencias</strong> y mejorando la continuidad operativa y la experiencia del cliente.
+      </p>
+    </div>
+  </div>
+</div>
+
+<footer>Dashboard Operativo · MEGADATOS S.A. · Confidencial para uso gerencial</footer>
+
+<script>
+// ============================================================
+// DATOS
+// ============================================================
+const revData = [{"login": "md-cueegfloresm1", "caso": "20260602-0542", "revisita": "20260602-1462", "motivo2": "CASO CANCELADO", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-cueegfloresm1", "caso": "20260602-0542", "revisita": "20260603-0765", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "revisita": "20260604-1000", "motivo2": "CORTE DE UM PASO DE VEHICULO DE CARGA PESADA", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuegaarellanop1", "caso": "20260603-0171", "revisita": "20260605-0492", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueaemirandal1", "caso": "20260601-0308", "revisita": "20260605-1569", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH06A-2A-CEL-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1mH1t3fhHVYEiy-iQIqbMAF4Wk36btoYr/view?usp=drive_link"}, {"login": "md-cuefgcastilloa1", "caso": "20260606-0940", "revisita": "20260608-0869", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1UQx9jV6pHDHBrBILgz53B-Li4zw-pwqr/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260606-0993", "revisita": "20260608-1609", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuearsaavedrap1", "caso": "20260605-1462", "revisita": "20260608-1681", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-San Pedro(E)/NA-F01-C18B-AZU", "foto": ""}, {"login": "md-cuemopiedram2", "caso": "20260602-1535", "revisita": "20260608-1689", "motivo2": "DAÑO EN EL CLIENTE PROVOCADO POR EL CLIENTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Mall del rio (E)/N/A-F01-PC02B-AZU", "foto": ""}, {"login": "md-cuefigallardou2", "caso": "20260606-1021", "revisita": "20260609-1176", "motivo2": "CASO CANCELADO", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F02-PCH05B-1A-VER-F01H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuekasaavedrap3", "caso": "20260606-0903", "revisita": "20260609-1412", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260606-0993", "revisita": "20260609-1563", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260608-1609", "revisita": "20260609-1563", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-azgvrurgiles3", "caso": "20260602-1034", "revisita": "20260610-0409", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE STN 02", "caja": "AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.NAR/H.BLA", "foto": ""}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "revisita": "20260610-0567", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260606-0903", "revisita": "20260610-0805", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "revisita": "20260610-0805", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "revisita": "20260610-1021", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260604-1000", "revisita": "20260610-1021", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejiquizhpel3", "caso": "20260603-0333", "revisita": "20260610-1105", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE STN 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cuegaarellanop1", "caso": "20260603-0171", "revisita": "20260610-1376", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuegaarellanop1", "caso": "20260605-0492", "revisita": "20260610-1376", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "revisita": "20260611-0706", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "revisita": "20260611-0706", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuejcmoretas1", "caso": "20260610-0926", "revisita": "20260611-1379", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "revisita": "20260611-1476", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260604-1000", "revisita": "20260611-1476", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260610-1021", "revisita": "20260611-1476", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cueagzeac5", "caso": "20260609-1663", "revisita": "20260612-0200", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Eucaliptos (E)/El Valle (E)-F01-PCH39B-3A-NEG-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuekasaavedrap3", "caso": "20260606-0903", "revisita": "20260612-0839", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1x-1x5S5NM_QPP5T2lBFht8In2MbnZ8NB/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "revisita": "20260612-0839", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1x-1x5S5NM_QPP5T2lBFht8In2MbnZ8NB/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260610-0805", "revisita": "20260612-0839", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "revisita": "20260612-1430", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "revisita": "20260612-1430", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260611-0706", "revisita": "20260612-1430", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuerfchuchucac12", "caso": "20260606-0991", "revisita": "20260612-1436", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuejlcordovat1", "caso": "20260607-0840", "revisita": "20260613-0163", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1qHfO6A08w4apCcbueVwqjnWF9i3DfF4f/view?usp=drive_link"}, {"login": "md-cueajsagbayo12", "caso": "20260610-1458", "revisita": "20260613-0814", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-2A-AMA-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "revisita": "20260614-0272", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueyppontonj1", "caso": "20260612-1294", "revisita": "20260614-0598", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F02-PCH05A-4A-NAR-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueadloayzar1", "caso": "20260615-0250", "revisita": "20260615-0430", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F01-PCH09A.1A-CAF-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuedebuestanm1", "caso": "20260608-1364", "revisita": "20260615-0566", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F03-C21B-BLA", "foto": ""}, {"login": "md-cuemscalderond1", "caso": "20260604-1421", "revisita": "20260615-0982", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Arenal (E)-F01-C54B-VIO", "foto": ""}, {"login": "md-cuedjencaladab12", "caso": "20260614-0677", "revisita": "20260615-1167", "motivo2": "CASO CANCELADO", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-El Arenal 1/Bellavista 1-F01-C17A-ROS", "foto": ""}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "revisita": "20260615-1257", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260614-0272", "revisita": "20260615-1257", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuemacullquipumac1", "caso": "20260615-1590", "revisita": "20260616-0528", "motivo2": "SOLUCIONADO SIN ITERVENCION TECNICA", "vt2": "SIN ASIGNAR", "caja": "CUE-Bellavista (A)-Epoca (E)/Arenal (E)-F01-C54B-VIO", "foto": ""}, {"login": "md-cuenglozadac1", "caso": "20260616-0825", "revisita": "20260616-1455", "motivo2": "DAÑO POR CAJA EN EL AIRE", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cueclespinozap1", "caso": "20260612-1403", "revisita": "20260616-1580", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1pQY-ydaCF7fiVOiogsnvA9hVALJ7W8vQ/view?usp=drive_link"}, {"login": "md-cuelpgavilanesa3", "caso": "20260616-1093", "revisita": "20260617-0207", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1QVMzW0Z1FBl1MOO0TAtQorkif80lk88Y/view?usp=drive_link"}, {"login": "md-cuenglozadac1", "caso": "20260616-0825", "revisita": "20260617-0908", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cuenglozadac1", "caso": "20260616-1455", "revisita": "20260617-0908", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1pQY-ydaCF7fiVOiogsnvA9hVALJ7W8vQ/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "revisita": "20260617-1636", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260614-0272", "revisita": "20260617-1636", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260615-1257", "revisita": "20260617-1636", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuejiquizhpel3", "caso": "20260603-0333", "revisita": "20260618-0634", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cuejiquizhpel3", "caso": "20260610-1105", "revisita": "20260618-0634", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1pQY-ydaCF7fiVOiogsnvA9hVALJ7W8vQ/view?usp=drive_link"}, {"login": "md-cueeaautag1", "caso": "20260619-0352", "revisita": "20260619-1466", "motivo2": "DAÑO POR CAJA EN EL AIRE", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Calderon (E)/Ricaurte (E)-F01-PC51B-ROS", "foto": "https://drive.google.com/file/d/1N9o8xocGaJWbhhqGlwJJN1Zw4Xz3frGR/view?usp=drive_link"}, {"login": "md-cuejfperguachil1", "caso": "20260619-0496", "revisita": "20260620-0460", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Calderon (E)/Bellavista (A)-F01-PCH11A-3A-NEG-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuelclemag1", "caso": "20260616-0575", "revisita": "20260621-0147", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Totoracocha (E)/Alvarez (E)-F03-PC03B-NAR", "foto": ""}, {"login": "md-cuecjcalderons4", "caso": "20260615-1633", "revisita": "20260621-0547", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Ricaurte (E)/Calderon (E)-F01-PC50B-ROS", "foto": ""}, {"login": "md-azgcimoran1", "caso": "20260620-0992", "revisita": "20260622-0498", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 01", "caja": "AZO-Bellavista (A)-Javier Loyola (E)(A)/Javier Loyola (E)(B)-F01-PC29B-ROJ", "foto": ""}];
+const recData = [{"login": "md-cueegfloresm1", "caso": "20260602-0542", "recurrente": "20260602-1462", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-cueegfloresm1", "caso": "20260602-0542", "recurrente": "20260603-0765", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-azgvrurgiles3", "caso": "20260602-1034", "recurrente": "20260610-0409", "titulo": "Roseta - Reparar fusión de hilo de FO", "vt2": "CUE PROV CUE STN 02", "caja": "AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.NAR/H.BLA", "foto": ""}, {"login": "md-cuemopiedram2", "caso": "20260602-1535", "recurrente": "20260608-1689", "titulo": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Mall del rio (E)/N/A-F01-PC02B-AZU", "foto": ""}, {"login": "md-cuegaarellanop1", "caso": "20260603-0171", "recurrente": "20260605-0492", "titulo": "Roseta - Reparar fusión de hilo de FO", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "recurrente": "20260604-1000", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "recurrente": "20260610-1021", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuesjmunoza1", "caso": "20260604-0260", "recurrente": "20260626-1137", "titulo": "Roseta - Cambio de pigtail FO", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Ricaurte (E)(B)/Ricaurte (E)(A)-F01-PC42B-GRI", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260604-1000", "recurrente": "20260610-1021", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuefgcastilloa1", "caso": "20260606-0940", "recurrente": "20260608-0869", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1UQx9jV6pHDHBrBILgz53B-Li4zw-pwqr/view?usp=drive_link"}, {"login": "md-cuejlcordovat1", "caso": "20260607-0840", "recurrente": "20260613-0163", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1UQx9jV6pHDHBrBILgz53B-Li4zw-pwqr/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260608-1609", "recurrente": "20260609-1563", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "recurrente": "20260610-0567", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "recurrente": "20260611-0706", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "recurrente": "20260612-1430", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuevgpautab1", "caso": "20260609-0966", "recurrente": "20260623-0823", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F02-PCH05A-1A-NAR-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "recurrente": "20260610-0805", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "recurrente": "20260612-0839", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "recurrente": "20260611-0706", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "recurrente": "20260612-1430", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260610-0805", "recurrente": "20260612-0839", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuejcmoretas1", "caso": "20260610-0926", "recurrente": "20260611-1379", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cueajsagbayo12", "caso": "20260610-1458", "recurrente": "20260613-0814", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-2A-AMA-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "recurrente": "20260615-1257", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "recurrente": "20260617-1636", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260611-0706", "recurrente": "20260612-1430", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260615-1257", "recurrente": "20260617-1636", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuenglozadac1", "caso": "20260616-0825", "recurrente": "20260624-1047", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cueamonterov1", "caso": "20260619-1452", "recurrente": "20260623-1553", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Control Sur (E)/Banos (E)-F01-PC19B-GRI", "foto": ""}, {"login": "md-cuejvbritos1", "caso": "20260620-0165", "recurrente": "20260623-1424", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}];
+
+// ============================================================
+// RESUMEN POR CAJA
+// ============================================================
+function agruparPorCaja(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const c = r.caja || 'SIN CAJA';
+    if(!map[c]) map[c] = 0;
+    map[c]++;
+  });
+  return Object.entries(map).sort((a,b) => b[1]-a[1]);
+}
+
+// ============================================================
+// RENDER TABLA RESUMEN
+// ============================================================
+let revCajaActiva = null;
+let recCajaActiva = null;
+
+let revGrupos = [];
+let recGrupos = [];
+
+function renderResumen(tipo) {
+  const data   = tipo==='rev' ? revData : recData;
+  const tbody  = document.getElementById(tipo+'-tbody');
+  const grupos = agruparPorCaja(data);
+  if(tipo==='rev') revGrupos = grupos; else recGrupos = grupos;
+  const max    = grupos.length ? grupos[0][1] : 1;
+
+  tbody.innerHTML = grupos.map(([caja, n], idx) => {
+    const pct  = Math.round((n/max)*100);
+    const activa = (tipo==='rev' ? revCajaActiva : recCajaActiva) === caja;
+    return `<tr class="${activa?'row-activa':''}">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice('${tipo}',${idx})" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">${caja}</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:${activa?'#1a3c6e':'#4a90d9'};height:4px;border-radius:3px;width:${pct}%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num ${activa?'activo':''}" onclick="seleccionarCajaPorIndice('${tipo}',${idx})" title="Clic para ver detalle">
+        ${n}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function seleccionarCajaPorIndice(tipo, idx) {
+  const grupos = tipo==='rev' ? revGrupos : recGrupos;
+  const caja = grupos[idx][0];
+  seleccionarCaja(tipo, caja);
+}
+
+// ============================================================
+// SELECCIONAR CAJA → MOSTRAR DETALLE
+// ============================================================
+function seleccionarCaja(tipo, caja) {
+  if(tipo==='rev') {
+    revCajaActiva = revCajaActiva===caja ? null : caja;
+  } else {
+    recCajaActiva = recCajaActiva===caja ? null : caja;
+  }
+  renderResumen(tipo);
+  renderDetalle(tipo);
+}
+
+function renderDetalle(tipo) {
+  const caja      = tipo==='rev' ? revCajaActiva : recCajaActiva;
+  const data      = tipo==='rev' ? revData : recData;
+  const titulo    = document.getElementById(tipo+'-det-title');
+  const cajaNombre= document.getElementById(tipo+'-det-caja');
+  const empty     = document.getElementById(tipo+'-empty');
+  const tabla     = document.getElementById(tipo+'-det-tabla');
+  const tbody     = document.getElementById(tipo+'-det-tbody');
+  const btnLimpiar= document.getElementById(tipo+'-btn-limpiar');
+
+  if(!caja) {
+    titulo.textContent = '👆 Selecciona una caja para ver el detalle';
+    cajaNombre.textContent = '';
+    empty.style.display = 'block';
+    tabla.style.display = 'none';
+    btnLimpiar.style.display = 'none';
+    return;
+  }
+
+  const filas = data.filter(r => r.caja === caja);
+  titulo.textContent = `📦 ${filas.length} registro${filas.length!==1?'s':''} — ${caja.length>60?caja.substring(0,60)+'…':caja}`;
+  cajaNombre.textContent = caja;
+  btnLimpiar.style.display = 'inline-block';
+
+  if(tipo==='rev') {
+    tbody.innerHTML = filas.map((r,i) => `
+      <tr class="det-row">
+        <td style="white-space:nowrap">${r.login||'—'}</td>
+        <td style="white-space:nowrap;font-weight:600">${r.caso||'—'}</td>
+        <td style="white-space:nowrap">${r.revisita||'—'}</td>
+        <td style="font-size:10px;line-height:1.4">${r.motivo2||'—'}</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">${r.vt2||'—'}</td>
+        <td style="white-space:nowrap">${r.foto ? `<a href="${r.foto}" target="_blank" class="foto-link">📷 Ver foto</a>` : '<span class="sin-foto">Sin foto</span>'}</td>
+      </tr>`).join('');
+  } else {
+    tbody.innerHTML = filas.map((r,i) => `
+      <tr class="det-row">
+        <td style="white-space:nowrap">${r.login||'—'}</td>
+        <td style="white-space:nowrap;font-weight:600">${r.caso||'—'}</td>
+        <td style="white-space:nowrap">${r.recurrente||'—'}</td>
+        <td style="font-size:10px;line-height:1.4">${r.titulo||'—'}</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">${r.vt2||'—'}</td>
+        <td style="white-space:nowrap">${r.foto ? `<a href="${r.foto}" target="_blank" class="foto-link">📷 Ver foto</a>` : '<span class="sin-foto">Sin foto</span>'}</td>
+      </tr>`).join('');
+  }
+
+  empty.style.display = 'none';
+  tabla.style.display = 'table';
+}
+
+function limpiarDetalle(tipo) {
+  if(tipo==='rev') revCajaActiva = null;
+  else recCajaActiva = null;
+  renderResumen(tipo);
+  renderDetalle(tipo);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderResumen('rev');
+renderResumen('rec');
+renderDetalle('rev');
+renderDetalle('rec');
+</script>
+</body>
+</html>
