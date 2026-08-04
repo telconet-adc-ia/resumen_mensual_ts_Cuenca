@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0081)https://telconet-adc-ia.github.io/resumen_mensual_ts_Cuenca/problematica_sop.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Operativo — MEGADATOS S.A.</title>
 <style>
@@ -130,11 +130,11 @@
     <div class="header-icon">📡</div>
     <div>
       <h1>Dashboard Operativo — MEGADATOS S.A.</h1>
-      <p>Análisis de Revisitas y Recurrencias · Junio 2026</p>
+      <p>Análisis de Revisitas y Recurrencias · Julio 2026</p>
     </div>
   </div>
   <div class="header-date">
-    Actualizado: junio 2026<br>
+    Actualizado: julio 2026<br>
     <span style="background:rgba(255,255,255,.15);border-radius:4px;padding:2px 8px;font-size:10px">Confidencial · Uso Gerencial</span>
   </div>
 </header>
@@ -143,27 +143,27 @@
 <div class="kpis">
   <div class="kpi" style="border-left-color:#1a3c6e;background:linear-gradient(135deg,#1a3c6e,#2563a8);color:#fff">
     <div class="kpi-label" style="color:rgba(255,255,255,0.75)">Total de Casos</div>
-    <div class="kpi-value" style="color:#fff">373</div>
+    <div class="kpi-value" style="color:#fff">432</div>
     <div class="kpi-sub" style="color:rgba(255,255,255,0.7)">Casos totales del período</div>
   </div>
   <div class="kpi">
     <div class="kpi-label">% Revisitas</div>
-    <div class="kpi-value">10.02<span style="font-size:18px;font-weight:600">%</span></div>
+    <div class="kpi-value">6.74<span style="font-size:18px;font-weight:600">%</span></div>
     <div class="kpi-sub">Tasa de revisitas del período</div>
   </div>
   <div class="kpi verde">
     <div class="kpi-label">% Recurrencias</div>
-    <div class="kpi-value">4.10<span style="font-size:18px;font-weight:600">%</span></div>
+    <div class="kpi-value">3.70<span style="font-size:18px;font-weight:600">%</span></div>
     <div class="kpi-sub">Tasa de recurrencias del período</div>
   </div>
   <div class="kpi">
     <div class="kpi-label">Total Revisitas</div>
-    <div class="kpi-value">62</div>
+    <div class="kpi-value">37</div>
     <div class="kpi-sub">Registros en el período</div>
   </div>
   <div class="kpi">
     <div class="kpi-label">Total Recurrencias</div>
-    <div class="kpi-value">30</div>
+    <div class="kpi-value">15</div>
     <div class="kpi-sub">Registros en el período</div>
   </div>
 </div>
@@ -179,7 +179,7 @@
         <h2>📋 REVISITAS</h2>
         <div style="font-size:11px;opacity:.75;margin-top:2px">Haz clic en el número de casos para ver el detalle</div>
       </div>
-      <span class="badge" id="rev-badge">62 registros</span>
+      <span class="badge" id="rev-badge">37 registros</span>
     </div>
 
     <div class="tbl-wrap">
@@ -190,32 +190,361 @@
             <th style="text-align:center;min-width:100px">N° de Casos</th>
           </tr>
         </thead>
-        <tbody id="rev-tbody"></tbody>
+        <tbody id="rev-tbody"><tr class="row-activa">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,0)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#1a3c6e;height:4px;border-radius:3px;width:100%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num activo" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,0)" title="Clic para ver detalle">
+        10
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,1)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:70%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,1)" title="Clic para ver detalle">
+        7
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,2)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:70%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,2)" title="Clic para ver detalle">
+        7
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,3)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:70%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,3)" title="Clic para ver detalle">
+        7
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,4)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:60%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,4)" title="Clic para ver detalle">
+        6
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,5)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:30%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,5)" title="Clic para ver detalle">
+        3
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,6)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:20%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,6)" title="Clic para ver detalle">
+        2
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,7)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:20%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,7)" title="Clic para ver detalle">
+        2
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,8)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Arenal (E)-F01-C54B-VIO</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:20%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,8)" title="Clic para ver detalle">
+        2
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,9)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH06A-2A-CEL-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,9)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,10)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-San Pedro(E)/NA-F01-C18B-AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,10)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,11)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Mall del rio (E)/N/A-F01-PC02B-AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,11)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,12)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F02-PCH05B-1A-VER-F01H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,12)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,13)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.NAR/H.BLA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,13)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,14)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Eucaliptos (E)/El Valle (E)-F01-PCH39B-3A-NEG-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,14)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,15)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-2A-AMA-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,15)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,16)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F02-PCH05A-4A-NAR-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,16)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,17)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F01-PCH09A.1A-CAF-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,17)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,18)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F03-C21B-BLA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,18)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,19)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista 1-El Arenal 1/Bellavista 1-F01-C17A-ROS</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,19)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,20)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Calderon (E)/Ricaurte (E)-F01-PC51B-ROS</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,20)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,21)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Calderon (E)/Bellavista (A)-F01-PCH11A-3A-NEG-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,21)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,22)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Totoracocha (E)/Alvarez (E)-F03-PC03B-NAR</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,22)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,23)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Ricaurte (E)/Calderon (E)-F01-PC50B-ROS</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,23)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rev&#39;,24)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">AZO-Bellavista (A)-Javier Loyola (E)(A)/Javier Loyola (E)(B)-F01-PC29B-ROJ</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:10%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rev&#39;,24)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr></tbody>
       </table>
     </div>
 
     <div class="detalle-wrap">
       <div class="detalle-head">
         <div>
-          <h3 id="rev-det-title">👆 Selecciona una caja para ver el detalle</h3>
-          <div class="caja-nombre" id="rev-det-caja"></div>
+          <h3 id="rev-det-title">📦 10 registros — CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-…</h3>
+          <div class="caja-nombre" id="rev-det-caja">CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU</div>
         </div>
-        <button class="btn-limpiar" onclick="limpiarDetalle('rev')" id="rev-btn-limpiar" style="display:none">✕ Limpiar</button>
+        <button class="btn-limpiar" onclick="limpiarDetalle(&#39;rev&#39;)" id="rev-btn-limpiar" style="display: inline-block;">✕ Limpiar</button>
       </div>
       <div class="detalle-tbl-wrap">
-        <div class="detalle-empty" id="rev-empty">Ninguna caja seleccionada</div>
-        <table id="rev-det-tabla" style="display:none;width:100%">
+        <div class="detalle-empty" id="rev-empty" style="display: none;">Ninguna caja seleccionada</div>
+        <table id="rev-det-tabla" style="display: table; width: 100%;">
           <thead class="det-head">
             <tr>
               <th>Login</th>
               <th>Caso</th>
               <th>Revisita</th>
-              <th>Motivo 2</th>
-              <th>2da VT</th>
-              <th>Foto</th>
+              <th>Título Fin Recurrente</th>
+              <th>1ra VT</th>
             </tr>
           </thead>
-          <tbody id="rev-det-tbody"></tbody>
+          <tbody id="rev-det-tbody">
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuemsvintimillao1</td>
+        <td style="white-space:nowrap;font-weight:600">20260606-0993</td>
+        <td style="white-space:nowrap">20260608-1609</td>
+        <td style="font-size:10px;line-height:1.4">DAÑO EN LA CAJA PROVOCADO POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 02</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuemsvintimillao1</td>
+        <td style="white-space:nowrap;font-weight:600">20260606-0993</td>
+        <td style="white-space:nowrap">20260609-1563</td>
+        <td style="font-size:10px;line-height:1.4">CORTE DE UM POR CAMBIO DE POSTE</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 03</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuemsvintimillao1</td>
+        <td style="white-space:nowrap;font-weight:600">20260608-1609</td>
+        <td style="white-space:nowrap">20260609-1563</td>
+        <td style="font-size:10px;line-height:1.4">CORTE DE UM POR CAMBIO DE POSTE</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 03</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuecourgilesm3</td>
+        <td style="white-space:nowrap;font-weight:600">20260609-0517</td>
+        <td style="white-space:nowrap">20260610-0567</td>
+        <td style="font-size:10px;line-height:1.4">CORTE DE UM POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 04</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuecourgilesm3</td>
+        <td style="white-space:nowrap;font-weight:600">20260609-0517</td>
+        <td style="white-space:nowrap">20260611-0706</td>
+        <td style="font-size:10px;line-height:1.4">DAÑO EN LA CAJA PROVOCADO POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 02</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuecourgilesm3</td>
+        <td style="white-space:nowrap;font-weight:600">20260610-0567</td>
+        <td style="white-space:nowrap">20260611-0706</td>
+        <td style="font-size:10px;line-height:1.4">DAÑO EN LA CAJA PROVOCADO POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 02</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuecourgilesm3</td>
+        <td style="white-space:nowrap;font-weight:600">20260609-0517</td>
+        <td style="white-space:nowrap">20260612-1430</td>
+        <td style="font-size:10px;line-height:1.4">DAÑO EN LA CAJA PROVOCADO POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 01</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuecourgilesm3</td>
+        <td style="white-space:nowrap;font-weight:600">20260610-0567</td>
+        <td style="white-space:nowrap">20260612-1430</td>
+        <td style="font-size:10px;line-height:1.4">DAÑO EN LA CAJA PROVOCADO POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 01</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuecourgilesm3</td>
+        <td style="white-space:nowrap;font-weight:600">20260611-0706</td>
+        <td style="white-space:nowrap">20260612-1430</td>
+        <td style="font-size:10px;line-height:1.4">DAÑO EN LA CAJA PROVOCADO POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 01</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr>
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-cuerfchuchucac12</td>
+        <td style="white-space:nowrap;font-weight:600">20260606-0991</td>
+        <td style="white-space:nowrap">20260612-1436</td>
+        <td style="font-size:10px;line-height:1.4">CORTE DE UM POR TERCEROS</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE SNL 01</td>
+        <td style="white-space:nowrap"><a href="https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link" target="_blank" class="foto-link">📷 Ver foto</a></td>
+      </tr></tbody>
         </table>
       </div>
     </div>
@@ -228,7 +557,7 @@
         <h2>🔁 RECURRENCIAS</h2>
         <div style="font-size:11px;opacity:.75;margin-top:2px">Haz clic en el número de casos para ver el detalle</div>
       </div>
-      <span class="badge" id="rec-badge">30 registros</span>
+      <span class="badge" id="rec-badge">15 registros</span>
     </div>
 
     <div class="tbl-wrap">
@@ -239,32 +568,179 @@
             <th style="text-align:center;min-width:100px">N° de Casos</th>
           </tr>
         </thead>
-        <tbody id="rec-tbody"></tbody>
+        <tbody id="rec-tbody"><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,0)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:100%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,0)" title="Clic para ver detalle">
+        7
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,1)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:57%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,1)" title="Clic para ver detalle">
+        4
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,2)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:57%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,2)" title="Clic para ver detalle">
+        4
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,3)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:43%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,3)" title="Clic para ver detalle">
+        3
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,4)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:29%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,4)" title="Clic para ver detalle">
+        2
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,5)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:29%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,5)" title="Clic para ver detalle">
+        2
+      </td>
+    </tr><tr class="row-activa">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,6)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.NAR/H.BLA</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#1a3c6e;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num activo" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,6)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,7)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Mall del rio (E)/N/A-F01-PC02B-AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,7)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,8)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,8)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,9)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Ricaurte (E)(B)/Ricaurte (E)(A)-F01-PC42B-GRI</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,9)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,10)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F02-PCH05A-1A-NAR-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,10)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,11)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-2A-AMA-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,11)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,12)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,12)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr><tr class="">
+      <td class="td-caja" onclick="seleccionarCajaPorIndice(&#39;rec&#39;,13)" title="Clic para filtrar por esta caja">
+        <div style="font-weight:600;margin-bottom:3px">CUE-Bellavista (A)-Control Sur (E)/Banos (E)-F01-PC19B-GRI</div>
+        <div style="background:#e2e8f0;border-radius:3px;height:4px;margin-top:4px">
+          <div style="background:#4a90d9;height:4px;border-radius:3px;width:14%;transition:width .3s"></div>
+        </div>
+      </td>
+      <td class="td-num " onclick="seleccionarCajaPorIndice(&#39;rec&#39;,13)" title="Clic para ver detalle">
+        1
+      </td>
+    </tr></tbody>
       </table>
     </div>
 
     <div class="detalle-wrap">
       <div class="detalle-head">
         <div>
-          <h3 id="rec-det-title">👆 Selecciona una caja para ver el detalle</h3>
-          <div class="caja-nombre" id="rec-det-caja"></div>
+          <h3 id="rec-det-title">📦 1 registro — AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.…</h3>
+          <div class="caja-nombre" id="rec-det-caja">AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.NAR/H.BLA</div>
         </div>
-        <button class="btn-limpiar" onclick="limpiarDetalle('rec')" id="rec-btn-limpiar" style="display:none">✕ Limpiar</button>
+        <button class="btn-limpiar" onclick="limpiarDetalle(&#39;rec&#39;)" id="rec-btn-limpiar" style="display: inline-block;">✕ Limpiar</button>
       </div>
       <div class="detalle-tbl-wrap">
-        <div class="detalle-empty" id="rec-empty">Ninguna caja seleccionada</div>
-        <table id="rec-det-tabla" style="display:none;width:100%">
+        <div class="detalle-empty" id="rec-empty" style="display: none;">Ninguna caja seleccionada</div>
+        <table id="rec-det-tabla" style="display: table; width: 100%;">
           <thead class="det-head">
             <tr>
               <th>Login</th>
               <th>Caso</th>
               <th>Caso Recurrente</th>
               <th>Título Fin Recurrente</th>
-              <th>2da VT</th>
-              <th>Foto</th>
+              <th>1ra VT</th>
             </tr>
           </thead>
-          <tbody id="rec-det-tbody"></tbody>
+          <tbody id="rec-det-tbody">
+      <tr class="det-row">
+        <td style="white-space:nowrap">md-azgvrurgiles3</td>
+        <td style="white-space:nowrap;font-weight:600">20260602-1034</td>
+        <td style="white-space:nowrap">20260610-0409</td>
+        <td style="font-size:10px;line-height:1.4">Roseta - Reparar fusión de hilo de FO</td>
+        <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">CUE PROV CUE STN 02</td>
+        <td style="white-space:nowrap"><span class="sin-foto">Sin foto</span></td>
+      </tr></tbody>
         </table>
       </div>
     </div>
@@ -299,8 +775,8 @@
 // ============================================================
 // DATOS
 // ============================================================
-const revData = [{"login": "md-cueegfloresm1", "caso": "20260602-0542", "revisita": "20260602-1462", "motivo2": "CASO CANCELADO", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-cueegfloresm1", "caso": "20260602-0542", "revisita": "20260603-0765", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "revisita": "20260604-1000", "motivo2": "CORTE DE UM PASO DE VEHICULO DE CARGA PESADA", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuegaarellanop1", "caso": "20260603-0171", "revisita": "20260605-0492", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueaemirandal1", "caso": "20260601-0308", "revisita": "20260605-1569", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH06A-2A-CEL-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1mH1t3fhHVYEiy-iQIqbMAF4Wk36btoYr/view?usp=drive_link"}, {"login": "md-cuefgcastilloa1", "caso": "20260606-0940", "revisita": "20260608-0869", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1UQx9jV6pHDHBrBILgz53B-Li4zw-pwqr/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260606-0993", "revisita": "20260608-1609", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuearsaavedrap1", "caso": "20260605-1462", "revisita": "20260608-1681", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-San Pedro(E)/NA-F01-C18B-AZU", "foto": ""}, {"login": "md-cuemopiedram2", "caso": "20260602-1535", "revisita": "20260608-1689", "motivo2": "DAÑO EN EL CLIENTE PROVOCADO POR EL CLIENTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Mall del rio (E)/N/A-F01-PC02B-AZU", "foto": ""}, {"login": "md-cuefigallardou2", "caso": "20260606-1021", "revisita": "20260609-1176", "motivo2": "CASO CANCELADO", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F02-PCH05B-1A-VER-F01H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuekasaavedrap3", "caso": "20260606-0903", "revisita": "20260609-1412", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260606-0993", "revisita": "20260609-1563", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260608-1609", "revisita": "20260609-1563", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-azgvrurgiles3", "caso": "20260602-1034", "revisita": "20260610-0409", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE STN 02", "caja": "AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.NAR/H.BLA", "foto": ""}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "revisita": "20260610-0567", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260606-0903", "revisita": "20260610-0805", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "revisita": "20260610-0805", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "revisita": "20260610-1021", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260604-1000", "revisita": "20260610-1021", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejiquizhpel3", "caso": "20260603-0333", "revisita": "20260610-1105", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE STN 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cuegaarellanop1", "caso": "20260603-0171", "revisita": "20260610-1376", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuegaarellanop1", "caso": "20260605-0492", "revisita": "20260610-1376", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "revisita": "20260611-0706", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "revisita": "20260611-0706", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuejcmoretas1", "caso": "20260610-0926", "revisita": "20260611-1379", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "revisita": "20260611-1476", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260604-1000", "revisita": "20260611-1476", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260610-1021", "revisita": "20260611-1476", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cueagzeac5", "caso": "20260609-1663", "revisita": "20260612-0200", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Eucaliptos (E)/El Valle (E)-F01-PCH39B-3A-NEG-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuekasaavedrap3", "caso": "20260606-0903", "revisita": "20260612-0839", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1x-1x5S5NM_QPP5T2lBFht8In2MbnZ8NB/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "revisita": "20260612-0839", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1x-1x5S5NM_QPP5T2lBFht8In2MbnZ8NB/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260610-0805", "revisita": "20260612-0839", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "revisita": "20260612-1430", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "revisita": "20260612-1430", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260611-0706", "revisita": "20260612-1430", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1NqzU-X2DDrfrdRcQv7j_CpYLbp7LJtBt/view?usp=drive_link"}, {"login": "md-cuerfchuchucac12", "caso": "20260606-0991", "revisita": "20260612-1436", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuejlcordovat1", "caso": "20260607-0840", "revisita": "20260613-0163", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1qHfO6A08w4apCcbueVwqjnWF9i3DfF4f/view?usp=drive_link"}, {"login": "md-cueajsagbayo12", "caso": "20260610-1458", "revisita": "20260613-0814", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-2A-AMA-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "revisita": "20260614-0272", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueyppontonj1", "caso": "20260612-1294", "revisita": "20260614-0598", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F02-PCH05A-4A-NAR-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueadloayzar1", "caso": "20260615-0250", "revisita": "20260615-0430", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F01-PCH09A.1A-CAF-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuedebuestanm1", "caso": "20260608-1364", "revisita": "20260615-0566", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F03-C21B-BLA", "foto": ""}, {"login": "md-cuemscalderond1", "caso": "20260604-1421", "revisita": "20260615-0982", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Arenal (E)-F01-C54B-VIO", "foto": ""}, {"login": "md-cuedjencaladab12", "caso": "20260614-0677", "revisita": "20260615-1167", "motivo2": "CASO CANCELADO", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista 1-El Arenal 1/Bellavista 1-F01-C17A-ROS", "foto": ""}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "revisita": "20260615-1257", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260614-0272", "revisita": "20260615-1257", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuemacullquipumac1", "caso": "20260615-1590", "revisita": "20260616-0528", "motivo2": "SOLUCIONADO SIN ITERVENCION TECNICA", "vt2": "SIN ASIGNAR", "caja": "CUE-Bellavista (A)-Epoca (E)/Arenal (E)-F01-C54B-VIO", "foto": ""}, {"login": "md-cuenglozadac1", "caso": "20260616-0825", "revisita": "20260616-1455", "motivo2": "DAÑO POR CAJA EN EL AIRE", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cueclespinozap1", "caso": "20260612-1403", "revisita": "20260616-1580", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1pQY-ydaCF7fiVOiogsnvA9hVALJ7W8vQ/view?usp=drive_link"}, {"login": "md-cuelpgavilanesa3", "caso": "20260616-1093", "revisita": "20260617-0207", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1QVMzW0Z1FBl1MOO0TAtQorkif80lk88Y/view?usp=drive_link"}, {"login": "md-cuenglozadac1", "caso": "20260616-0825", "revisita": "20260617-0908", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cuenglozadac1", "caso": "20260616-1455", "revisita": "20260617-0908", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1pQY-ydaCF7fiVOiogsnvA9hVALJ7W8vQ/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "revisita": "20260617-1636", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260614-0272", "revisita": "20260617-1636", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260615-1257", "revisita": "20260617-1636", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuejiquizhpel3", "caso": "20260603-0333", "revisita": "20260618-0634", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cuejiquizhpel3", "caso": "20260610-1105", "revisita": "20260618-0634", "motivo2": "DAÑO EN EL CLIENTE", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1pQY-ydaCF7fiVOiogsnvA9hVALJ7W8vQ/view?usp=drive_link"}, {"login": "md-cueeaautag1", "caso": "20260619-0352", "revisita": "20260619-1466", "motivo2": "DAÑO POR CAJA EN EL AIRE", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Calderon (E)/Ricaurte (E)-F01-PC51B-ROS", "foto": "https://drive.google.com/file/d/1N9o8xocGaJWbhhqGlwJJN1Zw4Xz3frGR/view?usp=drive_link"}, {"login": "md-cuejfperguachil1", "caso": "20260619-0496", "revisita": "20260620-0460", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Calderon (E)/Bellavista (A)-F01-PCH11A-3A-NEG-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuelclemag1", "caso": "20260616-0575", "revisita": "20260621-0147", "motivo2": "DAÑO EN LA CAJA PROVOCADO POR TERCEROS", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Totoracocha (E)/Alvarez (E)-F03-PC03B-NAR", "foto": ""}, {"login": "md-cuecjcalderons4", "caso": "20260615-1633", "revisita": "20260621-0547", "motivo2": "CORTE DE UM POR TERCEROS", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Ricaurte (E)/Calderon (E)-F01-PC50B-ROS", "foto": ""}, {"login": "md-azgcimoran1", "caso": "20260620-0992", "revisita": "20260622-0498", "motivo2": "CORTE DE UM POR CAMBIO DE POSTE", "vt2": "CUE PROV CUE SNL 01", "caja": "AZO-Bellavista (A)-Javier Loyola (E)(A)/Javier Loyola (E)(B)-F01-PC29B-ROJ", "foto": ""}];
-const recData = [{"login": "md-cueegfloresm1", "caso": "20260602-0542", "recurrente": "20260602-1462", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-cueegfloresm1", "caso": "20260602-0542", "recurrente": "20260603-0765", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista(A)-Carolina(E)(A)/Carolina(E)(B)-F01-PC43B-AMA", "foto": ""}, {"login": "md-azgvrurgiles3", "caso": "20260602-1034", "recurrente": "20260610-0409", "titulo": "Roseta - Reparar fusión de hilo de FO", "vt2": "CUE PROV CUE STN 02", "caja": "AZO-Bellavista (A)-La Playa (E)/Hostal (E)-F01-C10A-T.GRI-H.NAR/H.BLA", "foto": ""}, {"login": "md-cuemopiedram2", "caso": "20260602-1535", "recurrente": "20260608-1689", "titulo": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Mall del rio (E)/N/A-F01-PC02B-AZU", "foto": ""}, {"login": "md-cuegaarellanop1", "caso": "20260603-0171", "recurrente": "20260605-0492", "titulo": "Roseta - Reparar fusión de hilo de FO", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-2A-VER-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "recurrente": "20260604-1000", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260603-1067", "recurrente": "20260610-1021", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuesjmunoza1", "caso": "20260604-0260", "recurrente": "20260626-1137", "titulo": "Roseta - Cambio de pigtail FO", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Ricaurte (E)(B)/Ricaurte (E)(A)-F01-PC42B-GRI", "foto": ""}, {"login": "md-cuejmsarmientoo1", "caso": "20260604-1000", "recurrente": "20260610-1021", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cuefgcastilloa1", "caso": "20260606-0940", "recurrente": "20260608-0869", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1UQx9jV6pHDHBrBILgz53B-Li4zw-pwqr/view?usp=drive_link"}, {"login": "md-cuejlcordovat1", "caso": "20260607-0840", "recurrente": "20260613-0163", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana(E)/Bellavista(A)-F02-C04B-AMA", "foto": "https://drive.google.com/file/d/1UQx9jV6pHDHBrBILgz53B-Li4zw-pwqr/view?usp=drive_link"}, {"login": "md-cuemsvintimillao1", "caso": "20260608-1609", "recurrente": "20260609-1563", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "recurrente": "20260610-0567", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "recurrente": "20260611-0706", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260609-0517", "recurrente": "20260612-1430", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuevgpautab1", "caso": "20260609-0966", "recurrente": "20260623-0823", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Estadio (E)-F02-PCH05A-1A-NAR-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "recurrente": "20260610-0805", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260609-1412", "recurrente": "20260612-0839", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "recurrente": "20260611-0706", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260610-0567", "recurrente": "20260612-1430", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cuekasaavedrap3", "caso": "20260610-0805", "recurrente": "20260612-0839", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C03B-AMA", "foto": "https://drive.google.com/file/d/1KYloetFRGK5L82jPGmUD5pLwGrKvm0IR/view?usp=drive_link"}, {"login": "md-cuejcmoretas1", "caso": "20260610-0926", "recurrente": "20260611-1379", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F02-CH16A.1A-GRI-F02H-H.AZU/NAR", "foto": ""}, {"login": "md-cueajsagbayo12", "caso": "20260610-1458", "recurrente": "20260613-0814", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-2A-AMA-F02H-H.AZU/H.AZU", "foto": ""}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "recurrente": "20260615-1257", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260611-0675", "recurrente": "20260617-1636", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuecourgilesm3", "caso": "20260611-0706", "recurrente": "20260612-1430", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-4A-AMA-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1o9-4XMIAnwOtDT4G3GxIERbsRlgb2Sub/view?usp=drive_link"}, {"login": "md-cueggchuquiguangai1", "caso": "20260615-1257", "recurrente": "20260617-1636", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}, {"login": "md-cuenglozadac1", "caso": "20260616-0825", "recurrente": "20260624-1047", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1uUYs-lPjH8Wdd1MvxXJXvYHA3Z0wlSZs/view?usp=drive_link"}, {"login": "md-cueamonterov1", "caso": "20260619-1452", "recurrente": "20260623-1553", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Control Sur (E)/Banos (E)-F01-PC19B-GRI", "foto": ""}, {"login": "md-cuejvbritos1", "caso": "20260620-0165", "recurrente": "20260623-1424", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU", "foto": "https://drive.google.com/file/d/1idvavxJqbFUk1eWjQYy-FKT_lkn2mjs5/view?usp=drive_link"}];
+const revData = [{"login": "md-cuemfcontrerass2", "caso": "20260701-0467", "revisita": "20260723-0717", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 04", "caja": "CUE-Bellavista (A)-Mall del Rio (E)/Estadio (E)-F02-PCH10A-4A-CAF-F02H-H.AZU/H.AZU"}, {"login": "md-cuekjaguilarg1", "caso": "20260701-1008", "revisita": "20260702-1423", "motivo2": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Mall del rio 1/Control sur 1-F01-C12A-NEG"}, {"login": "md-cuejcverdugom1", "caso": "20260701-1351", "revisita": "20260703-0246", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Calderon (E)/Bellavista (A)-F03-PC14B-NAR"}, {"login": "md-cueeppachecoi1", "caso": "20260701-1412", "revisita": "20260723-0873", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C01B-AMA"}, {"login": "md-cuespmantillas1", "caso": "20260703-1260", "revisita": "20260714-1207", "motivo2": "Corte Externo Hilo Mpls/LDD", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-Turi (E)/Narancay (E)-F01-PCH26B-1A-ROJ-F01H-H.AZU/H.AZU"}, {"login": "md-cuewmcaller5", "caso": "20260707-0377", "revisita": "20260709-0701", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Arenal (E)/Banos (E)-F01-PC48B-VIO"}, {"login": "md-cuedsochoal1", "caso": "20260707-1481", "revisita": "20260707-1483", "motivo2": "Caso duplicado/mal aperturado", "vt2": "CUE PROV CUE STN 01", "caja": "CUE-Bellavista (A)-San Pedro (E)/N/A-F01-PC24B-VIO"}, {"login": "md-cuebcgonzaleza1", "caso": "20260708-1462", "revisita": "20260721-0939", "motivo2": "Corte de pigtail dentro de la caja Dispersion", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-El Arenal (E)/Control sur (E)-F02-CH03A-2A-VER-F48H-T.NAR-H.VER/CAF"}, {"login": "md-cuepmiglesiasg1", "caso": "20260709-0788", "revisita": "20260710-1356", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Sixto Chaullabamba (E)(A)/Sixto Chaullabamba (E)(B)-F01-PC21B-NAR"}, {"login": "md-cuecasarmientos1", "caso": "20260710-0202", "revisita": "20260721-0138", "motivo2": "Roseta - Cambio de pigtail FO", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Ricaurte (E)/Chiquintad (E)-F01-PC39B-AMA"}, {"login": "md-cuemcbanegasa2", "caso": "20260710-1262", "revisita": "20260714-1049", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Calderon (E)/Bellavista (A)-F03-PC14B-NAR"}, {"login": "md-cuejmpanezoc1", "caso": "20260712-0368", "revisita": "20260714-1456", "motivo2": "Corte de pigtail dentro de la caja Dispersion", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Eucaliptos (E)/Calderon (E)-F01-CH15A-22A-VIO-F24H-T.VER-H.GRI/H.BLA"}, {"login": "md-cuejlfajardo6", "caso": "20260713-0515", "revisita": "20260720-0611", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-3A-AMA-F02H-H.AZU/H.AZU"}, {"login": "md-cuemllozanos12", "caso": "20260715-1315", "revisita": "20260716-0527", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F02-PCH05B-2A-VER-F01H-H.AZU/H.AZU"}, {"login": "md-cuehportizo12", "caso": "20260716-0250", "revisita": "20260718-0853", "motivo2": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Banos (E)/Arenal (E)-F01-PC41B-AMA"}, {"login": "md-cuejjvivarr222", "caso": "20260717-0318", "revisita": "20260717-1107", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE STN 02", "caja": "CUE-Bellavista (A)-Estadio (E)/Mall del Rio (E)-F02-CH03A-2A-VER-F48H-T.NAR-H.VER/CAF"}, {"login": "md-cuecjmorochoc1", "caso": "20260717-0404", "revisita": "20260718-0499", "motivo2": "Atenuacion UM - mala conectorizacion caja", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH06A-1A-CEL-F02H-H.AZU/H.AZU"}, {"login": "md-cueceguzmans1", "caso": "20260717-1148", "revisita": "20260720-0567", "motivo2": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cueceguzmans1", "caso": "20260717-1148", "revisita": "20260721-0598", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU"}, {"login": "en-cuedbmasachep2", "caso": "20260718-0206", "revisita": "20260718-1092", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F02-PCH29B-3A-GRI-F02H-H.AZU/H.AZU"}, {"login": "md-cueavillescasg1", "caso": "20260718-0318", "revisita": "20260725-0276", "motivo2": "Atenuacion UM - mala conectorizacion caja", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PC04B-AMA"}, {"login": "md-cuemeordonezc1", "caso": "20260718-1103", "revisita": "20260721-1400", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C01B-AMA"}, {"login": "md-cueceguzmans1", "caso": "20260720-0567", "revisita": "20260721-0598", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cueggchuquiguangai1", "caso": "20260720-1515", "revisita": "20260722-1266", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuemccardosol1", "caso": "20260720-1621", "revisita": "20260728-0693", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/El Arenal (E)-F01-PCH64B-1A-ROS-F01H-H.AZU/H.AZU"}, {"login": "md-cuempcobof1", "caso": "20260721-0301", "revisita": "20260722-0133", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C01B-AMA"}, {"login": "md-cuewfmosquerap2", "caso": "20260721-0571", "revisita": "20260721-1094", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuevavergarai1", "caso": "20260721-1410", "revisita": "20260723-0277", "motivo2": "CASO SOLVENTADO SIN INTERVENCION TECNICA", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuenglozadac1", "caso": "20260722-0899", "revisita": "20260722-1211", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuejiquizhpel3", "caso": "20260723-0162", "revisita": "20260729-1298", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuejjjaramilloj3", "caso": "20260725-1138", "revisita": "20260801-0794", "motivo2": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Epoca 1/Estadio 1-F01-CH09A-CAF"}, {"login": "md-cuegtbritop1", "caso": "20260725-1155", "revisita": "20260726-0190", "motivo2": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F01-CH07A.2A-CEL-F02H-H.AZU/NAR"}, {"login": "md-cuegtbritop1", "caso": "20260725-1155", "revisita": "20260727-0129", "motivo2": "ONT quemado", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F01-CH07A.2A-CEL-F02H-H.AZU/NAR"}, {"login": "md-cuegtbritop1", "caso": "20260726-0190", "revisita": "20260727-0129", "motivo2": "ONT quemado", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F01-CH07A.2A-CEL-F02H-H.AZU/NAR"}, {"login": "md-cuegrer1", "caso": "20260726-0296", "revisita": "20260801-0812", "motivo2": "Atenuacion en Caja Dispersion", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista 1-Bellavista 1/El Arenal 1-F01-C10-CH02A-1A-F24H-T.NAR-H.VER/H.CAF"}, {"login": "md-cuelklucerom2", "caso": "20260728-1307", "revisita": "20260728-1311", "motivo2": "Caso duplicado/mal aperturado", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Calderon 1/Bellavista 1-F01-CH05A-NA"}, {"login": "md-cuerdaucapinas2", "caso": "20260728-1443", "revisita": "20260731-0611", "motivo2": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Calderon (E)/Eucaliptos (E)-F02-PC44B-AMA"}];
+const recData = [{"login": "md-cuejcverdugom1", "caso": "20260701-1351", "recurrente": "20260703-0246", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Calderon (E)/Bellavista (A)-F03-PC14B-NAR"}, {"login": "md-cueeppachecoi1", "caso": "20260701-1412", "recurrente": "20260723-0873", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Bellavista(A)/Castellana(E)-F02-C01B-AMA"}, {"login": "md-cuepmiglesiasg1", "caso": "20260709-0788", "recurrente": "20260710-1356", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Sixto Chaullabamba (E)(A)/Sixto Chaullabamba (E)(B)-F01-PC21B-NAR"}, {"login": "md-cuemcbanegasa2", "caso": "20260710-1262", "recurrente": "20260714-1049", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Calderon (E)/Bellavista (A)-F03-PC14B-NAR"}, {"login": "md-cuejlfajardo6", "caso": "20260713-0515", "recurrente": "20260720-0611", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Castellana (E)/Bellavista (A)-F02-PCH02B-3A-AMA-F02H-H.AZU/H.AZU"}, {"login": "md-cuemllozanos12", "caso": "20260715-1315", "recurrente": "20260716-0527", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Bellavista (A)/Castellana (E)-F02-PCH05B-2A-VER-F01H-H.AZU/H.AZU"}, {"login": "md-cuehportizo12", "caso": "20260716-0250", "recurrente": "20260718-0853", "titulo": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Banos (E)/Arenal (E)-F01-PC41B-AMA"}, {"login": "md-cuejjvivarr222", "caso": "20260717-0318", "recurrente": "20260717-1107", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE STN 02", "caja": "CUE-Bellavista (A)-Estadio (E)/Mall del Rio (E)-F02-CH03A-2A-VER-F48H-T.NAR-H.VER/CAF"}, {"login": "md-cueceguzmans1", "caso": "20260717-1148", "recurrente": "20260720-0567", "titulo": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-1A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cueggchuquiguangai1", "caso": "20260720-1515", "recurrente": "20260722-1266", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuemccardosol1", "caso": "20260720-1621", "recurrente": "20260728-0693", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 05", "caja": "CUE-Bellavista (A)-Epoca (E)/El Arenal (E)-F01-PCH64B-1A-ROS-F01H-H.AZU/H.AZU"}, {"login": "md-cuewfmosquerap2", "caso": "20260721-0571", "recurrente": "20260721-1094", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuenglozadac1", "caso": "20260722-0899", "recurrente": "20260722-1211", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 01", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuejiquizhpel3", "caso": "20260723-0162", "recurrente": "20260729-1298", "titulo": "Corte Externo FO Acceso - causa de terceros", "vt2": "CUE PROV CUE SNL 03", "caja": "CUE-Bellavista (A)-Epoca (E)/Bellavista (A)-F01-PCH02A-4A-VER-F02H-H.AZU/H.AZU"}, {"login": "md-cuegtbritop1", "caso": "20260725-1155", "recurrente": "20260726-0190", "titulo": "Atenuación de fibra del lado del cliente", "vt2": "CUE PROV CUE SNL 02", "caja": "CUE-Bellavista 1-Control sur 1/El Arenal 1-F01-CH07A.2A-CEL-F02H-H.AZU/NAR"}];
 
 // ============================================================
 // RESUMEN POR CAJA
@@ -399,7 +875,6 @@ function renderDetalle(tipo) {
         <td style="white-space:nowrap">${r.revisita||'—'}</td>
         <td style="font-size:10px;line-height:1.4">${r.motivo2||'—'}</td>
         <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">${r.vt2||'—'}</td>
-        <td style="white-space:nowrap">${r.foto ? `<a href="${r.foto}" target="_blank" class="foto-link">📷 Ver foto</a>` : '<span class="sin-foto">Sin foto</span>'}</td>
       </tr>`).join('');
   } else {
     tbody.innerHTML = filas.map((r,i) => `
@@ -409,7 +884,6 @@ function renderDetalle(tipo) {
         <td style="white-space:nowrap">${r.recurrente||'—'}</td>
         <td style="font-size:10px;line-height:1.4">${r.titulo||'—'}</td>
         <td style="white-space:nowrap;font-weight:600;color:#1a3c6e">${r.vt2||'—'}</td>
-        <td style="white-space:nowrap">${r.foto ? `<a href="${r.foto}" target="_blank" class="foto-link">📷 Ver foto</a>` : '<span class="sin-foto">Sin foto</span>'}</td>
       </tr>`).join('');
   }
 
@@ -432,5 +906,5 @@ renderResumen('rec');
 renderDetalle('rev');
 renderDetalle('rec');
 </script>
-</body>
-</html>
+
+</body></html>
