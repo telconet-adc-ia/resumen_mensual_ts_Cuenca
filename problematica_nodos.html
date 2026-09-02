@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Problemática por Migración de Nodos — Telconet</title>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f0f4f8;
+  color: #1a2332;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── HEADER */
+.hdr {
+  background: linear-gradient(135deg, #003087 0%, #1565c0 100%);
+  color: white;
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 3px 12px rgba(0,48,135,0.3);
+  position: sticky; top: 0; z-index: 100;
+}
+.hdr-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.15);
+  color: white; border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 11px; font-weight: 700; text-decoration: none;
+  transition: background 0.2s; white-space: nowrap;
+}
+.hdr-back:hover { background: rgba(255,255,255,0.28); }
+.hdr-logo {
+  background: rgba(255,255,255,0.18);
+  border-radius: 8px; padding: 6px 12px;
+  font-weight: 900; font-size: 14px; letter-spacing: 1px;
+}
+.hdr-titles { flex: 1; }
+.hdr-titles h1 { font-size: 16px; font-weight: 800; letter-spacing: 0.3px; }
+.hdr-titles p  { font-size: 11px; opacity: 0.75; margin-top: 2px; }
+.hdr-badge {
+  background: rgba(255,255,255,0.15); border-radius: 20px;
+  padding: 4px 12px; font-size: 11px; font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── MAIN */
+.main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+
+/* ── RESUMEN */
+.resumen-title {
+  font-size: 11px; font-weight: 700; color: #c0392b;
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+}
+.resumen-h2 {
+  font-size: 26px; font-weight: 900; color: #003087;
+  margin-bottom: 24px; line-height: 1.2;
+}
+.cards-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 16px;
+  margin-bottom: 48px;
+}
+@media(max-width:900px){ .cards-grid{ grid-template-columns: repeat(2,1fr); } }
+@media(max-width:560px){ .cards-grid{ grid-template-columns: 1fr; } }
+
+.nodo-card {
+  background: white; border-radius: 12px;
+  padding: 20px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.nodo-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px; color: white; flex-shrink: 0;
+}
+.nodo-card h3 { font-size: 17px; font-weight: 900; color: #1a2332; }
+.nodo-tag {
+  display: inline-block; border-radius: 4px;
+  padding: 4px 10px; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.nodo-desc { font-size: 12px; color: #555; flex: 1; }
+.nodo-estado {
+  font-size: 10px; font-weight: 700; color: #888;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border-top: 1px solid #f0f0f0; padding-top: 10px; margin-top: 4px;
+}
+
+/* ── DETALLE CASO */
+.caso {
+  background: white; border-radius: 14px;
+  margin-bottom: 32px; overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+}
+.caso-header {
+  padding: 24px 28px 0;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.caso-num-badge {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 16px; color: white;
+}
+.caso-meta { flex: 1; }
+.caso-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: #888; margin-bottom: 2px;
+}
+.caso-nodo { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; }
+.caso-h2 { font-size: 22px; font-weight: 900; color: #1a2332; margin: 14px 28px 0; line-height: 1.25; }
+.caso-tag-wrap { padding: 10px 28px 0; }
+.caso-body {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0; padding: 20px 28px 28px;
+}
+@media(max-width:700px){ .caso-body{ grid-template-columns:1fr; } }
+
+.caso-texto { padding-right: 24px; }
+.caso-texto p { font-size: 13px; color: #444; margin-bottom: 16px; }
+.caso-ficha {
+  border: 1px solid #eee; border-radius: 10px; overflow: hidden;
+  font-size: 12px; align-self: start;
+}
+.ficha-row {
+  display: grid; grid-template-columns: 130px 1fr;
+  border-bottom: 1px solid #eee;
+}
+.ficha-row:last-child { border-bottom: none; }
+.ficha-lbl {
+  padding: 10px 12px; font-weight: 700; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ficha-val { padding: 10px 12px; color: #333; }
+
+/* ── CONCLUSIONES */
+.concl-section { margin-top: 8px; }
+.concl-intro {
+  background: white; border-radius: 12px; padding: 22px 28px;
+  font-size: 13px; color: #444; margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 4px solid #c0392b;
+}
+.concl-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+}
+@media(max-width:900px){ .concl-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .concl-grid{ grid-template-columns:1fr; } }
+
+.concl-card {
+  background: white; border-radius: 12px; padding: 18px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.concl-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #003087; color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900; margin-bottom: 10px;
+}
+.concl-card h4 { font-size: 13px; font-weight: 800; color: #003087; margin-bottom: 6px; }
+.concl-card p  { font-size: 12px; color: #555; }
+
+/* ── DIVIDER */
+.section-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 36px 0 20px;
+}
+.section-divider span {
+  font-size: 11px; font-weight: 800; color: #c0392b;
+  text-transform: uppercase; letter-spacing: 1px; white-space: nowrap;
+}
+.section-divider::before, .section-divider::after {
+  content:''; flex:1; height:1px; background:#e0e7f0;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <a class="hdr-back" href="https://telconet-adc-ia.github.io/resumen_mensual_ts_Cuenca/resumen_mensual.html" target="_self">◀ Resumen Jefatura</a>
+  <div class="hdr-logo">TELCONET</div>
+  <div class="hdr-titles">
+    <h1>Problemática por Migración de Nodos</h1>
+    <p>Operaciones de Red · Cuenca — dic 2025 – ago 2026</p>
+  </div>
+  <div class="hdr-badge">⚠️ 4 nodos en desalojo</div>
+</header>
+
+<div class="main">
+
+  <!-- RESUMEN -->
+  <div class="resumen-title">Resumen de casos</div>
+  <div class="resumen-h2">Cuatro nodos, cuatro motivos de desalojo</div>
+
+  <div class="cards-grid">
+
+    <div class="nodo-card">
+      <div class="nodo-num" style="background:#c0392b">1</div>
+      <h3>MÉNDEZ</h3>
+      <div class="nodo-tag" style="background:#fdecea;color:#c0392b">Ruido del generador</div>
+      <div class="nodo-desc">El ruido excesivo del generador generó conflicto entre la dueña del local y los vecinos aledaños; se solicitó el desalojo.</div>
+      <div class="nodo-estado">Estado: Desalojo solicitado</div>
+    </div>
+
+    <div class="nodo-card">
+      <div class="nodo-num" style="background:#b03020">2</div>
+      <h3>MACAS</h3>
+      <div class="nodo-tag" style="background:#fdecea;color:#c0392b">Ruido, humo y derrame de aceite</div>
+      <div class="nodo-desc">El generador produjo ruido, humo y derrame de aceite; la dueña del local recibió quejas y pidió el desalojo.</div>
+      <div class="nodo-estado">Estado: Desalojo solicitado</div>
+    </div>
+
+    <div class="nodo-card">
+      <div class="nodo-num" style="background:#2a6098">3</div>
+      <h3>LA PLAYA</h3>
+      <div class="nodo-tag" style="background:#e8f0fb;color:#2a6098">Venta del inmueble</div>
+      <div class="nodo-desc">La venta de la casa obliga a desalojar. La reubicación fracasó por la cláusula contractual de instalar generador.</div>
+      <div class="nodo-estado">Estado: Desalojo solicitado</div>
+    </div>
+
+    <div class="nodo-card">
+      <div class="nodo-num" style="background:#1e7a5a">4</div>
+      <h3>MOLLETURO</h3>
+      <div class="nodo-tag" style="background:#e6f4ee;color:#1e7a5a">Instalación sin permiso</div>
+      <div class="nodo-desc">La instalación de un bajante sin autorización llevó a la dueña del local a solicitar el desalojo.</div>
+      <div class="nodo-estado">Estado: Desalojo solicitado</div>
+    </div>
+
+  </div>
+
+  <!-- CASO 1 -->
+  <div class="section-divider"><span>Caso 1 de 4</span></div>
+  <div class="caso">
+    <div class="caso-header">
+      <div class="caso-num-badge" style="background:#c0392b">1</div>
+      <div class="caso-meta">
+        <div class="caso-eyebrow">Caso 1 de 4</div>
+        <div class="caso-nodo">Nodo Méndez</div>
+      </div>
+    </div>
+    <div class="caso-h2">Desalojo por ruido excesivo del generador</div>
+    <div class="caso-tag-wrap">
+      <span class="nodo-tag" style="background:#c0392b;color:white">Ruido / Queja vecinal</span>
+    </div>
+    <div class="caso-body">
+      <div class="caso-texto">
+        <p>El ruido excesivo del generador de respaldo del nodo ocasionó conflictos entre la dueña del local y los vecinos aledaños. Como consecuencia, se nos solicitó desalojar las instalaciones.</p>
+      </div>
+      <div class="caso-ficha">
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Ubicación</div>
+          <div class="ficha-val">Santiago de Méndez, Cantón Santiago de Méndez, Morona Santiago</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Causa</div>
+          <div class="ficha-val">Ruido excesivo del generador (salida de escape hacia el segundo piso)</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Evidencia</div>
+          <div class="ficha-val">Mediciones de ruido con sonómetro a distintas distancias del nodo</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Acción requerida</div>
+          <div class="ficha-val">Desalojo solicitado por la propietaria</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASO 2 -->
+  <div class="section-divider"><span>Caso 2 de 4</span></div>
+  <div class="caso">
+    <div class="caso-header">
+      <div class="caso-num-badge" style="background:#b03020">2</div>
+      <div class="caso-meta">
+        <div class="caso-eyebrow">Caso 2 de 4</div>
+        <div class="caso-nodo">Nodo Macas</div>
+      </div>
+    </div>
+    <div class="caso-h2">Ruido, humo y derrame de aceite del generador</div>
+    <div class="caso-tag-wrap">
+      <span class="nodo-tag" style="background:#c0392b;color:white">Ruido / Humo / Derrame</span>
+    </div>
+    <div class="caso-body">
+      <div class="caso-texto">
+        <p>El generador de respaldo produjo ruido excesivo, emisión de humo y derrame de aceite en el sitio. Estas afectaciones generaron quejas de los vecinos hacia la dueña del local, quien solicitó el desalojo del nodo.</p>
+      </div>
+      <div class="caso-ficha">
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Ubicación</div>
+          <div class="ficha-val">Capitán José Villanueva, Macas, Morona Santiago</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Causa</div>
+          <div class="ficha-val">Derrame de aceite del generador y humo hacia zonas comunes</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Evidencia</div>
+          <div class="ficha-val">Registro fotográfico del derrame y del humo en la escalera de acceso</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#c0392b">Acción requerida</div>
+          <div class="ficha-val">Desalojo solicitado por la propietaria</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASO 3 -->
+  <div class="section-divider"><span>Caso 3 de 4</span></div>
+  <div class="caso">
+    <div class="caso-header">
+      <div class="caso-num-badge" style="background:#2a6098">3</div>
+      <div class="caso-meta">
+        <div class="caso-eyebrow">Caso 3 de 4</div>
+        <div class="caso-nodo">Nodo La Playa</div>
+      </div>
+    </div>
+    <div class="caso-h2">Desalojo por venta del inmueble</div>
+    <div class="caso-tag-wrap">
+      <span class="nodo-tag" style="background:#2a6098;color:white">Venta del inmueble</span>
+    </div>
+    <div class="caso-body">
+      <div class="caso-texto">
+        <p>La venta de la vivienda que alberga el nodo obliga a desalojar el local. Se evaluaron varias alternativas de reubicación, pero la negociación con los nuevos propietarios se cayó debido a la cláusula —presente en todos los contratos— que exige permitir la instalación de un generador.</p>
+      </div>
+      <div class="caso-ficha">
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#2a6098">Ubicación</div>
+          <div class="ficha-val">Sector La Playa, con alternativa evaluada en Azogues</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#2a6098">Causa</div>
+          <div class="ficha-val">Venta de la vivienda actual del nodo</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#2a6098">Obstáculo</div>
+          <div class="ficha-val">Cláusula contractual de instalación de generador rechazada por los propietarios</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#2a6098">Acción requerida</div>
+          <div class="ficha-val">Búsqueda de nuevo local en curso</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASO 4 -->
+  <div class="section-divider"><span>Caso 4 de 4</span></div>
+  <div class="caso">
+    <div class="caso-header">
+      <div class="caso-num-badge" style="background:#1e7a5a">4</div>
+      <div class="caso-meta">
+        <div class="caso-eyebrow">Caso 4 de 4</div>
+        <div class="caso-nodo">Nodo Molleturo</div>
+      </div>
+    </div>
+    <div class="caso-h2">Desalojo por instalación sin permiso</div>
+    <div class="caso-tag-wrap">
+      <span class="nodo-tag" style="background:#1e7a5a;color:white">Instalación sin permiso</span>
+    </div>
+    <div class="caso-body">
+      <div class="caso-texto">
+        <p>La instalación de un bajante de aguas en la fachada del inmueble, realizada sin la autorización previa de la propietaria, ocasionó su malestar y la consecuente solicitud de desalojo del nodo.</p>
+      </div>
+      <div class="caso-ficha">
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#1e7a5a">Ubicación</div>
+          <div class="ficha-val">Molleturo, Cuenca</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#1e7a5a">Causa</div>
+          <div class="ficha-val">Instalación de bajante sin permiso de la propietaria</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#1e7a5a">Evidencia</div>
+          <div class="ficha-val">Registro fotográfico del bajante instalado y trabajos de acceso</div>
+        </div>
+        <div class="ficha-row">
+          <div class="ficha-lbl" style="color:#1e7a5a">Acción requerida</div>
+          <div class="ficha-val">Desalojo solicitado por la propietaria</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCLUSIONES -->
+  <div class="section-divider"><span>Conclusiones</span></div>
+  <div class="concl-section">
+    <div class="concl-intro">
+      En Méndez, Macas y La Playa, el origen del conflicto está directamente relacionado con el generador de respaldo instalado en el nodo (ruido, humo, derrame de aceite o la cláusula contractual que exige su instalación). Molleturo es el único caso con una causa distinta: una instalación realizada sin autorización de la propietaria.
+    </div>
+    <div class="concl-grid">
+      <div class="concl-card">
+        <div class="concl-num">1</div>
+        <h4>Revisar la cláusula de generador</h4>
+        <p>Evaluar alternativas de energía de respaldo con menor impacto (insonorización, ubicación del escape, o fuentes silenciosas) para reducir el rechazo de propietarios.</p>
+      </div>
+      <div class="concl-card">
+        <div class="concl-num">2</div>
+        <h4>Mantenimiento preventivo</h4>
+        <p>Reforzar la contención de fugas de aceite y el control de emisiones en generadores instalados dentro de espacios habitados.</p>
+      </div>
+      <div class="concl-card">
+        <div class="concl-num">3</div>
+        <h4>Dar seguimiento a reubicaciones</h4>
+        <p>Priorizar la búsqueda de nuevo local para los nodos con desalojo activo, comenzando por La Playa.</p>
+      </div>
+      <div class="concl-card">
+        <div class="concl-num">4</div>
+        <h4>Formalizar permisos de obra</h4>
+        <p>Confirmar por escrito con el propietario cualquier instalación física antes de ejecutarla en sitio.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</body>
+</html>
