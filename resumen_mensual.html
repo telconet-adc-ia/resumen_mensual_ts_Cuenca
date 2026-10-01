@@ -543,7 +543,6 @@ canvas { max-height: 160px; }
     <!-- PRÓXIMAS SECCIONES -->
     <!-- CONSTRUCCIÓN Y ARREGLO DE CAJA -->
     <div class="panel" id="panel-construccion">
-  <a class="btn-detalle" target="_self" href="https://telconet-adc-ia.github.io/telconet-adc/adc.html">↗ Ver Detalle ADC</a>
   <a class="btn-detalle" target="_self" href="https://telconet-adc-ia.github.io/telconet-adc/construccion.html" style="margin-left:8px">↗ Ver Detalle CONS</a>
 
 
@@ -716,7 +715,6 @@ canvas { max-height: 160px; }
 
     <!-- ══ PANEL PROBLEMÁTICAS TS ══ -->
     <div class="panel" id="panel-problematicas">
-      <a class="btn-detalle" target="_self" href="https://telconet-adc-ia.github.io/telconet-adc/correlacion.html">↗ Problemática ADC</a>
       <a class="btn-detalle" target="_self" href="https://dcaguanatn2808-dotcom.github.io/Disponibilidad-hilos-TS-Cuenca/" style="margin-left:8px">↗ Problemática Interurbanos</a>
       <a class="btn-detalle" target="_self" href="https://telconet-adc-ia.github.io/resumen_mensual_ts_Cuenca/problematica_sop.html" style="margin-left:8px">↗ Problemática Soporte</a>
       <a class="btn-detalle" target="_self" href="https://telconet-adc-ia.github.io/resumen_mensual_ts_Cuenca/problematica_nodos.html" style="margin-left:8px">↗ Problemática Nodos</a>
@@ -1518,6 +1516,7 @@ async function renderCon(){
 function renderConItems(){
   const items = _conCache[mesSel] || CON_DATA[mesSel] || [];
   if (!items.length) return;
+
 
   // Poblar selector solo la primera vez o al cambiar mes
   // Siempre repoblar el selector con items del mes actual
